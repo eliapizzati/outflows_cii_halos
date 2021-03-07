@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created on Fri Mar  5 16:12:54 2021
 
@@ -24,7 +23,7 @@ gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
 
 
-def lamda(T, n, r, Zeta=1., f_esc=0., SFR_pure):
+def lamda(T, n, r, SFR_pure, Zeta=1., f_esc=0.):
     
     Pc6 = 0.
 
