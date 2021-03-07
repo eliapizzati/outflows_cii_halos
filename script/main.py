@@ -8,7 +8,7 @@ Created on Sun Mar  7 17:16:03 2021
 
 
 import os
-import numpy as np
+#import numpy as np
 import matplotlib.pyplot as plt
 import mydir
 
