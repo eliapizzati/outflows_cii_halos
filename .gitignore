@@ -1,6 +1,6 @@
 data/*
 plot/*
-input_data/*
+script/input_data/*
 *.pdf
 *.aux
 *.log
