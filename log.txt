@@ -1,0 +1,18 @@
+.LOG
+
+4:56 PM 3/4/2021
+
+- Plan to do:
+   - Create a "refine" branch where you can update add the relevant updates
+      - Add the contribution of CMB suppression to the final luminosity
+      - Include a new parameter theta to account for the dependence of the escape fraction 
+      - Do not change v_esc since we know the mass of the single galaxies
+      - Download the data from Fujimoto+20 and start the comparison with the single galaxies
+
+   - Make a better structure for the scripts (a class maybe? introduce some function?) -- I'll take a look and try to work on it
+
+   - I have to handle the folder structure in a better way -->  solution is to use os, sys
+
+   - I also want to handle the plots in a more straightforward way! solution is to use matplotlib.rcParams.update()
+
+   - 
