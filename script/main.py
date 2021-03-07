@@ -7,14 +7,14 @@ Created on Sun Mar  7 17:16:03 2021
 
 
 import os
-#import numpy as np
+import numpy as np
 import matplotlib.pyplot as plt
 import mydir
 
 from solver_profiles import profile, solve_eq
 
 
-params = dict([("type", "n")
+params = dict([("type", "n"),
                ("SFR", 20.),
                ("beta", 1.0), 
                ("f_esc", 0.), 
