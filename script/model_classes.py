@@ -78,7 +78,7 @@ class sol_profiles():
         ax_n.plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.n))
         ax_T.plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.T))
         
-        plt.savefig(os.path.join(mydir.data_dir, folder, "profiles_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+        plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles_beta{:.2f}_SFR{}_vc{:.1f}.png".\
                                 format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
 
         return
@@ -99,7 +99,7 @@ class ion_profiles():
         
         self.var = variables
         
-        self.x_H = variables[0]
+        self.x_e = variables[0]
         self.x_CII = variables[1]
         
         self.params = params
@@ -112,9 +112,9 @@ class ion_profiles():
         if not os.path.exists(os.path.join(mydir.data_dir, folder)):
             os.mkdir(os.path.join(mydir.data_dir, folder))
 
-        np.savetxt(os.path.join(mydir.plot_dir, folder, "ionization_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+        np.savetxt(os.path.join(mydir.data_dir, folder, "ionization_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
                                 format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
-                                (self.r,self.x_H,self.x_CII))
+                                (self.r,self.x_e,self.x_CII))
         
         return
     
@@ -147,7 +147,7 @@ class ion_profiles():
         ax_xe.plot(np.log10(self.r/(1000*nc.pc)),1.-self.x_e)
         ax_xCII.plot(np.log10(self.r/(1000*nc.pc)),self.x_CII)
         
-        plt.savefig(os.path.join(mydir.plot_dir, folder, "ionization_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+        plt.savefig(os.path.join(mydir.plot_dir, folder, "ionization_beta{:.2f}_SFR{}_vc{:.1f}.png".\
                                 format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
 
         return    

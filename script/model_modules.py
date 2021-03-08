@@ -222,7 +222,7 @@ def get_profiles(params, resol=1000):
     
     r_eval = np.linspace(r_bound[0],r_bound[1],resol)
 
-    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(v_c_pure, SFR_pure, f_esc, Zeta))
+    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(params,))
     
     if sol.success == False:
         print('Error in integration procedure')
@@ -311,15 +311,15 @@ def get_ionization_states(profiles, params):
     
     ratio =  gamma_H / nc.A_H / n
     
-    x_H = ( np.sqrt( (ratio-kappa_H)**2 + 4*ratio*(beta_H+kappa_H)) - (ratio-kappa_H) ) / (2*(beta_H+kappa_H))
+    x_e = ( np.sqrt( (ratio-kappa_H)**2 + 4*ratio*(beta_H+kappa_H)) - (ratio-kappa_H) ) / (2*(beta_H+kappa_H))
                 
-    n_e = x_H * nc.A_H * n
+    n_e = x_e * nc.A_H * n
                 
     x_CII = 1. / (1. + (gamma_CII)/(beta_CIII * n_e) + (beta_CII * n_e)/(gamma_CI + kappa_CI * n_e) + kappa_CII/beta_CIII)
     
     ionization_states = []
     
-    ionization_states.append(x_H)
+    ionization_states.append(x_e)
     ionization_states.append(x_CII)
     
     return ion_profiles(radius=profiles.r, variables=ionization_states, params=params)

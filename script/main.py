@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import mydir
 import natconst as nc
 
-from model_modules import profile, get_profiles, get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved
+from model_modules import get_profiles, get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved
 #from data_modules import *
 #from utils import * 
 
@@ -89,7 +89,7 @@ time_start = time.clock()
 
 profiles = get_profiles(params)
     
-ionization_state = get_ionization_states(r, profiles, params)
+ionization_state = get_ionization_states(profiles, params)
 
 #h, sigma_CII = get_surface_density(r, profiles, ionization_state, params)
 
