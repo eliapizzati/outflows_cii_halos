@@ -16,6 +16,9 @@ from model_modules import profile, get_profiles, get_ionization_states, get_surf
 #from data_modules import *
 #from utils import * 
 
+import time
+
+
 
 """
 PARAMETER DESCRIPTION
@@ -82,6 +85,7 @@ params_obs = dict([("line_frequency", 1900*1e9),
                    ("beam", None)])
 
 
+time_start = time.clock()
 
 profiles = get_profiles(params)
     
@@ -99,5 +103,8 @@ ionization_state.to_file()
 ionization_state.plot()
 
 
+time_elapsed = (time.clock() - time_start)
+
+print(time_elapsed)
 
 
