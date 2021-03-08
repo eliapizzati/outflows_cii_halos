@@ -143,7 +143,10 @@ class profile():
     def to_file(self):
         
         folder = 'data_profiles_SFR{}_vc{:.1f}'.format(self.params["SFR"], self.params["v_c"])
-            
+        
+        if not os.path.exists(os.path.join(mydir.data_dir, folder)):
+            os.mkdir(os.path.join(mydir.data_dir, folder))
+
         np.savetxt(os.path.join(mydir.data_dir, folder, "{}_beta{:.2f}.dat".format(self.params["type"], self.params["beta"])), \
                    (self.r,self.var))
         
