@@ -8,7 +8,6 @@ import os
 import natconst as nc
 import mydir 
 import gnedincooling as gc
-import radiation_fields
 
 import scipy.integrate as si
 
@@ -46,7 +45,7 @@ def lamda(T, n, r, SFR_pure, Zeta=1., f_esc=0.):
 
 # SYSTEM OF EQUATIONS
 
-def diff_system(r, y, v_c_pure, SFR_pure, f_esc=0., Zeta=1.):
+def diff_system(r, y, v_c_pure, SFR_pure, f_esc, Zeta):
 
     assert len(y.shape) == 1, 'Dimensionality of the input array is wrong'
 
@@ -79,7 +78,7 @@ def diff_system(r, y, v_c_pure, SFR_pure, f_esc=0., Zeta=1.):
 
 
 
-def solve_eq(beta, SFR_pure, v_c_pure, alfa = 1., R_pure = 0.3, resol = 1000):
+def solve_eq(beta, SFR_pure, v_c_pure, alfa = 1., R_pure = 0.3, resol = 1000, Zeta=1., f_esc=0.):
     
     # getting the BC
     
@@ -110,7 +109,7 @@ def solve_eq(beta, SFR_pure, v_c_pure, alfa = 1., R_pure = 0.3, resol = 1000):
     
     r_eval = np.linspace(r_bound[0],r_bound[1],resol)
 
-    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval)
+    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(v_c_pure, SFR_pure, f_esc, Zeta))
     
     if sol.success == False:
         print('Error in integration procedure')
