@@ -11,19 +11,17 @@ import numpy as np
 import scipy.interpolate
 
 
-def sersic(r):
+def sersic(r, r_e, sersic_index, central):
+        
+    b = 2 * sersic_index - 1/3
     
-    re= 1.1
-    sersic_index = 1.2
-    b=2*sersic_index-1/3
-    I=7.8*np.exp(b*((1/re)**(1/sersic_index)-1))
+    I_e = central * np.exp(b*((1/re)**(1/sersic_index)-1))
     
-    return I*np.exp(-b*((r/re)**(1/sersic_index)-1))
+    return I_e*np.exp(-b*((r/r_e)**(1/sersic_index)-1.))
 
-def halo(r):
-    
-    rn=3.3
-    C=1.5*np.exp(1/rn)
+def halo(r, r_n, central):
+        
+    C = central * np.exp(1/r_n)
     
     return C*np.exp(-r/rn)
 
@@ -51,7 +49,7 @@ def twod_making(profile, x_axis, nimage=1000):
     return x_ext, y_ext, z
 
 
-def create_beam_from_data(r_beam_raw, beam_raw):
+def create_beam_from_data(r_beam_raw, beam_raw,):
     
     h_data = np.linspace(0.3,10,nimage)
 

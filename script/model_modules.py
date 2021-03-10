@@ -326,7 +326,7 @@ def get_ionization_states(profiles, params):
             
 
 
-def get_surface_density(profiles, ionization_states, params, central_contribution=False):
+def get_surface_density(profiles, ionization_states, params, central_contribution=False, h_resol = 1000):
     """
     computes the surface density predicted by the model; 
     
@@ -343,6 +343,8 @@ def get_surface_density(profiles, ionization_states, params, central_contributio
         
     central_contribution: Boolean, optional
     
+    h_resol: int, optional
+    
     Returns
     =======
     sigma_CII: lum_profile class element
@@ -358,11 +360,12 @@ def get_surface_density(profiles, ionization_states, params, central_contributio
     
     # unpacking profiles 
     
-    v = profiles[0]
-    n = profiles[1]
-    T = profiles[2]
+    v = profiles.v
+    n = profiles.n
+    T = profiles.T
     
-    x_CII = ionization_states[1]
+    x_e = ionization_states.x_e
+    x_CII = ionization_states.x_CII
     
     # computing the emissivity 
     
@@ -370,29 +373,28 @@ def get_surface_density(profiles, ionization_states, params, central_contributio
       
     epsilon = 3e-27 * n**2 * (nc.A_C * Zeta/1.4e-4) * (1+0.42*x_CII/1e-3) * np.exp(-92./T)
     
-    h = np.linspace(min(r),min(max(r),10.*1000*nc.pc),1000)
+    h = np.linspace(min(profiles.r),min(max(profiles.r),10.*1000*nc.pc), h_resol)
    
     sigma_CII = np.zeros_like(h)
     
-    sigma_CII[:] = 2* np.trapz(epsilon[r>h[:]] * r[r>h[:]] / np.sqrt((r[r>h[:]])**2 - h[:]**2), r[r>h[:]])        
+    sigma_CII[:] = 2* np.trapz(epsilon[profiles.r>h[:]] * profiles.r[profiles.r>h[:]] / np.sqrt((profiles.r[profiles.r>h[:]])**2 - h[:]**2),\
+                 profiles.r[profiles.r>h[:]])        
 
     if central_contribution == True:    
         pass
 
-    return h, sigma_CII
+    return lum_profile(radius=h, variable=sigma_CII, params=params, category="sigma")
     
     
 
 
-def get_intensity_raw(h, sigma_CII, params_obs):
+def get_intensity_raw(sigma_CII, params, params_obs):
     """
     computes raw intensity (not convolved with the beam) from the surface density
     
     Parameters
     ==========
-    h: array
-    
-    sigma_CII: array
+    sigma_CII: lum_profile class element
     
     params_obs: dict
         parameters from observations
@@ -400,7 +402,7 @@ def get_intensity_raw(h, sigma_CII, params_obs):
     
     Returns
     =======
-    h, intensity: array, array
+    intensity: lum_profile class element
 
     """    
     
@@ -424,18 +426,18 @@ def get_intensity_raw(h, sigma_CII, params_obs):
 
     # transforming sigma to the intensity
     
-    intensity = sigma_CII / (nu_0*4*np.pi*(1.+zeta)**3*FWHM_vel/nc.cc)
+    intensity = sigma_CII.var / (nu_0*4*np.pi*(1.+zeta)**3*FWHM_vel/nc.cc)
         
     # changing the units
             
     intensity *= 1e26 #transformation to mJy 
     intensity /= 4.2e10 #transforming sr to arcsec^2
     
-    return h, intensity
+    return lum_profile(radius=sigma_CII.h, variable=intensity, params=params, category="int_raw")
 
 
 
-def get_intensity_convolved(h, intensity_raw, params_obs):
+def get_intensity_convolved(h, intensity_raw, params, params_obs):
     """
     computes the ionization state for hydrogen (x_HI) and Carbon (x_CII)
     
@@ -450,7 +452,7 @@ def get_intensity_convolved(h, intensity_raw, params_obs):
     
     Returns
     =======
-    h, intensity_convolved: array, array
+    intensity_convolved: lum_profile class element
 
     """    
     
@@ -494,11 +496,12 @@ def get_intensity_convolved(h, intensity_raw, params_obs):
     
     #normalizes the convolved intensity
     
-    norm_intensity = np.trapz(2*np.pi * h * intensity_raw, h) / np.trapz(2*np.pi * h *intensity_convolved, h)
+    norm_intensity = np.trapz(2*np.pi * h * intensity_raw, h) / np.trapz(2*np.pi * h * intensity_convolved, h)
     
     intensity_convolved *= norm_intensity
 
-    return h, intensity_convolved
+    return lum_profile(radius=intensity_raw.h, variable=intensity_convolved, params=params, category="int_conv")
+
 
 
 def add_central_contribution():
