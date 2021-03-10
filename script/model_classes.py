@@ -46,7 +46,7 @@ class sol_profiles():
                                     (self.r,self.v,self.n,self.T))
             
           
-        if filename is not None:
+        elif filename is not None:
             
             np.savetxt(filename, (self.r,self.v,self.n,self.T))
       
@@ -132,7 +132,7 @@ class ion_profiles():
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
                                     (self.r,self.x_e,self.x_CII))
             
-        if filename is not None:
+        elif filename is not None:
             
             np.savetxt(filename, (self.r,self.x_e,self.x_CII))
             
@@ -203,73 +203,93 @@ class lum_profile():
         
 
     
-    def to_file(self):
+    def to_file(self, filename = None):
         
-        folder = 'data_emission'
-        
-        if not os.path.exists(os.path.join(mydir.data_dir, folder)):
-            os.mkdir(os.path.join(mydir.data_dir, folder))
+        if filename is None:
 
-        
-        if self.category == "sigma":
-            np.savetxt(os.path.join(mydir.data_dir, folder, "sigma_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
-                                format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
-                                (self.r,self.var))    
-        
-        elif self.category == "int_raw":
-            np.savetxt(os.path.join(mydir.data_dir, folder, "intensity_raw_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
-                                format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
-                                (self.r,self.var))    
-        
-        elif self.category == "int_conv":
-            np.savetxt(os.path.join(mydir.data_dir, folder, "intensity_conv_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
-                                format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
-                                (self.r,self.var))    
-        else:
-            raise ValueError("No correct category")
+            folder = 'data_emission'
             
+            if not os.path.exists(os.path.join(mydir.data_dir, folder)):
+                os.mkdir(os.path.join(mydir.data_dir, folder))
+    
+            
+            if self.category == "sigma":
+                np.savetxt(os.path.join(mydir.data_dir, folder, "sigma_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+                                    format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
+                                    (self.h,self.var))    
+            
+            elif self.category == "int_raw":
+                np.savetxt(os.path.join(mydir.data_dir, folder, "intensity_raw_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+                                    format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
+                                    (self.h,self.var))    
+            
+            elif self.category == "int_conv":
+                np.savetxt(os.path.join(mydir.data_dir, folder, "intensity_conv_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+                                    format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
+                                    (self.h,self.var))    
+            else:
+                raise ValueError("No correct category")
+                
+        elif filename is not None:
+                        
+            np.savetxt(filename, (self.h,self.var))
+
         return
     
+                
         
-    def plot(self, size=14):
+    def plot(self,  ax=None, size=14, obs_data=None):
         
         folder = 'data_emission'
         
         if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
             os.mkdir(os.path.join(mydir.plot_dir, folder))
 
+        if ax is None:
 
-        fig, ax = plt.subplots(1, 1, sharex=True, figsize=(1.5*8.27,1.5*4.))
-
-        ax.set_xlabel("b [kpc]", size=size)
-        
-        if self.category == "sigma":
-            ax.set_ylabel(r"log ($\Sigma_{CII}$ [erg/cm s^2]), size=size)
-        elif self.category == "int_raw":
-            ax.set_ylabel("flux [mJy/arcsec$^2$]", size=size)
-        elif self.category == "int_conv":
-            ax.set_ylabel("flux [mJy/arcsec$^2$]", size=size)
-        else:
-            raise ValueError("No correct category")
-
-        ax.tick_params(labelsize=size)
-        #ax.set_ylim((0,1))
-        ax.set_xlim((0.,10))
-
-        ax.plot(self.h/(1000*nc.pc),np.log10(self.var))
-
-        if self.category == "sigma":
-            plt.savefig(os.path.join(mydir.plot_dir, folder, "sigma_beta{:.2f}_SFR{}_vc{:.1f}.png".\
-                                format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
-        
-        elif self.category == "int_raw":
-            plt.savefig(os.path.join(mydir.plot_dir, folder, "intensity_raw_beta{:.2f}_SFR{}_vc{:.1f}.png".\
-                                format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
-        
-        elif self.category == "int_conv":
-            plt.savefig(os.path.join(mydir.plot_dir, folder, "intensity_conv_beta{:.2f}_SFR{}_vc{:.1f}.png".\
-                                format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
-
+            fig, ax = plt.subplots(1, 1, sharex=True, figsize=(1.5*8.27,1.5*4.))
+    
+            ax.set_xlabel("b [kpc]", size=size)
+            
+            if self.category == "sigma":
+                ax.set_ylabel(r"log ($\Sigma_{CII}$ [erg/cm s^2])", size=size)
+            elif self.category == "int_raw":
+                ax.set_ylabel("flux [mJy/arcsec$^2$]", size=size)
+            elif self.category == "int_conv":
+                ax.set_ylabel("flux [mJy/arcsec$^2$]", size=size)
+            else:
+                raise ValueError("No correct category")
+    
+            ax.tick_params(labelsize=size)
+            #ax.set_ylim((0,1))
+            ax.set_xlim((0.,10))
+    
+            ax.plot(self.h/(1000*nc.pc),np.log10(self.var))
+            
+            if obs_data is not None:
+                ax.errorbar(obs_data.x, obs_data.data, yerr=obs_data.err, \
+                            markerfacecolor='C3',markeredgecolor='C3', marker='o',\
+                            linestyle='', ecolor = 'C3')
+    
+            if self.category == "sigma":
+                plt.savefig(os.path.join(mydir.plot_dir, folder, "sigma_beta{:.2f}_SFR{}_vc{:.1f}.png".\
+                                    format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
+            
+            elif self.category == "int_raw":
+                plt.savefig(os.path.join(mydir.plot_dir, folder, "intensity_raw_beta{:.2f}_SFR{}_vc{:.1f}.png".\
+                                    format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
+            
+            elif self.category == "int_conv":
+                plt.savefig(os.path.join(mydir.plot_dir, folder, "intensity_conv_beta{:.2f}_SFR{}_vc{:.1f}.png".\
+                                    format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
+            
+        elif ax is not None:
+            
+            ax.plot(np.log10(self.h/(1000*nc.pc)),np.log10(self.var))
+            
+            ax.errorbar(obs_data.x, obs_data.data, yerr=obs_data.err, \
+                            markerfacecolor='C3',markeredgecolor='C3', marker='o',\
+                            linestyle='', ecolor = 'C3')
 
         return    
     

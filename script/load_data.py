@@ -13,7 +13,7 @@ from astropy.table import Table
 import mydir
 import natconst as nc 
 
-from data_modules import obs_data
+from data_classes import obs_data
 
 
 """
@@ -49,7 +49,7 @@ data = np.loadtxt(input_filename, unpack=True)
 
 fuji_x_arcsec, fuji_y, err_down, err_up = data
 
-fuji_x = fuji_x_arcsec / 0.17076006194998467
+fuji_x = fuji_x_arcsec / 0.17076006194998467 / nc.pc / 1000 # in kpc
 
 fuji_y *= 1e3 # from Jy to mJy
 err_up *= 1e3 # from Jy to mJy
@@ -62,7 +62,7 @@ data_beam = np.loadtxt(input_filename, unpack=True)
 
 beam_x_arcsec, beam_y, beam_err_down, beam_err_up = data
 
-beam_x = beam_x_arcsec / 0.17076006194998467
+beam_x = beam_x_arcsec / 0.17076006194998467 / nc.pc / 1000 # in kpc
 
 beam_y *= 1e3 # from Jy to mJy
 beam_err_up *= 1e3 # from Jy to mJy

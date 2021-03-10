@@ -108,7 +108,7 @@ intensity_raw.to_file()
 intensity_raw.plot()
 
 intensity_conv.to_file()
-intensity_conv.plot()
+intensity_conv.plot(obs_data=observational_data)
 
 time_elapsed = (time.perf_counter() - time_start)
 
