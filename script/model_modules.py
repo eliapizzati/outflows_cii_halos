@@ -375,10 +375,21 @@ def get_surface_density(profiles, ionization_states, params, central_contributio
     
     h = np.linspace(min(profiles.r),min(max(profiles.r),10.*1000*nc.pc), h_resol)
    
-    sigma_CII = np.zeros_like(h)
+#    sigma_CII = np.zeros_like(h)
     
-    sigma_CII[:] = 2* np.trapz(epsilon[profiles.r>h[:]] * profiles.r[profiles.r>h[:]] / np.sqrt((profiles.r[profiles.r>h[:]])**2 - h[:]**2),\
-                 profiles.r[profiles.r>h[:]])        
+    print("a")
+    print(sigma_CII.shape)
+    
+#    sigma_CII[:] = 2* np.trapz(epsilon[profiles.r>h[:]] * profiles.r[profiles.r>h[:]] / np.sqrt((profiles.r[profiles.r>h[:]])**2 - h[:]**2),\
+#                 profiles.r[profiles.r>h[:]])        
+
+    sigma_CII = []
+    for el_h in h:
+        
+        integral = np.trapz(epsilon[r>el_h] * r[r>el_h] / np.sqrt((r[r>el_h])**2 - el_h**2), r[r>el_h])        
+        sigma_CII.append(2.*integral)
+                
+    sigma_CII = np.asarray(sigma_CII)
 
     if central_contribution == True:    
         pass
