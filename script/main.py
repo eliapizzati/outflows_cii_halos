@@ -92,7 +92,7 @@ for beta_el in betas:
     if load_sol_from_file == True:
         profiles = load_from_file(params, type_class = "sol_profiles")
     else:
-        from model_modules import get_profiles, 
+        from model_modules import get_profiles
         profiles = get_profiles(params)
         
     ionization_state = get_ionization_states(profiles, params)
