@@ -375,9 +375,9 @@ def get_surface_density(profiles, ionization_states, params, central_contributio
     
     h = np.linspace(min(profiles.r),min(max(profiles.r),10.*1000*nc.pc), h_resol)
    
-#    sigma_CII = np.zeros_like(h)
+    sigma_CII = np.zeros_like(h)
     
-    print("a")
+    print(h/1e3/nc.pc)
     print(sigma_CII.shape)
     
 #    sigma_CII[:] = 2* np.trapz(epsilon[profiles.r>h[:]] * profiles.r[profiles.r>h[:]] / np.sqrt((profiles.r[profiles.r>h[:]])**2 - h[:]**2),\
@@ -386,7 +386,7 @@ def get_surface_density(profiles, ionization_states, params, central_contributio
     sigma_CII = []
     for el_h in h:
         
-        integral = np.trapz(epsilon[r>el_h] * r[r>el_h] / np.sqrt((r[r>el_h])**2 - el_h**2), r[r>el_h])        
+        integral = np.trapz(epsilon[profiles.r>el_h] * profiles.r[profiles.r>el_h] / np.sqrt((profiles.r[profiles.r>el_h])**2 - el_h**2), profiles.r[profiles.r>el_h])        
         sigma_CII.append(2.*integral)
                 
     sigma_CII = np.asarray(sigma_CII)
@@ -448,7 +448,7 @@ def get_intensity_raw(sigma_CII, params, params_obs):
 
 
 
-def get_intensity_convolved(h, intensity_raw, params, params_obs):
+def get_intensity_convolved(intensity_raw, params, params_obs, obs_data):
     """
     computes the ionization state for hydrogen (x_HI) and Carbon (x_CII)
     
@@ -458,8 +458,12 @@ def get_intensity_convolved(h, intensity_raw, params, params_obs):
         
     intensity_raw: array
     
+    params: dict
+    
     params_obs: dict
         parameters from observations
+        
+    obs_data: obs_data class element
     
     Returns
     =======
@@ -467,31 +471,14 @@ def get_intensity_convolved(h, intensity_raw, params, params_obs):
 
     """    
     
-    
-    # params definition
-    
-    if "r_beam" in params_obs:
-        if "r_beam" == None:
-            raise ValueError("No beam given")
-        else:
-            r_beam = params_obs["r_beam"]
-    else: 
-        raise ValueError("No beam given")
-
-
-    if "beam" in params_obs:
-        if "beam" == None:
-            raise ValueError("No beam given")
-        else:
-            beam = params_obs["beam"]
-    else: 
-        raise ValueError("No beam given")
-
-    
+        
     # creates the 2d profiles
     
-    x, y, profile_2d = twod_making(intensity_raw, h)
-    x, y, beam_2d = twod_making(beam, r_beam)
+    print(intensity_raw.h/1e3/nc.pc)
+    print(intensity_raw.h.shape)
+    
+    x, y, profile_2d = twod_making(intensity_raw, intensity_raw.h/1e3/nc.pc)
+    x, y, beam_2d = twod_making(obs_data.beam, obs_data.x_beam/1e3/nc.pc)
 
     #makes the 2dfft
     

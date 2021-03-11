@@ -89,7 +89,7 @@ sigma_CII = get_surface_density(profiles, ionization_state, params)
 
 intensity_raw = get_intensity_raw(sigma_CII, params, params_obs)
 
-intensity_conv = get_intensity_convolved(intensity_raw, params, params_obs)
+intensity_conv = get_intensity_convolved(intensity_raw, params, params_obs, observational_data)
 
 
 profiles.to_file()
