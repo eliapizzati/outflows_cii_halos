@@ -9,13 +9,14 @@ Created on Mon Mar  8 14:50:57 2021
 import numpy as np
 
 import scipy.interpolate
+import natconst as nc
 
 
 def sersic(r, r_e, sersic_index, central):
         
     b = 2 * sersic_index - 1/3
     
-    I_e = central * np.exp(b*((1/re)**(1/sersic_index)-1))
+    I_e = central * np.exp(b*((1/r_e)**(1/sersic_index)-1))
     
     return I_e*np.exp(-b*((r/r_e)**(1/sersic_index)-1.))
 
@@ -23,7 +24,7 @@ def halo(r, r_n, central):
         
     C = central * np.exp(1/r_n)
     
-    return C*np.exp(-r/rn)
+    return C*np.exp(-r/r_n)
 
 
 def twod_making(profile, x_axis, nimage=1000):
@@ -35,7 +36,7 @@ def twod_making(profile, x_axis, nimage=1000):
     xy, yx = np.meshgrid(x_ext,y_ext)
     
     x_1d = np.linspace(-x_axis.max()*np.sqrt(2), x_axis.max()*np.sqrt(2), nimage)
-    
+        
     profile_ext_pos = np.interp(x_1d[x_1d>0.], x_axis, profile, right=0.)
     
     profile_ext_neg = profile_ext_pos[::-1]
@@ -49,24 +50,5 @@ def twod_making(profile, x_axis, nimage=1000):
     return x_ext, y_ext, z
 
 
-def create_beam_from_data(r_beam_raw, beam_raw,):
-    
-    h_data = np.linspace(0.3,10,nimage)
-
-    h_data_ext = np.linspace(0,10,nimage)
-
-    beam = np.interp(h_data, beam_x, beam_y)
-
-    #cut_low = 0.
-    #mask    = beam < cut_low
-    #beam[mask] =  cut_low
-
-
-    beam_ext = np.interp(h_data_ext, h_data, beam)
-    normalization_beam = np.sqrt(np.trapz(2*np.pi * h_data_ext * beam_ext**2, h_data_ext))
-
-    beam /= normalization_beam
-
-    return beam
 
 

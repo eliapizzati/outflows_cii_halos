@@ -7,7 +7,7 @@ Created on Fri Mar  5 16:12:54 2021
 import os
 import natconst as nc
 import mydir 
-import gnedincooling as gc
+
 
 import scipy.integrate as si
 
@@ -21,7 +21,11 @@ from utils import twod_making
         
 # cooling function
 
-gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
+from main import load_sol_from_file
+
+if load_sol_from_file == False:
+    import gnedincooling as gc
+    gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
 def lamda(T, n, r, params):
     """
@@ -242,7 +246,8 @@ def get_profiles(params, resol=1000):
     profiles.append(T)
     
     return sol_profiles(radius=r, variables=profiles, params=params)
-    
+
+
 
 
 def get_ionization_states(profiles, params):
@@ -376,10 +381,7 @@ def get_surface_density(profiles, ionization_states, params, central_contributio
     h = np.linspace(min(profiles.r),min(max(profiles.r),10.*1000*nc.pc), h_resol)
    
     sigma_CII = np.zeros_like(h)
-    
-    print(h/1e3/nc.pc)
-    print(sigma_CII.shape)
-    
+        
 #    sigma_CII[:] = 2* np.trapz(epsilon[profiles.r>h[:]] * profiles.r[profiles.r>h[:]] / np.sqrt((profiles.r[profiles.r>h[:]])**2 - h[:]**2),\
 #                 profiles.r[profiles.r>h[:]])        
 
@@ -474,11 +476,8 @@ def get_intensity_convolved(intensity_raw, params, params_obs, obs_data):
         
     # creates the 2d profiles
     
-    print(intensity_raw.h/1e3/nc.pc)
-    print(intensity_raw.h.shape)
-    
-    x, y, profile_2d = twod_making(intensity_raw, intensity_raw.h/1e3/nc.pc)
-    x, y, beam_2d = twod_making(obs_data.beam, obs_data.x_beam/1e3/nc.pc)
+    x, y, profile_2d = twod_making(intensity_raw.var, intensity_raw.h)
+    x, y, beam_2d = twod_making(obs_data.beam, obs_data.x_beam)
 
     #makes the 2dfft
     
@@ -490,11 +489,12 @@ def get_intensity_convolved(intensity_raw, params, params_obs, obs_data):
     cimage = np.real(np.fft.ifftshift(np.fft.ifft2(f_cimag)))
     cprofile_2d = cimage[:, cimage.shape[1]//2]
     
-    intensity_convolved = np.interp(h, x, cprofile_2d)
+    intensity_convolved = np.interp(intensity_raw.h, x, cprofile_2d)
     
     #normalizes the convolved intensity
     
-    norm_intensity = np.trapz(2*np.pi * h * intensity_raw, h) / np.trapz(2*np.pi * h * intensity_convolved, h)
+    norm_intensity = np.trapz(2*np.pi * intensity_raw.h * intensity_raw.var, intensity_raw.h)\
+                                / np.trapz(2*np.pi * intensity_raw.h * intensity_convolved, intensity_raw.h)
     
     intensity_convolved *= norm_intensity
 

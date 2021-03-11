@@ -15,6 +15,8 @@ class obs_data():
         
         self.data = y_data
         
+        self.err = err
+        
         self.err_down =  err[0]
         self.err_up = err[1]
         

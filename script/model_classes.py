@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 
 import natconst as nc
 
+
 # CLASSES
 
 class sol_profiles():
@@ -30,6 +31,7 @@ class sol_profiles():
         self.T = variables[2]
         
         self.params = params
+        
 
     
     def to_file(self, filename = None):
@@ -51,6 +53,8 @@ class sol_profiles():
             np.savetxt(filename, (self.r,self.v,self.n,self.T))
       
         return
+
+
     
         
     def plot(self, ax=None, size=14):
@@ -238,7 +242,7 @@ class lum_profile():
     
                 
         
-    def plot(self,  ax=None, size=14, obs_data=None):
+    def plot(self,  ax=None, size=14, data=None):
         
         folder = 'data_emission'
         
@@ -266,8 +270,8 @@ class lum_profile():
     
             ax.plot(self.h/(1000*nc.pc),np.log10(self.var))
             
-            if obs_data is not None:
-                ax.errorbar(obs_data.x, obs_data.data, yerr=obs_data.err, \
+            if data is not None:
+                ax.errorbar(data.x, data.data, yerr=data.err, \
                             markerfacecolor='C3',markeredgecolor='C3', marker='o',\
                             linestyle='', ecolor = 'C3')
     
@@ -287,7 +291,8 @@ class lum_profile():
             
             ax.plot(np.log10(self.h/(1000*nc.pc)),np.log10(self.var))
             
-            ax.errorbar(obs_data.x, obs_data.data, yerr=obs_data.err, \
+            if data is not None:
+                ax.errorbar(data.x, data.data, yerr=data.err, \
                             markerfacecolor='C3',markeredgecolor='C3', marker='o',\
                             linestyle='', ecolor = 'C3')
 
@@ -300,4 +305,67 @@ class lum_profile():
         
         return np.isnan(np.sum(var))
 
+    
+    
+# FINAL LOADING FUNCTION
+
+def load_from_file(params, filename = None, type_class = "sol_profiles"):
+        
+    if type_class == "sol_profiles":
+
+        if filename is None:
+                
+            folder = 'data_profiles'
+            
+            if not os.path.exists(os.path.join(mydir.data_dir, folder)):
+                raise ValueError("No existing path!")
+    
+            data = np.loadtxt(os.path.join(mydir.data_dir, folder, "profiles_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+                                    format(params["beta"], params["SFR"], params["v_c"]))) 
+            
+        elif filename is not None:
+            
+            data = np.loadtxt(filename)
+            
+
+        try:
+            r, v, n, T = data
+        except:
+            raise ValueError("No correct format for input data from sol_profiles")
+                
+        profile = sol_profiles(radius=r, variables=[v,n,T], params=params)
+
+        
+    elif type_class == "ion_profiles":
+
+        if filename is None:
+                
+            folder = 'data_ionization'
+            
+            if not os.path.exists(os.path.join(mydir.data_dir, folder)):
+                raise ValueError("No existing path!")
+    
+            data = np.loadtxt(os.path.join(mydir.data_dir, folder, "ionization_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+                                    format(params["beta"], params["SFR"], params["v_c"]))) 
+            
+        elif filename is not None:
+            
+            data = np.loadtxt(filename)
+            
+
+        try:
+            r, x_e, x_CII = data
+        except:
+            raise ValueError("No correct format for input data from sol_profiles")
+                
+        profile = sol_profiles(radius=r, variables=[x_e, x_CII], params=params)
+
+        
+    elif type_class == "lum_profile":
+        pass #TBD
+        
+    else:
+        raise ValueError("No correct class selected, which kind of file are you searching for?")
+                
+    return profile
     

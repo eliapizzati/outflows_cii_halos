@@ -12,14 +12,13 @@ import matplotlib.pyplot as plt
 import mydir
 import natconst as nc
 
-from model_modules import get_profiles, get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved
-#from data_modules import *
-#from utils import * 
-from data_classes import obs_data
+from model_modules import get_ionization_states, \
+                          get_surface_density, get_intensity_raw, get_intensity_convolved
+
+from model_classes import load_from_file
 from load_data import observational_data, params_obs
 
 import time
-
 
 
 
@@ -78,38 +77,51 @@ params = dict([("class", "sol"),
                ("alfa", 1.0),
                ("R_in", 0.3)])    
 
+load_sol_from_file = False
 
-time_start = time.clock()
-
-profiles = get_profiles(params)
     
-ionization_state = get_ionization_states(profiles, params)
+betas = np.asarray([0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.2,3.4])
 
-sigma_CII = get_surface_density(profiles, ionization_state, params)
+time_start = time.perf_counter()
 
-intensity_raw = get_intensity_raw(sigma_CII, params, params_obs)
+for beta_el in betas:
+    
+    params.update(beta = beta_el)
+    
+    
+    if load_sol_from_file == True:
+        profiles = load_from_file(params, type_class = "sol_profiles")
+    else:
+        from model_modules import get_profiles, 
+        profiles = get_profiles(params)
+        
+    ionization_state = get_ionization_states(profiles, params)
 
-intensity_conv = get_intensity_convolved(intensity_raw, params, params_obs, observational_data)
+    sigma_CII = get_surface_density(profiles, ionization_state, params)
 
+    intensity_raw = get_intensity_raw(sigma_CII, params, params_obs)
 
-profiles.to_file()
-profiles.plot()
+    intensity_conv = get_intensity_convolved(intensity_raw, params, params_obs, observational_data)
 
-print(profiles.check_nans())
-
-ionization_state.to_file()
-ionization_state.plot()
-
-
-sigma_CII.to_file()
-sigma_CII.plot()
-
-intensity_raw.to_file()
-intensity_raw.plot()
-
-intensity_conv.to_file()
-intensity_conv.plot(obs_data=observational_data)
-
+    
+    profiles.to_file()
+    profiles.plot()
+    
+    print(profiles.check_nans())
+    
+    ionization_state.to_file()
+    ionization_state.plot()
+    
+    
+    sigma_CII.to_file()
+    sigma_CII.plot()
+    
+    intensity_raw.to_file()
+    intensity_raw.plot()
+    
+    intensity_conv.to_file()
+    intensity_conv.plot(data=observational_data)
+    
 time_elapsed = (time.perf_counter() - time_start)
 
 print(time_elapsed)
