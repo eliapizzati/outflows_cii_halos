@@ -21,11 +21,11 @@ from utils import twod_making
         
 # cooling function
 
-from main import load_sol_from_file
+#from main import load_sol_from_file
 
-if load_sol_from_file == False:
-    import gnedincooling as gc
-    gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
+#if load_sol_from_file == False:
+import gnedincooling as gc
+gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
 def lamda(T, n, r, params):
     """
