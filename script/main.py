@@ -67,69 +67,69 @@ WORKFLOW:
     
 """
 
+load_sol_from_file = False
 
-data = obs_data_list[0]
+
+betas = np.asarray([0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.2,3.4])
+#betas = [3.0,3.2,3.4]
 
 
-params = dict([("beta", 1.0), 
+datas = obs_data_list[1:4]
+
+
+for data in datas:
+
+    params = dict([("beta", 1.0), 
                ("SFR", data.params_obs["SFR"]),
                ("f_esc", 0.), 
                ("v_c", data.params_obs["v_c"]),
                ("Zeta", 1.0),
                ("alfa", 1.0),
                ("R_in", 0.3)])    
-
-load_sol_from_file = True
-
     
-betas = np.asarray([0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.2,3.4])
-#betas = [3.0,3.2,3.4]
+    time_start = time.perf_counter()
 
-time_start = time.perf_counter()
-
-
-
-for beta_el in betas:
+    for beta_el in betas:
     
-    params.update(beta = beta_el)
+        params.update(beta = beta_el)
     
-    if load_sol_from_file == True:
-        profiles = load_from_file(params, type_class = "sol_profiles")
-    else:
-        from sol_modules import get_profiles
-        profiles = get_profiles(params, resol=10000)
+        if load_sol_from_file == False:
         
-    ionization_state = get_ionization_states(profiles, params)
+            from sol_modules import get_profiles
+            profiles = get_profiles(params, resol=1000)
+        
+            profiles.to_file()
+            profiles.plot(ax=pltc.axs_sol)
+            print(profiles.check_nans())
+        
+        else:
+        
+            profiles = load_from_file(params, type_class = "sol_profiles")
+         
+            ionization_state = get_ionization_states(profiles, params)
+        
+            sigma_CII = get_surface_density(profiles, ionization_state, params)
+        
+            intensity_raw = get_intensity_raw(sigma_CII, params, params_obs)
+        
+            intensity_conv = get_intensity_convolved(intensity_raw, params, data.params_obs, data)
+         
+            ionization_state.to_file()
+            ionization_state.plot(ax=pltc.axs_ion)
+             
+            sigma_CII.to_file()
+            sigma_CII.plot(ax=pltc.ax_sigma)
+            
+            intensity_raw.to_file()
+            intensity_raw.plot(ax=pltc.ax_int_raw)
+            
+            intensity_conv.to_file()
+            intensity_conv.plot(ax=pltc.ax_int_conv)
+            
 
-    sigma_CII = get_surface_density(profiles, ionization_state, params)
 
-    intensity_raw = get_intensity_raw(sigma_CII, params, params_obs)
+    time_elapsed = (time.perf_counter() - time_start)
 
-    intensity_conv = get_intensity_convolved(intensity_raw, params, data.params_obs, obs_data_list)
-
-    
-    profiles.to_file()
-    profiles.plot(ax=pltc.axs_sol)
-    
-    print(profiles.check_nans())
-    
-    ionization_state.to_file()
-    ionization_state.plot(ax=pltc.axs_ion)
-    
-    
-    sigma_CII.to_file()
-    sigma_CII.plot(ax=pltc.ax_sigma)
-    
-    intensity_raw.to_file()
-    intensity_raw.plot(ax=pltc.ax_int_raw)
-    
-    intensity_conv.to_file()
-    intensity_conv.plot(ax=pltc.ax_int_conv)
-    
-
-
-time_elapsed = (time.perf_counter() - time_start)
-
-print("total time elapsed (s)=", time_elapsed)
+    print("total time elapsed (s)=", time_elapsed)
 
 
