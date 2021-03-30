@@ -1,8 +1,6 @@
 data/*
 plot/*
-script/input_data/*
-!script/input_data/radial_cii_ALMA-ALL.dat
-!script/input_data/radial_psf_ALMA-ALL.dat
+!script/input_data/*
 *.pdf
 *.aux
 *.log

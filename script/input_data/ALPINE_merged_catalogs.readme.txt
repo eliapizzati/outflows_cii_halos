@@ -1,0 +1,58 @@
+### ALPINE DR1 MERGED CATALOG ###
+
+5 june 2020
+
+contact: matthieu.bethermin@lam.fr
+
+If you use this catalog, you should cite Béthermin et al. (2020, A&A in press, arXiv:2002.00962) describing
+the ALMA data processing and catalogs and the the additional papers if relevant:
+   - If ancillary data/properties from UV-to-near-IR are used: Faisst et al. (2020, ApJS 247 61)
+   - If the morpho-kinematic classification is used: Le Fèvre et al. (2020, A&A in press, arXiv:1910.09517)
+   - If the ALMA sizes are used: Fujimoto et al. (2020, A&A in press, arXiv:2003.00013)
+   
+The generic references for ALPINE is the following trio of papers: Le Fèvre et al. (2020, survey design),
+Béthermin et al. (2020, ALMA data), and Faisst et al. (2020, ancillary data).
+
+------------------------------------------------------------------------------------------------------------
+
+COLUMN DESCRIPTION:
+
+name: name of the source
+
+### From Bethermin et al. (2020) ###
+
+CII_flux:		CII line flux (Jy km/s), nan if non detection
+unc_CII_flux: 	  	1-sigma uncertainty on the CII line flux, 3-sigma secure upper limit if non detection
+LCII: 		  	CII luminosity (Lsun),  nan if non detection
+unc_LCII:	  	1-sigma uncertainty on LCII, 3-sigma secure upper limit if non detection
+zCII:		  	CII redshift
+unc_CII: 	  	uncertainties on the CII redshift
+CII_FWHM:	  	FWHM of the CII line (km/s)
+unc_CII_FWHM: 	  	uncertainty on CII_FWHM
+SNR_CII:	  	CII SNR measured in the mom-0 map
+flag_complex_CII: 	flag indicating a complex [CII] photometry (see Appendix of Bethermin et al. 2020)
+Scont: 		  	~155-um continuum flux (mJy), nan if non detection
+unc_Scont:	  	1-sigma uncertainty on Scont,  3-sigma secure upper limit if non detection
+L155: 		  	~155-um continuum monochromatic luminosity (Lsun, nuLnu unit), nan if non detection
+unc_L155:	  	1-sigma uncertainty on L155,  3-sigma secure upper limit if non detection
+LIR: 		  	integrated 8-1000 micron luminosity (Lsun, nuLnu unit), nan if non detection
+unc_LIR:	  	1-sigma uncertainty on LIR,  3-sigma secure upper limit if non detection
+rest_freq_cont:   	effective rest-frame frequency at which the continuum is measured (GHz)
+SNR_cont:	  	peak SNR in the continuum map
+flag_complex_cont:	flag indicating a complex continuum photometry (see Appendix of Bethermin et al. 2020)
+
+### From Le Fevre et al. 2020 ###
+
+class_morpho_kin:    	Morpho kinematic class as descibed in Le Fevre et al. (2020)
+(1: Rotator, 2: Pair-merger, 3: Extended dispersion-dominated, 4: Compact Dispersion-dominated, 5: Too faint to
+be classified)
+
+### From Fujimoto et al. 2020 ###
+
+CII_size: 	     	 CII size [kpc]
+unc_CII_size:		 1-sigma uncertainty on the CII size
+size_reliability_flag:   0 if reliable
+
+### From Faisst al. 2020 ###
+
+See Table A.1 of Faisst et al. 2020 for a description of the columns
