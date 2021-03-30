@@ -43,7 +43,7 @@ class sol_profiles():
             if not os.path.exists(os.path.join(mydir.data_dir, folder)):
                 os.mkdir(os.path.join(mydir.data_dir, folder))
     
-            np.savetxt(os.path.join(mydir.data_dir, folder, "profiles_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+            np.savetxt(os.path.join(mydir.data_dir, folder, "profiles_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
                                     (self.r,self.v,self.n,self.T))
             
@@ -90,7 +90,7 @@ class sol_profiles():
             ax_n.plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.n))
             ax_T.plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.T))
             
-            plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles_beta{:.2f}_SFR{}_vc{:.1f}.png".\
+            plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles_beta{:.2f}_SFR{:.1f}_vc{:.1f}.png".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
 
         elif ax is not None:
@@ -106,7 +106,7 @@ class sol_profiles():
         
         var = np.asarray(self.var)
         
-        return np.isnan(np.sum(var))
+        return np.isnan(np.sum(np.log10(var)))
     
    
 class ion_profiles():
@@ -132,7 +132,7 @@ class ion_profiles():
             if not os.path.exists(os.path.join(mydir.data_dir, folder)):
                 os.mkdir(os.path.join(mydir.data_dir, folder))
     
-            np.savetxt(os.path.join(mydir.data_dir, folder, "ionization_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+            np.savetxt(os.path.join(mydir.data_dir, folder, "ionization_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
                                     (self.r,self.x_e,self.x_CII))
             
@@ -172,7 +172,7 @@ class ion_profiles():
             ax_xe.plot(np.log10(self.r/(1000*nc.pc)),1.-self.x_e)
             ax_xCII.plot(np.log10(self.r/(1000*nc.pc)),self.x_CII)
             
-            plt.savefig(os.path.join(mydir.plot_dir, folder, "ionization_beta{:.2f}_SFR{}_vc{:.1f}.png".\
+            plt.savefig(os.path.join(mydir.plot_dir, folder, "ionization_beta{:.2f}_SFR{:.1f}_vc{:.1f}.png".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
 
         elif ax is not None:
@@ -218,17 +218,17 @@ class lum_profile():
     
             
             if self.category == "sigma":
-                np.savetxt(os.path.join(mydir.data_dir, folder, "sigma_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+                np.savetxt(os.path.join(mydir.data_dir, folder, "sigma_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
                                     (self.h,self.var))    
             
             elif self.category == "int_raw":
-                np.savetxt(os.path.join(mydir.data_dir, folder, "intensity_raw_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+                np.savetxt(os.path.join(mydir.data_dir, folder, "intensity_raw_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
                                     (self.h,self.var))    
             
             elif self.category == "int_conv":
-                np.savetxt(os.path.join(mydir.data_dir, folder, "intensity_conv_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+                np.savetxt(os.path.join(mydir.data_dir, folder, "intensity_conv_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
                                     (self.h,self.var))    
             else:
@@ -265,10 +265,11 @@ class lum_profile():
                 raise ValueError("No correct category")
     
             ax.tick_params(labelsize=size)
-            #ax.set_ylim((0,1))
             ax.set_xlim((0.,10))
+            
+            ax.set_yscale("log")
     
-            ax.plot(self.h/(1000*nc.pc),np.log10(self.var))
+            ax.plot(self.h/(1000*nc.pc),self.var)
             
             if data is not None:
                 ax.errorbar(data.x, data.data, yerr=data.err, \
@@ -289,13 +290,8 @@ class lum_profile():
             
         elif ax is not None:
             
-            ax.plot(np.log10(self.h/(1000*nc.pc)),np.log10(self.var))
-            
-            if data is not None:
-                ax.errorbar(data.x, data.data, yerr=data.err, \
-                            markerfacecolor='C3',markeredgecolor='C3', marker='o',\
-                            linestyle='', ecolor = 'C3')
-
+            ax.plot(self.h/(1000*nc.pc),self.var)
+        
         return    
     
     

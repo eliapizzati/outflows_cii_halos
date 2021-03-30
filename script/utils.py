@@ -44,7 +44,7 @@ def twod_making(profile, x_axis, nimage=1000):
     profile_ext = np.concatenate((profile_ext_neg, profile_ext_pos))
         
     function_ext = scipy.interpolate.interp1d(x_1d, profile_ext)
-    
+        
     z = function_ext(np.sqrt(xy**2 + yx**2))
     
     return x_ext, y_ext, z

@@ -54,7 +54,7 @@ wav = nc.hh * nc.cc / energy / nc.angs #Angstrom
     
 flux_eV_UVB = 10**flux_exp_UVB #eV/s/cm2/Hz/sr
 
-flux_UVB = flux_eV_UVB * nc.ev
+flux_UVB = flux_eV_UVB * nc.ev # erg/s/cm2/Hz/sr
     
 # photoionization coefficients
     
@@ -135,6 +135,7 @@ Gamma_H_1000, Gamma_He_1000, Gamma_CI_1000, Gamma_CII_1000 = photoionization_rat
 flux_LW = 10**40.7
 
 Gamma_LW_1000 = 1.38e9 * flux_LW * (963*nc.angs)**2 / (4**2*np.pi**2*(R_sample)**2*nc.cc*nc.angs) 
+
 
 
 print("######### gal ###########")

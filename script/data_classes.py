@@ -6,6 +6,8 @@ Created on Mon Mar  8 15:01:16 2021
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
+import natconst as nc
 
 class obs_data():
     
@@ -36,4 +38,43 @@ class obs_data():
     
 
 
+        
+    def plot(self, ax=None, size=14):
+        
+        
+        if ax is None:
+            
+            fig, ax = plt.subplots(1, 1, sharex=True, figsize=(1.5*8.27,1.5*4.))
+    
+            ax.set_xlabel("b [kpc]", size=size)
+            
+            ax.set_ylabel("data [mJy/arcsec^2]", size=size)
+                          
+            ax.tick_params(labelsize=size)
+            #ax.set_xlim(0.,10)
+            ax.set_ylim(1e-4,1e1)
+            
+            ax.set_yscale("log")
+    
+            ax.errorbar(self.x/(1000*nc.pc), self.data, self.err, label="data",\
+                        markerfacecolor='C3',markeredgecolor='C3', marker='o',linestyle='', ecolor = 'C3')
 
+            ax.plot(self.x_beam/(1000*nc.pc), self.beam*self.data[0]/self.beam[0], label="beam", linestyle="-", color="gray")
+            
+            if "name" in self.params_obs:
+                ax.set_title(self.params_obs["name"], size=size)
+            
+        elif ax is not None:
+                
+            ax.errorbar(self.x/(1000*nc.pc), self.data, self.err, label="beam",\
+                         marker='o',linestyle='')
+
+            ax.plot(self.x_beam/(1000*nc.pc), self.beam*self.data[0]/self.beam[0], label="beam", linestyle="--", color="gray")
+            
+        return
+    
+    def print_values(self):
+        
+        print(self.params_obs)
+        
+        return
