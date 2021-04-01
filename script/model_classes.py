@@ -57,7 +57,7 @@ class sol_profiles():
 
     
         
-    def plot(self, ax=None, size=14):
+    def plot(self, ax=None, size=14, label = None):
         
         folder = 'data_profiles'
         
@@ -86,19 +86,23 @@ class sol_profiles():
             ax_T.tick_params(labelsize=size)
             ax_T.set_ylim((2,8))
         
-            ax_v.plot(np.log10(self.r/(1000*nc.pc)),self.v/10**8)       
+            ax_v.plot(np.log10(self.r/(1000*nc.pc)),self.v/10**8, label=label)       
             ax_n.plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.n))
             ax_T.plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.T))
             
             plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles_beta{:.2f}_SFR{:.1f}_vc{:.1f}.png".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
-
+            
+            if label is not None:
+                
+                fig.legend(loc="lower center")
+                
         elif ax is not None:
             
-            ax[0].plot(np.log10(self.r/(1000*nc.pc)),self.v/10**8)       
+            ax[0].plot(np.log10(self.r/(1000*nc.pc)),self.v/10**8, label=label)       
             ax[1].plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.n))
             ax[2].plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.T))
-            
+                
         return
     
     
@@ -143,7 +147,7 @@ class ion_profiles():
         return
     
         
-    def plot(self,  ax=None, size=14):
+    def plot(self,  ax=None, size=14, label=None):
         
         folder = 'data_ionization'
         
@@ -169,15 +173,20 @@ class ion_profiles():
             ax_xCII.ticklabel_format(axis='y', style='plain')
             ax_xCII.set_ylim((0,1))
     
-            ax_xe.plot(np.log10(self.r/(1000*nc.pc)),1.-self.x_e)
+            ax_xe.plot(np.log10(self.r/(1000*nc.pc)),1.-self.x_e, label=label)
             ax_xCII.plot(np.log10(self.r/(1000*nc.pc)),self.x_CII)
             
             plt.savefig(os.path.join(mydir.plot_dir, folder, "ionization_beta{:.2f}_SFR{:.1f}_vc{:.1f}.png".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
 
+            
+            if label is not None:
+                
+                fig.legend(loc="lower center")
+                
         elif ax is not None:
             
-            ax[0].plot(np.log10(self.r/(1000*nc.pc)),1.-self.x_e)
+            ax[0].plot(np.log10(self.r/(1000*nc.pc)),1.-self.x_e, label=label)
             ax[1].plot(np.log10(self.r/(1000*nc.pc)),self.x_CII)
             
         return    
@@ -242,7 +251,7 @@ class lum_profile():
     
                 
         
-    def plot(self,  ax=None, size=14, data=None):
+    def plot(self,  ax=None, size=14, data=None, label=None):
         
         folder = 'data_emission'
         
@@ -269,7 +278,12 @@ class lum_profile():
             
             ax.set_yscale("log")
     
-            ax.plot(self.h/(1000*nc.pc),self.var)
+            ax.plot(self.h/(1000*nc.pc),self.var, label=label)
+            
+            
+            if label is not None:
+                
+                fig.legend(loc="lower center")
             
             if data is not None:
                 ax.errorbar(data.x, data.data, yerr=data.err, \
@@ -277,21 +291,21 @@ class lum_profile():
                             linestyle='', ecolor = 'C3')
     
             if self.category == "sigma":
-                plt.savefig(os.path.join(mydir.plot_dir, folder, "sigma_beta{:.2f}_SFR{}_vc{:.1f}.png".\
+                plt.savefig(os.path.join(mydir.plot_dir, folder, "sigma_beta{:.2f}_SFR{:.1f}_vc{:.1f}.png".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
             
             elif self.category == "int_raw":
-                plt.savefig(os.path.join(mydir.plot_dir, folder, "intensity_raw_beta{:.2f}_SFR{}_vc{:.1f}.png".\
+                plt.savefig(os.path.join(mydir.plot_dir, folder, "intensity_raw_beta{:.2f}_SFR{:.1f}_vc{:.1f}.png".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
             
             elif self.category == "int_conv":
-                plt.savefig(os.path.join(mydir.plot_dir, folder, "intensity_conv_beta{:.2f}_SFR{}_vc{:.1f}.png".\
+                plt.savefig(os.path.join(mydir.plot_dir, folder, "intensity_conv_beta{:.2f}_SFR{:.1f}_vc{:.1f}.png".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
             
         elif ax is not None:
             
-            ax.plot(self.h/(1000*nc.pc),self.var)
-        
+            ax.plot(self.h/(1000*nc.pc),self.var, label=label)
+                    
         return    
     
     
@@ -316,7 +330,7 @@ def load_from_file(params, filename = None, type_class = "sol_profiles"):
             if not os.path.exists(os.path.join(mydir.data_dir, folder)):
                 raise ValueError("No existing path!")
     
-            data = np.loadtxt(os.path.join(mydir.data_dir, folder, "profiles_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+            data = np.loadtxt(os.path.join(mydir.data_dir, folder, "profiles_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
                                     format(params["beta"], params["SFR"], params["v_c"]))) 
             
         elif filename is not None:
@@ -341,7 +355,7 @@ def load_from_file(params, filename = None, type_class = "sol_profiles"):
             if not os.path.exists(os.path.join(mydir.data_dir, folder)):
                 raise ValueError("No existing path!")
     
-            data = np.loadtxt(os.path.join(mydir.data_dir, folder, "ionization_beta{:.2f}_SFR{}_vc{:.1f}.dat".\
+            data = np.loadtxt(os.path.join(mydir.data_dir, folder, "ionization_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
                                     format(params["beta"], params["SFR"], params["v_c"]))) 
             
         elif filename is not None:

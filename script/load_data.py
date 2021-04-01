@@ -43,13 +43,15 @@ redshift=6
 
 size = 14
 
-fig_tot, ax_tot = plt.subplots(1, 1, sharex=True, figsize=(1.5*8.27,1.5*4.))
-ax_tot.set_xlabel("b [kpc]", size=size)
-ax_tot.set_ylabel("data [mJy/arcsec^2]", size=size)
-ax_tot.tick_params(labelsize=size)
-#ax_tot.set_xlim(0.,15)
-ax_tot.set_ylim(1e-7,1e1)
-ax_tot.set_yscale("log")
+
+if __name__ == "__main__":
+    fig_tot, ax_tot = plt.subplots(1, 1, sharex=True, figsize=(1.5*8.27,1.5*4.))
+    ax_tot.set_xlabel("b [kpc]", size=size)
+    ax_tot.set_ylabel("data [mJy/arcsec^2]", size=size)
+    ax_tot.tick_params(labelsize=size)
+    #ax_tot.set_xlim(0.,15)
+    ax_tot.set_ylim(1e-7,1e1)
+    ax_tot.set_yscale("log")
 
 
 
@@ -122,7 +124,7 @@ for name in names:
                        ("line_frequency", 1900*1e9),
                        ("redshift", redshift),
                        ("line_FWHM", CII_FWHM*nc.km),
-                       ("Mstar", 10**log_M_star),
+                       ("M_star", 10**log_M_star),
                        ("SFR", 10**log_SFR),
                        ("v_c", np.sqrt(nc.gg*M_halo)),
                        ("sersic_effective_radius", 1.1),
@@ -132,14 +134,16 @@ for name in names:
     
     observational_data = obs_data(x_data=fuji_x, y_data=fuji_y, x_beam=beam_x, y_beam=beam_y, err=err, params_obs=params_obs)
     
-    #observational_data.plot()
-    observational_data.plot(ax=ax_tot)
-    #observational_data.print_values()
-
+    
     obs_data_list.append(observational_data)
     
-    ax_star.scatter(log_M_star, log_SFR)
-    print(log_SFR,"\t", log_M_star,"\t", redshift, "\t", log_M_halo, "\t", round(v_c/1e5), "\t", R_halo/1e3/nc.pc)
+    if __name__ == "__main__":
+        #observational_data.plot()
+        observational_data.plot(ax=ax_tot)
+        #observational_data.print_values()
+
+        ax_star.scatter(log_M_star, log_SFR)
+        print(log_SFR,"\t", log_M_star,"\t", redshift, "\t", log_M_halo, "\t", round(v_c/1e5), "\t", R_halo/1e3/nc.pc)
     
 
 #

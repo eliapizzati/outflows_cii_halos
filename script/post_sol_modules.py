@@ -98,7 +98,7 @@ def get_ionization_states(profiles, params):
             
 
 
-def get_surface_density(profiles, ionization_states, params, central_contribution=False, h_resol = 1000):
+def get_surface_density(profiles, ionization_states, params, central_contribution=False, h_resol = 1000, rmax=10.):
     """
     computes the surface density predicted by the model; 
     
@@ -145,7 +145,7 @@ def get_surface_density(profiles, ionization_states, params, central_contributio
       
     epsilon = 3e-27 * n**2 * (nc.A_C * Zeta/1.4e-4) * (1+0.42*x_CII/1e-3) * np.exp(-92./T)
     
-    h = np.linspace(min(profiles.r),max(max(profiles.r),10.*1000*nc.pc), h_resol)
+    h = np.linspace(min(profiles.r),max(max(profiles.r),rmax*1000*nc.pc), h_resol)
    
     sigma_CII = np.zeros_like(h)
         
