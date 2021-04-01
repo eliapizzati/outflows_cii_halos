@@ -76,13 +76,14 @@ betas = np.asarray([0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.2,
 
 datas = obs_data_list
 
+counter = 0
 
 for data in datas:
     
     print("#####################")
-    print(data.params_obs["name"])
+    print(data.params_obs["name"], "(number {})".format(counter) )
     print("#####################")
-
+    counter+=1
 
     params = dict([("beta", 1.0), 
                ("SFR", data.params_obs["SFR"]),
