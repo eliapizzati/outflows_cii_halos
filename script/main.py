@@ -122,7 +122,7 @@ for data in datas:
             profiles = get_profiles(params, resol=1000)
         
             profiles.to_file()
-            profiles.plot(ax=pltc.axs_sol)
+            profiles.plot(ax=axs_sol)
             
             if profiles.check_nans() == True:
                 string_nans = "Integration error: presence of nans"
