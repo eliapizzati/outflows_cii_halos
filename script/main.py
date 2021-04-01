@@ -74,7 +74,7 @@ betas = np.asarray([0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.2,
 #betas = [3.0,3.2,3.4]
 
 
-#datas = obs_data_list[1:4]
+datas = obs_data_list
 
 
 for data in datas:
