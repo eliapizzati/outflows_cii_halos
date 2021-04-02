@@ -14,6 +14,8 @@ import scipy.integrate as si
 import numpy as np
 
 from model_classes import sol_profiles
+from radiation_fields import UVB_rates
+
 
 # FUNCTIONS
         
