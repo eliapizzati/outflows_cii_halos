@@ -47,7 +47,7 @@ def UVB_rates(redshift, quantity):
     flux_UVB = flux_eV_UVB * nc.ev # erg/s/cm2/Hz/sr
     
     
-    index_redshift = np.searchsorted(redshift_list, 6) 
+    index_redshift = np.searchsorted(redshift_list, redshift) 
     redshift_value = redshift_list[index_redshift-1]
         
     energy_eV_z =[]

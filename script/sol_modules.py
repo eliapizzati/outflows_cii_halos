@@ -26,7 +26,7 @@ import gnedincooling as gc
 
 gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
-def lamda(T, n, r, params):
+def lamda(T, n, r, params, Plw, Ph1, Pg1):
     """
     Cooling function (calling gnedincooling from Fortran functions)
     
@@ -55,10 +55,6 @@ def lamda(T, n, r, params):
     else:
         f_esc = 0.
         
-    if "redshift" in params:
-        redshift = params["redshift"]
-    else: 
-        raise ValueError("No redshift given")
         
     if "Zeta" in params:
         Zeta = params["Zeta"]
@@ -71,10 +67,9 @@ def lamda(T, n, r, params):
 
     # UV background (values around 1e-13 s^-1)
         
-    Plw = UVB_rates(redshift, quantity="LW rate")
-    Ph1 = UVB_rates(redshift, quantity="H rate")
-    Pg1 = UVB_rates(redshift, quantity="He rate")  
-                      
+    Plw = Plw
+    Ph1 = Ph1
+    Pg1 = Pg1            
         
     # ADDING THE GALACTIC FLUX CONTRIBUTION 
         
@@ -89,7 +84,7 @@ def lamda(T, n, r, params):
 
 # SYSTEM OF EQUATIONS
 
-def diff_system(r, y, params):
+def diff_system(r, y, params, Plw, Ph1, Pg1):
     """
     differential system for the Euler equations
     
@@ -128,7 +123,7 @@ def diff_system(r, y, params):
     
     n = rho / (nc.mus * nc.mp) #in cgs unit
     
-    q = rho*lamda(T, n, r, params) / (nc.mus * nc.mp)**2
+    q = rho*lamda(T, n, r, params, Plw, Ph1, Pg1) / (nc.mus * nc.mp)**2
     
     v_c = v_c_pure * 1e5 #cm/s 
     v_e = v_c * np.sqrt(2) #cm/s 
@@ -182,6 +177,11 @@ def get_profiles(params, resol=1000):
     else: 
         raise ValueError("No v_c given")
     
+    if "redshift" in params:
+        redshift = params["redshift"]
+    else: 
+        raise ValueError("No redshift given")
+
     if "f_esc" in params:
         f_esc = params["f_esc"]
     else:
@@ -203,6 +203,11 @@ def get_profiles(params, resol=1000):
         alfa = 0.3
     
     # getting the BC
+    
+    Plw = UVB_rates(redshift, quantity="LW rate")
+    Ph1 = UVB_rates(redshift, quantity="H rate")
+    Pg1 = UVB_rates(redshift, quantity="He rate")  
+    
     
     SFR = SFR_pure/nc.year #1/s
     
@@ -231,7 +236,7 @@ def get_profiles(params, resol=1000):
     
     r_eval = np.linspace(r_bound[0],r_bound[1],resol)
 
-    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(params,))
+    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(params,Plw,Ph1,Pg1))
     
     if sol.success == False:
         print('Error in integration procedure')
