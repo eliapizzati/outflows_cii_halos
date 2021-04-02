@@ -69,9 +69,10 @@ def lamda(T, n, r, params):
 
     # UV background (values around 1e-13 s^-1)
         
-    Plw = nc.Gamma_LW_UVB
-    Ph1 = nc.Gamma_H_UVB
-    Pg1 = nc.Gamma_He_UVB         
+    Plw = UVB_rates(redshift, quantity="LW rate")
+    Ph1 = UVB_rates(redshift, quantity="H rate")
+    Pg1 = UVB_rates(redshift, quantity="He rate")  
+                      
         
     # ADDING THE GALACTIC FLUX CONTRIBUTION 
         
