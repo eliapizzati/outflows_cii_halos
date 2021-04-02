@@ -35,7 +35,7 @@ matplotlib.rcParams.update({
 size = 14
 
 
-def plot_configurator(plot_type = "sol", bottom=0.28, wspace=0.1):
+def plot_configurator(plot_type = "sol", bottom=0.28, wspace=0.2):
 
 
     if plot_type == "sol":
@@ -97,14 +97,19 @@ def plot_configurator(plot_type = "sol", bottom=0.28, wspace=0.1):
 
         return fig_ion, axs_ion
     
-    elif plot_type == "sigma": 
+    elif plot_type == "sigma" or plot_type == "int": 
         
-        fig_sigma, ax_sigma = plt.subplots(1, 1, sharex=True, figsize=(1.5*8.27,1.5*4.))
+        fig, ax = plt.subplots(1, 1, sharex=True, figsize=(1.5*8.27,1.5*4.))
             
-        ax_sigma.set_xlabel("b [kpc]", size=size)
-        ax_sigma.set_ylabel(r"log ($\Sigma_{CII}$ [erg/cm s^2])", size=size)
-        ax_sigma.set_yscale("log")
-        ax_sigma.set_xlim((0.,16))
+        ax.set_xlabel("b [kpc]", size=size)
+        
+        if plot_type == "sigma":
+            ax.set_ylabel(r"log ($\Sigma_{CII}$ [erg/cm s^2])", size=size)
+        elif plot_type == "int":
+            ax.set_ylabel("flux [mJy/arcsec$^2$]", size=size)
+
+        ax.set_yscale("log")
+        ax.set_xlim((0.,18))
 
         plt.subplots_adjust(left = 0.1,  # the left side of the subplots of the figure
             right = 0.95,   # the right side of the subplots of the figure
@@ -115,27 +120,7 @@ def plot_configurator(plot_type = "sol", bottom=0.28, wspace=0.1):
             hspace = 0.1)  # the amount of height reserved for space between subplots,
                           # expressed as a fraction of the average axis height
 
-        return fig_sigma, ax_sigma
-    
-    elif plot_type == "int":
-    
-        fig_int, ax_int = plt.subplots(1, 1, sharex=True, figsize=(1.5*8.27,1.5*4.))
-            
-        ax_int.set_xlabel("b [kpc]", size=size)
-        ax_int.set_ylabel("flux [mJy/arcsec$^2$]", size=size)
-        ax_int.set_yscale("log")
-        ax_int.set_xlim((0.,16))
-
-        plt.subplots_adjust(left = 0.1,  # the left side of the subplots of the figure
-            right = 0.95,   # the right side of the subplots of the figure
-            bottom = bottom,  # the bottom of the subplots of the figure
-            top = 0.9,     # the top of the subplots of the figure
-            wspace = wspace,  # the amount of width reserved for space between subplots,
-            # expressed as a fraction of the average axis width
-            hspace = 0.1)  # the amount of height reserved for space between subplots,
-                          # expressed as a fraction of the average axis height
-        
-        return fig_int, ax_int
+        return fig, ax
     
     else:
         raise ValueError("No correct type")

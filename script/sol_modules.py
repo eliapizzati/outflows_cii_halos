@@ -53,6 +53,11 @@ def lamda(T, n, r, params):
     else:
         f_esc = 0.
         
+    if "redshift" in params:
+        redshift = params["redshift"]
+    else: 
+        raise ValueError("No redshift given")
+        
     if "Zeta" in params:
         Zeta = params["Zeta"]
     else:
@@ -236,13 +241,15 @@ def get_profiles(params, resol=1000):
     n = rho / (nc.mus*nc.mp) #cm^-3
     T = sol.y[2] #K
     
+    mask = v > 4.1e6
+
     profiles = []
     
-    profiles.append(v)
-    profiles.append(n)
-    profiles.append(T)
+    profiles.append(v[mask])
+    profiles.append(n[mask])
+    profiles.append(T[mask])
     
-    return sol_profiles(radius=r, variables=profiles, params=params)
+    return sol_profiles(radius=r[mask], variables=profiles, params=params)
 
 
 

@@ -57,7 +57,7 @@ class sol_profiles():
 
     
         
-    def plot(self, ax=None, size=14, label = None):
+    def plot(self, ax=None, size=14, label = None, **kwargs):
         
         folder = 'data_profiles'
         
@@ -86,9 +86,9 @@ class sol_profiles():
             ax_T.tick_params(labelsize=size)
             ax_T.set_ylim((2,8))
         
-            ax_v.plot(np.log10(self.r/(1000*nc.pc)),self.v/10**8, label=label)       
-            ax_n.plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.n))
-            ax_T.plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.T))
+            ax_v.plot(np.log10(self.r/(1000*nc.pc)),self.v/10**8, label=label, **kwargs)       
+            ax_n.plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.n), **kwargs)
+            ax_T.plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.T), **kwargs)
             
             plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles_beta{:.2f}_SFR{:.1f}_vc{:.1f}.png".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
@@ -99,9 +99,9 @@ class sol_profiles():
                 
         elif ax is not None:
             
-            ax[0].plot(np.log10(self.r/(1000*nc.pc)),self.v/10**8, label=label)       
-            ax[1].plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.n))
-            ax[2].plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.T))
+            ax[0].plot(np.log10(self.r/(1000*nc.pc)),self.v/10**8, label=label, **kwargs)       
+            ax[1].plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.n), **kwargs)
+            ax[2].plot(np.log10(self.r/(1000*nc.pc)),np.log10(self.T), **kwargs)
                 
         return
     
@@ -147,7 +147,7 @@ class ion_profiles():
         return
     
         
-    def plot(self,  ax=None, size=14, label=None):
+    def plot(self,  ax=None, size=14, label=None, **kwargs):
         
         folder = 'data_ionization'
         
@@ -173,8 +173,8 @@ class ion_profiles():
             ax_xCII.ticklabel_format(axis='y', style='plain')
             ax_xCII.set_ylim((0,1))
     
-            ax_xe.plot(np.log10(self.r/(1000*nc.pc)),1.-self.x_e, label=label)
-            ax_xCII.plot(np.log10(self.r/(1000*nc.pc)),self.x_CII)
+            ax_xe.plot(np.log10(self.r/(1000*nc.pc)),1.-self.x_e, label=label, **kwargs)
+            ax_xCII.plot(np.log10(self.r/(1000*nc.pc)),self.x_CII, **kwargs)
             
             plt.savefig(os.path.join(mydir.plot_dir, folder, "ionization_beta{:.2f}_SFR{:.1f}_vc{:.1f}.png".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])))
@@ -186,8 +186,8 @@ class ion_profiles():
                 
         elif ax is not None:
             
-            ax[0].plot(np.log10(self.r/(1000*nc.pc)),1.-self.x_e, label=label)
-            ax[1].plot(np.log10(self.r/(1000*nc.pc)),self.x_CII)
+            ax[0].plot(np.log10(self.r/(1000*nc.pc)),1.-self.x_e, label=label, **kwargs)
+            ax[1].plot(np.log10(self.r/(1000*nc.pc)),self.x_CII, **kwargs)
             
         return    
     
@@ -251,7 +251,7 @@ class lum_profile():
     
                 
         
-    def plot(self,  ax=None, size=14, data=None, label=None):
+    def plot(self,  ax=None, size=14, data=None, label=None, **kwargs):
         
         folder = 'data_emission'
         
@@ -278,7 +278,7 @@ class lum_profile():
             
             ax.set_yscale("log")
     
-            ax.plot(self.h/(1000*nc.pc),self.var, label=label)
+            ax.plot(self.h/(1000*nc.pc),self.var, label=label, **kwargs)
             
             
             if label is not None:
@@ -304,7 +304,7 @@ class lum_profile():
             
         elif ax is not None:
             
-            ax.plot(self.h/(1000*nc.pc),self.var, label=label)
+            ax.plot(self.h/(1000*nc.pc),self.var, label=label, **kwargs)
                     
         return    
     

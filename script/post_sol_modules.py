@@ -14,6 +14,8 @@ import numpy as np
 
 from model_classes import sol_profiles, ion_profiles, lum_profile
 from utils import twod_making
+from cmb_suppression import T_spin_func_vec, eta_func_vec
+from radiation_fields import UVB_rates
 
 
 
@@ -40,6 +42,11 @@ def get_ionization_states(profiles, params):
         SFR_pure = params["SFR"]
     else: 
         raise ValueError("No SFR given")
+        
+    if "redshift" in params:
+        redshift = params["redshift"]
+    else: 
+        raise ValueError("No redshift given")
             
     if "f_esc" in params:
         f_esc = params["f_esc"]
@@ -54,15 +61,15 @@ def get_ionization_states(profiles, params):
     
     #UV BACKGROUND
         
-    gamma_H = nc.Gamma_H_UVB
-    gamma_CI = nc.Gamma_CI_UVB               
-    gamma_CII = nc.Gamma_CII_UVB
+    gamma_H = UVB_rates(redshift, quantity="H rate")
+    gamma_CI = UVB_rates(redshift, quantity="CI rate")
+    gamma_CII = UVB_rates(redshift, quantity="CII rate")
                 
     if f_esc != 0.0:
     
         gamma_H += nc.Gamma_H_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc              
-        gamma_CI = nc.Gamma_CI_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc
-        gamma_CII = nc.Gamma_CII_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc
+        gamma_CI += nc.Gamma_CI_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc
+        gamma_CII += nc.Gamma_CII_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc
             
         
     beta_H = 4.18e-13 * (T/1e4)**(-0.75) #cm^3 s^-1
@@ -98,7 +105,7 @@ def get_ionization_states(profiles, params):
             
 
 
-def get_surface_density(profiles, ionization_states, params, central_contribution=False, h_resol = 1000, rmax=10.):
+def get_surface_density(profiles, ionization_states, params, add_CMB_suppression=False, h_resol = 1000, rmax=10.):
     """
     computes the surface density predicted by the model; 
     
@@ -113,9 +120,11 @@ def get_surface_density(profiles, ionization_states, params, central_contributio
     params: dict
         parameters to be passed to all functions
         
-    central_contribution: Boolean, optional
+    add_CMB_suppression: Boolean, optional
     
     h_resol: int, optional
+    
+    rmax: int, optional
     
     Returns
     =======
@@ -125,10 +134,16 @@ def get_surface_density(profiles, ionization_states, params, central_contributio
     
     # params definition
     
+    if "redshift" in params:
+        redshift = params["redshift"]
+    else: 
+        raise ValueError("No redshift given")
+
     if "Zeta" in params:
         Zeta = params["Zeta"]
     else: 
         Zeta = 1.0
+        
     
     # unpacking profiles 
     
@@ -145,6 +160,19 @@ def get_surface_density(profiles, ionization_states, params, central_contributio
       
     epsilon = 3e-27 * n**2 * (nc.A_C * Zeta/1.4e-4) * (1+0.42*x_CII/1e-3) * np.exp(-92./T)
     
+    if add_CMB_suppression == True:
+        
+        intensity_tot = UVB_rates(redshift, quantity="CII intensity") +\
+                        nc.intensity_CII_1000 * (1000*nc.pc/profiles.r)**2 * params["SFR"]*params["f_esc"]
+        
+        T_spin = T_spin_func_vec(n_vec=profiles.n, T_vec=profiles.T, I_vec= intensity_tot, x_e_vec = ionization_states.x_e, z=redshift)
+
+        eta = eta_func_vec(T_spin_vec=T_spin, z=redshift)
+        
+        epsilon *= eta
+
+    # intergrating along the line of sight
+    
     h = np.linspace(min(profiles.r),max(max(profiles.r),rmax*1000*nc.pc), h_resol)
    
     sigma_CII = np.zeros_like(h)
@@ -160,8 +188,6 @@ def get_surface_density(profiles, ionization_states, params, central_contributio
                 
     sigma_CII = np.asarray(sigma_CII)
 
-    if central_contribution == True:    
-        pass
 
     return lum_profile(radius=h, variable=sigma_CII, params=params, category="sigma")
     
@@ -188,13 +214,8 @@ def get_intensity_raw(sigma_CII, params, params_obs):
     
     # params definition
     
-    if "line_frequency" in params_obs:
-        nu_0 = params_obs["line_frequency"]
-    else: 
-        raise ValueError("No line_frequency given")
-
     if "redshift" in params_obs:
-        zeta = params_obs["redshift"]
+        redshift = params_obs["redshift"]
     else: 
         raise ValueError("No redshift given")
 
@@ -203,10 +224,11 @@ def get_intensity_raw(sigma_CII, params, params_obs):
     else: 
         raise ValueError("No line_FWHM given")
 
-
+    nu_0 = nc.line_CII_rest_frame
+    
     # transforming sigma to the intensity
     
-    intensity = sigma_CII.var / (nu_0*4*np.pi*(1.+zeta)**3*FWHM_vel/nc.cc)
+    intensity = sigma_CII.var / (nu_0*4*np.pi*(1.+redshift)**3*FWHM_vel/nc.cc)
         
     # changing the units
             
@@ -217,7 +239,7 @@ def get_intensity_raw(sigma_CII, params, params_obs):
 
 
 
-def get_intensity_convolved(intensity_raw, params, params_obs, obs_data):
+def get_intensity_convolved(intensity_raw, params, params_obs, obs_data, add_central_contribution=False):
     """
     computes the ionization state for hydrogen (x_HI) and Carbon (x_CII)
     
@@ -234,13 +256,19 @@ def get_intensity_convolved(intensity_raw, params, params_obs, obs_data):
         
     obs_data: obs_data class element
     
+    add_CMB_suppression: Boolean, optional
+    
     Returns
     =======
     intensity_convolved: lum_profile class element
 
     """    
     
-        
+    if "SFR" in params:
+        SFR_pure = params["SFR"]
+    else: 
+        raise ValueError("No SFR given")
+
     # creates the 2d profiles
     
     x, y, profile_2d = twod_making(intensity_raw.var, intensity_raw.h, nimage=1000)
@@ -265,19 +293,60 @@ def get_intensity_convolved(intensity_raw, params, params_obs, obs_data):
                                 / np.trapz(2*np.pi * intensity_raw.h * intensity_convolved, intensity_raw.h)
     
     intensity_convolved *= norm_intensity
+    
+    if add_central_contribution == True:
+        
+        beam_interp = np.interp(intensity_raw.h, obs_data.x_beam, obs_data.beam)
+        
+        luminosity_central = nc.ls * 1e7 * SFR_pure
+
+        factor = luminosity_central / np.trapz(2*np.pi*intensity_raw.h*beam_interp, intensity_raw.h)
+
+        intensity_convolved += factor * beam_interp
+
 
     return lum_profile(radius=intensity_raw.h, variable=intensity_convolved, params=params, category="int_conv")
 
 
 
-def add_central_contribution():
-    pass
+def get_chi2(intensity_convolved, obs_data):
+    """
+    computes the chi squared given the data and the intensity profiles
+    
+    Parameters
+    ==========
+    r: array
+        
+    intensity_raw: array
+    
+    params: dict
+    
+    params_obs: dict
+        parameters from observations
+        
+    obs_data: obs_data class element
+    
+    add_CMB_suppression: Boolean, optional
+    
+    Returns
+    =======
+    intensity_convolved: lum_profile class element
 
-def add_CMB_suppression():
-    pass
+    """    
+    
+    from scipy.interpolate import interp1d
+    
+    emission_profile = interp1d(obs_data.x, intensity_convolved)
 
+    res = emission_profile(obs_data.x) - obs_data.data
+    
+    residuals = 2*res / (obs_data.err_down + obs_data.err_up) 
+    
+    chi2 = np.sum(residuals**2)
+    
+    return chi2
 
-
+    
     
 
     
@@ -292,17 +361,4 @@ def add_CMB_suppression():
 #    print('M_CII',beta, M_CII/nc.ms/1e6)
         
     
-    
-    # adding to sigma the contribution of the inner galaxy
-    
-#    luminosity_central = nc.ls * 1e7 * SFR_pure
-#    
-#    beam_h = fuji.h_data * 1e3 * nc.pc
-#    
-#    normalization_beam = np.trapz(2*np.pi * beam_h * fuji.beam, beam_h)
-#
-#    factor = luminosity_central / np.trapz(2*np.pi*h_data*fuji.beam, h_data)
-#    
-#    
-#    sigma_CII_plus_central = sigma_CII + factor * fuji.beam
 

@@ -101,17 +101,15 @@ mus = 0.61 # mean molecular weight of the sun
 knorm = kk/(mus*mp) 
 A_C = 2.69e-4 # carbon percentage for Z=1
 A_H = 0.7 # hydrogen percentage for Z=1
-
-Gamma_H_UVB = 2.3335173959061055e-13
-Gamma_He_UVB = 1.3489995327486414e-13
-Gamma_CI_UVB = 1.3427596010628604e-12
-Gamma_CII_UVB = 6.77306313125094e-14
-Gamma_LW_UVB = 2.053552516714885e-13
 #
-Gamma_H_1000 = 5.48031935502901e-09
-Gamma_He_1000 = 1.7687762344020628e-09
-Gamma_CI_1000 = 5.423253133640651e-08
-Gamma_CII_1000 = 9.56484853366846e-10
-Gamma_LW_1000 = 1.4229125141877616e-08
+Gamma_H_1000 = 5.48031935502901e-09 # s^-1
+Gamma_He_1000 = 1.7687762344020628e-09 # s^-1
+Gamma_CI_1000 = 5.423253133640651e-08 # s^-1
+Gamma_CII_1000 = 9.56484853366846e-10 # s^-1
+Gamma_LW_1000 = 1.4229125141877616e-08 # s^-1
 #
-CMB_temperature = 2.725
+CMB_temperature = 2.725 # K
+#
+line_CII_rest_frame = 1900*1e9 #Hz
+#
+intensity_CII_1000 = 1.4999701261856988e-16 # erg/s/cm^2/Hz/sr

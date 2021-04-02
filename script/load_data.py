@@ -28,14 +28,20 @@ ALPINE
 #define the input file
 
 
-names = [#"DEIMOS_COSMOS_351640", "DEIMOS_COSMOS_396844", "DEIMOS_COSMOS_416105", "DEIMOS_COSMOS_488399",\
-         #"DEIMOS_COSMOS_494057", "DEIMOS_COSMOS_494763", "DEIMOS_COSMOS_539609", "DEIMOS_COSMOS_630594",\
-         #"DEIMOS_COSMOS_683613", "DEIMOS_COSMOS_709575", "DEIMOS_COSMOS_733857", "DEIMOS_COSMOS_834764","DEIMOS_COSMOS_848185",\
+names = ["DEIMOS_COSMOS_351640", "DEIMOS_COSMOS_396844", "DEIMOS_COSMOS_416105", "DEIMOS_COSMOS_488399",\
+         "DEIMOS_COSMOS_494057", "DEIMOS_COSMOS_494763", "DEIMOS_COSMOS_539609", "DEIMOS_COSMOS_630594",\
+         "DEIMOS_COSMOS_683613", "DEIMOS_COSMOS_709575", "DEIMOS_COSMOS_733857", "DEIMOS_COSMOS_834764",#"DEIMOS_COSMOS_848185",\
          "DEIMOS_COSMOS_880016", "DEIMOS_COSMOS_881725", #"vuds_cosmos_510596653",\
          "vuds_cosmos_5100537582", "vuds_cosmos_5100537582", "vuds_cosmos_5100969402", "vuds_cosmos_5100994794",\
          #"vuds_cosmos_5101218326", 
          "vuds_cosmos_5110377875", "vuds_efdcs_530029038"]
 
+
+names_CII_halo = ["DEIMOS_COSMOS_683613", "vuds_cosmos_5110377875", "vuds_cosmos_5100537582", "DEIMOS_COSMOS_488399",\
+                  "DEIMOS_COSMOS_396844", "DEIMOS_COSMOS_630594", "DEIMOS_COSMOS_880016", "DEIMOS_COSMOS_881725"]
+
+names_wo_CII_halo = ["DEIMOS_COSMOS_351640", "DEIMOS_COSMOS_416105", "DEIMOS_COSMOS_539609", \
+                     "DEIMOS_COSMOS_709575", "DEIMOS_COSMOS_733857"]#"vuds_cosmos_510596653",
 
 obs_data_list = []
 
@@ -52,6 +58,9 @@ if __name__ == "__main__":
     #ax_tot.set_xlim(0.,15)
     ax_tot.set_ylim(1e-7,1e1)
     ax_tot.set_yscale("log")
+    
+    plt_star, ax_star = plt.subplots()
+
 
 
 
@@ -71,7 +80,6 @@ halo_masses, halo_mass_ratio = np.loadtxt(input_filename_behroozi, unpack=True, 
 
 stellar_masses = halo_masses + halo_mass_ratio
 
-plt_star, ax_star = plt.subplots()
 
 for name in names:
     
@@ -121,7 +129,6 @@ for name in names:
     
     
     params_obs = dict([("name", name),
-                       ("line_frequency", 1900*1e9),
                        ("redshift", redshift),
                        ("line_FWHM", CII_FWHM*nc.km),
                        ("M_star", 10**log_M_star),
