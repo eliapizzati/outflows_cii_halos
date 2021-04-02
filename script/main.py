@@ -189,34 +189,34 @@ for data in datas:
 
             beta_counter+=1
                 
-        if plot_emission:
-            # data   
+            if plot_emission:
+                # data   
 
-            ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
-                             markerfacecolor='C3',markeredgecolor='C3', marker='o',\
-                             linestyle='', ecolor = 'C3')
-        
-            # central contribution
+                ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
+                                 markerfacecolor='C3',markeredgecolor='C3', marker='o',\
+                                 linestyle='', ecolor = 'C3')
             
-            luminosity_central = nc.ls * 1e7 * data.params_obs["SFR"]
+                # central contribution
+                
+                luminosity_central = nc.ls * 1e7 * data.params_obs["SFR"]
+        
+                factor = luminosity_central / np.trapz(2*np.pi*data.x_beam*data.beam, data.x_beam)
+                
+                ax_int_conv.plot(data.x_beam/1e3/nc.pc, data.beam*factor, linestyle="--", color="gray")
+                
+        
+            if plot_hydro:
+                fig_sol.legend(loc="lower center", ncol=8, fontsize="small")
+                fig_ion.legend(loc="lower center", ncol=8, fontsize="small")
+                
+            if plot_emission:
+                fig_int_raw.legend(loc="lower center", ncol=8, fontsize="small")
+                fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
     
-            factor = luminosity_central / np.trapz(2*np.pi*data.x_beam*data.beam, data.x_beam)
-            
-            ax_int_conv.plot(data.x_beam/1e3/nc.pc, data.beam*factor, linestyle="--", color="gray")
-            
         
-        if plot_hydro:
-            fig_sol.legend(loc="lower center", ncol=8, fontsize="small")
-            fig_ion.legend(loc="lower center", ncol=8, fontsize="small")
-
-        if plot_emission:
-            fig_int_raw.legend(loc="lower center", ncol=8, fontsize="small")
-            fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
-    
+            chi2 = get_chi2(intensity_conv, data)
         
-        chi2 = get_chi2(intensity_conv, data)
-        
-        print("beta=", beta_el, "\t", string_nans, "\t chi2=", chi2)
+            print("beta=", beta_el, "\t", string_nans, "\t chi2=", chi2)
    
         time_elapsed = (time.perf_counter() - time_start)
     
