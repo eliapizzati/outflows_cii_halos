@@ -67,13 +67,13 @@ WORKFLOW:
     
 """
 
-load_sol_from_file = False
+load_sol_from_file = True
 
-to_file = True
+to_file = False
 
 plot_hydro = False
 
-plot_emission = False
+plot_emission = True
 
 
 betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6])
@@ -156,7 +156,7 @@ for data in datas:
                               
                 ionization_state = get_ionization_states(profiles, params)
             
-                sigma_CII = get_surface_density(profiles, ionization_state, params, rmax=18, h_resol=100, add_CMB_suppression=True)
+                sigma_CII = get_surface_density(profiles, ionization_state, params, rmax=18, h_resol=100, add_CMB_suppression=False)
             
                 intensity_raw = get_intensity_raw(sigma_CII, params, data.params_obs)
             
@@ -185,7 +185,7 @@ for data in datas:
                     intensity_raw_no_CMB = get_intensity_raw(sigma_CII_no_CMB, params, data.params_obs)
                     intensity_conv_no_CMB = get_intensity_convolved(intensity_raw_no_CMB, params, data.params_obs, data, add_central_contribution=False)
                         
-                    intensity_conv_no_CMB.plot(ax=ax_int_conv, color="C{}".format(beta_counter), linestyle='--')
+                    #intensity_conv_no_CMB.plot(ax=ax_int_conv, color="C{}".format(beta_counter), linestyle='--')
 
             beta_counter+=1
                 
@@ -219,7 +219,7 @@ for data in datas:
             
                 chi2 = get_chi2(intensity_conv, data)
                     
-                print("beta=", beta_el, "\t", string_nans, "\t chi2=", chi2)
+                print("beta=", beta_el, "\t", string_nans, "\t chi2/ndof=", "{:.1f}/{:.0f}".format(chi2, len(data.data)))
    
         time_elapsed = (time.perf_counter() - time_start)
     

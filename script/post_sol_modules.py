@@ -336,7 +336,8 @@ def get_chi2(intensity_convolved, obs_data):
     
     from scipy.interpolate import interp1d
     
-    emission_profile = interp1d(obs_data.x, intensity_convolved)
+    emission_profile = interp1d(intensity_convolved.h, intensity_convolved.var)
+    
 
     res = emission_profile(obs_data.x) - obs_data.data
     
