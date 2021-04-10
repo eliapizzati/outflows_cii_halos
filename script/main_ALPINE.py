@@ -14,7 +14,7 @@ import natconst as nc
 from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved, get_chi2
 
 from model_classes import load_from_file
-from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo
+from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo, observational_data_fuji
 import plot_config as pltc
 
 
@@ -67,9 +67,9 @@ WORKFLOW:
     
 """
 
-load_sol_from_file = True
+load_sol_from_file = False
 
-to_file = False
+to_file = True
 
 plot_hydro = False
 
@@ -77,7 +77,8 @@ plot_emission = True
 
 
 betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6])
-#betas = [3.0,3.2,3.4]
+#betas = np.asarray([1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1])
+#betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8])
 
 
 datas = obs_data_list
@@ -86,7 +87,8 @@ data_counter = 0
 
 for data in datas:
     
-    if data.params_obs["name"] not in names_CII_halo:
+    if data.params_obs["name"] not in names_wo_CII_halo: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
+    #if data.params_obs["name"] != "DEIMOS_COSMOS_351640":
         pass
     else:
         print("#####################")
@@ -112,8 +114,8 @@ for data in datas:
             fig_ion.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
         
         if plot_emission:
-            fig_int_raw, ax_int_raw = pltc.plot_configurator(plot_type="int") 
-            fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int")
+            fig_int_raw, ax_int_raw = pltc.plot_configurator(plot_type="int", xlim=15) 
+            fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=15)
         
             ax_int_raw.set_ylim((1e-3,1e2))
             ax_int_conv.set_ylim((1e-3,1e2))
@@ -156,7 +158,7 @@ for data in datas:
                               
                 ionization_state = get_ionization_states(profiles, params)
             
-                sigma_CII = get_surface_density(profiles, ionization_state, params, rmax=18, h_resol=100, add_CMB_suppression=False)
+                sigma_CII = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=True)
             
                 intensity_raw = get_intensity_raw(sigma_CII, params, data.params_obs)
             
@@ -181,7 +183,7 @@ for data in datas:
                 
                     intensity_conv.plot(ax=ax_int_conv,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
                 
-                    sigma_CII_no_CMB = get_surface_density(profiles, ionization_state, params, rmax=18, h_resol=100, add_CMB_suppression=False)
+                    sigma_CII_no_CMB = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=False)
                     intensity_raw_no_CMB = get_intensity_raw(sigma_CII_no_CMB, params, data.params_obs)
                     intensity_conv_no_CMB = get_intensity_convolved(intensity_raw_no_CMB, params, data.params_obs, data, add_central_contribution=False)
                         
@@ -196,17 +198,24 @@ for data in datas:
                         # data   
     
                         ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
-                                     markerfacecolor='C3',markeredgecolor='C3', marker='o',\
-                                     linestyle='', ecolor = 'C3')
+                                     markerfacecolor='maroon',markeredgecolor='maroon', marker='o',\
+                                     linestyle='', ecolor = 'maroon')
+                        
+                        ax_int_conv.errorbar(observational_data_fuji.x/(1000*nc.pc), observational_data_fuji.data, yerr=observational_data_fuji.err, \
+                                     markerfacecolor='navy',markeredgecolor='navy', marker='d',\
+                                     linestyle='', ecolor = 'navy')
                         
                         # central contribution
                     
                         luminosity_central = nc.ls * 1e7 * data.params_obs["SFR"]
             
-                        factor = luminosity_central / np.trapz(2*np.pi*data.x_beam*data.beam, data.x_beam)
-                    
-                        ax_int_conv.plot(data.x_beam/1e3/nc.pc, data.beam*factor, linestyle="--", color="gray")
-                    
+
+                        factor_lum = luminosity_central / np.trapz(2*np.pi*data.x_beam*data.beam, data.x_beam)
+                        factor_data = data.data[0]/data.beam[0]
+                                            
+                        ax_int_conv.plot(data.x_beam/1e3/nc.pc, data.beam*factor_data, linestyle="--", color="gray")
+                        
+
             
                 if plot_hydro:
                         fig_sol.legend(loc="lower center", ncol=8, fontsize="small")

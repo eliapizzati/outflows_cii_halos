@@ -35,7 +35,7 @@ matplotlib.rcParams.update({
 size = 14
 
 
-def plot_configurator(plot_type = "sol", bottom=0.28, wspace=0.2):
+def plot_configurator(plot_type = "sol", bottom=0.28, wspace=0.2, xlim=18):
 
 
     if plot_type == "sol":
@@ -109,7 +109,7 @@ def plot_configurator(plot_type = "sol", bottom=0.28, wspace=0.2):
             ax.set_ylabel("flux [mJy/arcsec$^2$]", size=size)
 
         ax.set_yscale("log")
-        ax.set_xlim((0.,18))
+        ax.set_xlim((0.,xlim))
 
         plt.subplots_adjust(left = 0.1,  # the left side of the subplots of the figure
             right = 0.95,   # the right side of the subplots of the figure
