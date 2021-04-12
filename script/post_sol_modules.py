@@ -14,7 +14,7 @@ import numpy as np
 
 from model_classes import sol_profiles, ion_profiles, lum_profile
 from utils import twod_making
-from cmb_suppression import T_spin_func_vec, eta_func_vec
+from cmb_suppression import T_spin_func_vec, eta_func
 from radiation_fields import UVB_rates
 
 
@@ -167,7 +167,7 @@ def get_surface_density(profiles, ionization_states, params, add_CMB_suppression
         
         T_spin = T_spin_func_vec(n_vec=profiles.n, T_vec=profiles.T, I_vec= intensity_tot, x_e_vec = ionization_states.x_e, z=redshift)
 
-        eta = eta_func_vec(T_spin_vec=T_spin, z=redshift)
+        eta = eta_func(T_spin=T_spin, z=redshift)
         
         epsilon *= eta
 
@@ -188,6 +188,11 @@ def get_surface_density(profiles, ionization_states, params, add_CMB_suppression
                 
     sigma_CII = np.asarray(sigma_CII)
 
+    if add_CMB_suppression == True:
+        
+        eta = np.interp(h, profiles.r, eta, right=0.)
+        
+        return lum_profile(radius=h, variable=sigma_CII, params=params, category="sigma", eta=eta)
 
     return lum_profile(radius=h, variable=sigma_CII, params=params, category="sigma")
     
@@ -235,7 +240,7 @@ def get_intensity_raw(sigma_CII, params, params_obs):
     intensity *= 1e26 #transformation to mJy 
     intensity /= 4.2e10 #transforming sr to arcsec^2
     
-    return lum_profile(radius=sigma_CII.h, variable=intensity, params=params, category="int_raw")
+    return lum_profile(radius=sigma_CII.h, variable=intensity, params=params, category="int_raw", eta=sigma_CII.eta)
 
 
 
@@ -318,7 +323,7 @@ def get_intensity_convolved(intensity_raw, params, params_obs, obs_data, add_cen
         intensity_convolved += factor * beam_interp
 
 
-    return lum_profile(radius=intensity_raw.h, variable=intensity_convolved, params=params, category="int_conv")
+    return lum_profile(radius=intensity_raw.h, variable=intensity_convolved, params=params, category="int_conv", eta=intensity_raw.eta)
 
 
 

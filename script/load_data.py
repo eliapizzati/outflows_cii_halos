@@ -43,6 +43,22 @@ names_CII_halo = ["DEIMOS_COSMOS_683613", "vuds_cosmos_5110377875", "vuds_cosmos
 names_wo_CII_halo = ["DEIMOS_COSMOS_351640", "DEIMOS_COSMOS_416105", "DEIMOS_COSMOS_539609", \
                      "DEIMOS_COSMOS_709575", "DEIMOS_COSMOS_733857"]#"vuds_cosmos_510596653",
 
+
+names_short = ["DC_351640", "DC_396844", "DC_416105", "DC_488399",\
+         "DC_494057", "DC_494763", "DC_539609", "DC_630594",\
+         "DC_683613", "DC_709575", "DC_733857", "DC_834764",#"DC_848185",\
+         "DC_880016", "DC_881725", #"vc_510596653",\
+         "vc_5100537582", "vc_5100969402", "vc_5100994794",\
+         #"vc_5101218326", 
+         "vc_5110377875", "ve_530029038"]
+
+
+names_CII_halo_short = ["DC_683613", "vc_5110377875", "vc_5100537582", "DC_488399",\
+                  "DC_396844", "DC_630594", "DC_880016", "DC_881725"]
+
+names_wo_CII_halo_short = ["DC_351640", "DC_416105", "DC_539609", \
+                     "DC_709575", "DC_733857"]#"vc_510596653",
+
 obs_data_list = []
 
 redshift=6
@@ -81,7 +97,7 @@ halo_masses, halo_mass_ratio = np.loadtxt(input_filename_behroozi, unpack=True, 
 stellar_masses = halo_masses + halo_mass_ratio
 
 
-for name in names:
+for name, name_short in zip(names, names_short):
     
     
     L_CII = evt_data[evt_data["name"] == name]["LCII"][0]
@@ -129,6 +145,7 @@ for name in names:
     
     
     params_obs = dict([("name", name),
+                       ("name_short", name_short),
                        ("redshift", redshift),
                        ("line_FWHM", CII_FWHM*nc.km),
                        ("M_star", 10**log_M_star),

@@ -97,7 +97,7 @@ def plot_configurator(plot_type = "sol", bottom=0.28, wspace=0.2, xlim=18):
 
         return fig_ion, axs_ion
     
-    elif plot_type == "sigma" or plot_type == "int": 
+    elif plot_type == "sigma" or plot_type == "int" or plot_type == "eta": 
         
         fig, ax = plt.subplots(1, 1, sharex=True, figsize=(1.5*8.27,1.5*4.))
             
@@ -105,10 +105,15 @@ def plot_configurator(plot_type = "sol", bottom=0.28, wspace=0.2, xlim=18):
         
         if plot_type == "sigma":
             ax.set_ylabel(r"log ($\Sigma_{CII}$ [erg/cm s^2])", size=size)
+            ax.set_yscale("log")
+        
         elif plot_type == "int":
             ax.set_ylabel("flux [mJy/arcsec$^2$]", size=size)
-
-        ax.set_yscale("log")
+            ax.set_yscale("log")
+        
+        elif plot_type == "eta":
+            ax.set_ylabel("eta", size=size)
+            
         ax.set_xlim((0.,xlim))
 
         plt.subplots_adjust(left = 0.1,  # the left side of the subplots of the figure

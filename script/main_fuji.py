@@ -74,9 +74,11 @@ plot_hydro = True
 
 plot_emission = True
 
+plot_eta = True
 
-#betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6])
-betas = np.asarray([1.8,2.2,2.6,3.0,3.4])
+
+betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6])
+betas = np.asarray([1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.2])
 #betas = [3.0]
 
 
@@ -101,8 +103,8 @@ if plot_hydro:
     #fig_ion.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
 
 if plot_emission:
-    fig_int_raw, ax_int_raw = pltc.plot_configurator(plot_type="int", xlim=20) 
-    fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=20)
+    fig_int_raw, ax_int_raw = pltc.plot_configurator(plot_type="int", xlim=10) 
+    fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=10)
 
     ax_int_raw.set_ylim((1e-3,1e2))
     ax_int_conv.set_ylim((1e-3,1e2))
@@ -110,7 +112,14 @@ if plot_emission:
     #fig_int_raw.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
     #fig_int_conv.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
 
+if plot_eta:
+    
+    fig_eta, ax_eta = pltc.plot_configurator(plot_type="eta", xlim=10) 
+    
+    
 beta_counter = 0
+
+chi2_betas = []
 
 for beta_el in betas:
 
@@ -176,6 +185,9 @@ for beta_el in betas:
                 
             intensity_conv_no_CMB.plot(ax=ax_int_conv, color="C{}".format(beta_counter), linestyle='--')
             intensity_raw_no_CMB.plot(ax=ax_int_raw, color="C{}".format(beta_counter), linestyle='--')
+            
+        if plot_eta: 
+            ax_eta.plot(intensity_conv.h/1e3/nc.pc, intensity_conv.eta, label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
 
     beta_counter+=1
         
@@ -186,8 +198,8 @@ for beta_el in betas:
                 # data   
 
                 ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
-                             markerfacecolor='C3',markeredgecolor='C3', marker='o',\
-                             linestyle='', ecolor = 'C3')
+                             markerfacecolor='maroon',markeredgecolor='maroon', marker='o',\
+                             linestyle='', ecolor = 'maroon')
                 
                 # central contribution
             
@@ -207,9 +219,14 @@ for beta_el in betas:
         if plot_emission:
                 fig_int_raw.legend(loc="lower center", ncol=8, fontsize="small")
                 fig_int_conv.legend(loc="lower center", fontsize="small", ncol=5)
-
+        
+        if plot_eta:
+                fig_eta.legend(loc="lower center", fontsize="small", ncol=8)
+    
     
         chi2 = get_chi2(intensity_conv, data)
+        
+        chi2_betas.append(chi2)
             
         print("beta=", beta_el, "\t", string_nans, "\t chi2/ndof=", "{:.1f}/{:.0f}".format(chi2, len(data.data)))
    

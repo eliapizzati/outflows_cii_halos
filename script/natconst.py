@@ -113,3 +113,4 @@ CMB_temperature = 2.725 # K
 line_CII_rest_frame = 1900*1e9 #Hz
 #
 intensity_CII_1000 = 1.4999701261856988e-16 # erg/s/cm^2/Hz/sr
+T_star = 91.7 # K
