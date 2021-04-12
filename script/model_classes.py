@@ -201,7 +201,7 @@ class ion_profiles():
 
 class lum_profile():
     
-    def __init__(self, radius, variable, params, category):
+    def __init__(self, radius, variable, params, category, eta=None):
         """
         category can be sigma, int_raw, int_conv
         """
@@ -213,6 +213,8 @@ class lum_profile():
         self.params = params
         
         self.category = category
+        
+        self.eta = eta
         
 
     

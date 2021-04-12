@@ -76,6 +76,7 @@ plot_hydro = False
 plot_emission = True
 
 
+
 betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6])
 #betas = np.asarray([1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1])
 #betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8])
@@ -85,13 +86,20 @@ datas = obs_data_list
 
 data_counter = 0
 
+chi2_names = []
+
+datas_real = []
+
+data_container_name = "wo_CII_halo"
+
 for data in datas:
     
-    #if data.params_obs["name"] not in names_wo_CII_halo: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
-    if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] not in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
-    #if data.params_obs["name"] != "DEIMOS_COSMOS_733857":
+    #if data.params_obs["name"] not in names_CII_halo: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
+    if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
+    #if data.params_obs["name"] not in names_wo_CII_halo:
         pass
     else:
+        datas_real.append(data)
         print("#####################")
         print(data.params_obs["name"], "(number {})".format(data_counter) )
         print("#####################")
@@ -125,6 +133,8 @@ for data in datas:
             fig_int_conv.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
     
         beta_counter = 0
+        
+        chi2_betas = []
         
         for beta_el in betas:
         
@@ -228,12 +238,31 @@ for data in datas:
         
             
                 chi2 = get_chi2(intensity_conv, data)
+                
+                likelihood = np.exp(-chi2/data.data.shape[0])  
+
+                chi2_betas.append(likelihood)
+                
                     
                 print("beta=", beta_el, "\t", string_nans, "\t chi2/ndof=", "{:.1f}/{:.0f}".format(chi2, len(data.data)))
-   
+        
+        if load_sol_from_file == True:
+
+            chi2_betas = np.asarray(chi2_betas)
+            
+            print(chi2_betas)
+            
+            chi2_names.append(chi2_betas)
+            
         time_elapsed = (time.perf_counter() - time_start)
-    
+        
         print("total time elapsed (s)=", time_elapsed)
 
         data_counter+=1
+       
+if load_sol_from_file == True:     
+    chi2_names = np.asarray(chi2_names)
+    
+    out_filename = os.path.join(mydir.data_dir, "data_chi2", data_container_name)
+    np.save(out_filename, chi2_names)
 
