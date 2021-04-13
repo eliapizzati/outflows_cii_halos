@@ -66,15 +66,15 @@ WORKFLOW:
     
 """
 
-load_sol_from_file = True
+load_sol_from_file = False
 
 to_file = True
 
-plot_hydro = True
+plot_hydro = False
 
-plot_emission = True
+plot_emission = False
 
-plot_eta = True
+plot_eta = False
 
 fesc = 0.0
 
