@@ -42,11 +42,17 @@ class sol_profiles():
             
             if not os.path.exists(os.path.join(mydir.data_dir, folder)):
                 os.mkdir(os.path.join(mydir.data_dir, folder))
-    
-            np.savetxt(os.path.join(mydir.data_dir, folder, "profiles_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
+            
+            if self.params["f_esc"] == 0.0:
+                np.savetxt(os.path.join(mydir.data_dir, folder, "profiles_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
                                     (self.r,self.v,self.n,self.T))
             
+            elif self.params["f_esc"] != 0.0:
+                np.savetxt(os.path.join(mydir.data_dir, folder, "profiles_beta{:.2f}_SFR{:.1f}_vc{:.1f}_fesc_{:.2f}.dat".\
+                                    format(self.params["beta"], self.params["SFR"], self.params["v_c"], self.params["f_esc"])), \
+                                    (self.r,self.v,self.n,self.T))
+                            
           
         elif filename is not None:
             
@@ -136,10 +142,19 @@ class ion_profiles():
             if not os.path.exists(os.path.join(mydir.data_dir, folder)):
                 os.mkdir(os.path.join(mydir.data_dir, folder))
     
-            np.savetxt(os.path.join(mydir.data_dir, folder, "ionization_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
+                
+            if self.params["f_esc"] == 0.0:
+
+                np.savetxt(os.path.join(mydir.data_dir, folder, "ionization_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
                                     (self.r,self.x_e,self.x_CII))
             
+            elif self.params["f_esc"] != 0.0:
+           
+                np.savetxt(os.path.join(mydir.data_dir, folder, "ionization_beta{:.2f}_SFR{:.1f}_vc{:.1f}_fesc{:.2f}.dat".\
+                                    format(self.params["beta"], self.params["SFR"], self.params["v_c"], self.params["f_esc"])), \
+                                    (self.r,self.x_e,self.x_CII))
+ 
         elif filename is not None:
             
             np.savetxt(filename, (self.r,self.x_e,self.x_CII))
@@ -229,19 +244,47 @@ class lum_profile():
     
             
             if self.category == "sigma":
-                np.savetxt(os.path.join(mydir.data_dir, folder, "sigma_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
+                
+                if self.params["f_esc"] == 0.0:
+
+                    np.savetxt(os.path.join(mydir.data_dir, folder, "sigma_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
                                     (self.h,self.var))    
             
+                elif self.params["f_esc"] != 0.0:
+           
+                    np.savetxt(os.path.join(mydir.data_dir, folder, "sigma_beta{:.2f}_SFR{:.1f}_vc{:.1f}_fesc{:.2f}.dat".\
+                                    format(self.params["beta"], self.params["SFR"], self.params["v_c"], self.params["f_esc"])), \
+                                    (self.h,self.var))    
+             
             elif self.category == "int_raw":
-                np.savetxt(os.path.join(mydir.data_dir, folder, "intensity_raw_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
+            
+                if self.params["f_esc"] == 0.0:
+
+                    np.savetxt(os.path.join(mydir.data_dir, folder, "intensity_raw_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
                                     (self.h,self.var))    
             
+                elif self.params["f_esc"] != 0.0:
+           
+                    np.savetxt(os.path.join(mydir.data_dir, folder, "intensity_raw_beta{:.2f}_SFR{:.1f}_vc{:.1f}_fesc{:.2f}.dat".\
+                                    format(self.params["beta"], self.params["SFR"], self.params["v_c"], self.params["f_esc"])), \
+                                    (self.h,self.var))    
+             
             elif self.category == "int_conv":
-                np.savetxt(os.path.join(mydir.data_dir, folder, "intensity_conv_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
+                
+                if self.params["f_esc"] == 0.0:
+
+                    np.savetxt(os.path.join(mydir.data_dir, folder, "intensity_conv_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
                                     format(self.params["beta"], self.params["SFR"], self.params["v_c"])), \
                                     (self.h,self.var))    
+            
+                elif self.params["f_esc"] != 0.0:
+           
+                    np.savetxt(os.path.join(mydir.data_dir, folder, "intensity_conv_beta{:.2f}_SFR{:.1f}_vc{:.1f}_fesc{:.2f}.dat".\
+                                    format(self.params["beta"], self.params["SFR"], self.params["v_c"], self.params["f_esc"])), \
+                                    (self.h,self.var))    
+            
             else:
                 raise ValueError("No correct category")
                 
@@ -267,7 +310,7 @@ class lum_profile():
             ax.set_xlabel("b [kpc]", size=size)
             
             if self.category == "sigma":
-                ax.set_ylabel(r"log ($\Sigma_{CII}$ [erg/cm s^2])", size=size)
+                ax.set_ylabel(r"log ($\Sigma_{CII}$ [erg/cm s$^2$])", size=size)
             elif self.category == "int_raw":
                 ax.set_ylabel("flux [mJy/arcsec$^2$]", size=size)
             elif self.category == "int_conv":
@@ -331,10 +374,19 @@ def load_from_file(params, filename = None, type_class = "sol_profiles"):
             
             if not os.path.exists(os.path.join(mydir.data_dir, folder)):
                 raise ValueError("No existing path!")
-    
-            data = np.loadtxt(os.path.join(mydir.data_dir, folder, "profiles_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
+                
+            if params["f_esc"] == 0.0:
+
+                     data = np.loadtxt(os.path.join(mydir.data_dir, folder, "profiles_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
                                     format(params["beta"], params["SFR"], params["v_c"]))) 
-            
+       
+            elif params["f_esc"] != 0.0:
+           
+                    data = np.loadtxt(os.path.join(mydir.data_dir, folder, "profiles_beta{:.2f}_SFR{:.1f}_vc{:.1f}_fesc{:.2f}.dat".\
+                                    format(params["beta"], params["SFR"], params["v_c"], params["f_esc"]))) 
+       
+    
+                
         elif filename is not None:
             
             data = np.loadtxt(filename)
@@ -356,9 +408,17 @@ def load_from_file(params, filename = None, type_class = "sol_profiles"):
             
             if not os.path.exists(os.path.join(mydir.data_dir, folder)):
                 raise ValueError("No existing path!")
-    
-            data = np.loadtxt(os.path.join(mydir.data_dir, folder, "ionization_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
+      
+            if params["f_esc"] == 0.0:
+
+                     data = np.loadtxt(os.path.join(mydir.data_dir, folder, "ionization_beta{:.2f}_SFR{:.1f}_vc{:.1f}.dat".\
                                     format(params["beta"], params["SFR"], params["v_c"]))) 
+       
+            elif params["f_esc"] != 0.0:
+           
+                    data = np.loadtxt(os.path.join(mydir.data_dir, folder, "ionization_beta{:.2f}_SFR{:.1f}_vc{:.1f}_fesc{:.2f}.dat".\
+                                    format(params["beta"], params["SFR"], params["v_c"], params["f_esc"]))) 
+     
             
         elif filename is not None:
             

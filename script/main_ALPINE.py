@@ -14,7 +14,7 @@ import natconst as nc
 from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved, get_chi2
 
 from model_classes import load_from_file
-from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo, observational_data_fuji
+from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo, names_other,  observational_data_fuji
 import plot_config as pltc
 
 
@@ -67,14 +67,17 @@ WORKFLOW:
     
 """
 
-load_sol_from_file = False
+load_sol_from_file = True
 
-to_file = True
+to_file = False
 
 plot_hydro = False
 
 plot_emission = True
 
+save_chi2 = True
+
+plot_eta = False
 
 
 betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6])
@@ -90,13 +93,13 @@ chi2_names = []
 
 datas_real = []
 
-data_container_name = "wo_CII_halo"
+data_container_name = "other"
 
 for data in datas:
     
-    #if data.params_obs["name"] not in names_CII_halo: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
-    if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
-    #if data.params_obs["name"] not in names_wo_CII_halo:
+    if data.params_obs["name"] not in names_other: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
+    #if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
+    #if data.params_obs["name"] != "vuds_cosmos_5100969402":
         pass
     else:
         datas_real.append(data)
@@ -132,6 +135,10 @@ for data in datas:
             fig_int_raw.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
             fig_int_conv.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
     
+        if plot_eta:
+    
+            fig_eta, ax_eta = pltc.plot_configurator(plot_type="eta", xlim=15) 
+
         beta_counter = 0
         
         chi2_betas = []
@@ -200,6 +207,9 @@ for data in datas:
                         
                     #intensity_conv_no_CMB.plot(ax=ax_int_conv, color="C{}".format(beta_counter), linestyle='--')
 
+                if plot_eta: 
+                    ax_eta.plot(intensity_conv.h/1e3/nc.pc, intensity_conv.eta, label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
+
             beta_counter+=1
                 
             
@@ -237,6 +247,9 @@ for data in datas:
                         fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
         
             
+                if plot_eta:
+                    fig_eta.legend(loc="lower center", fontsize="small", ncol=8)
+
                 chi2 = get_chi2(intensity_conv, data)
                 
                 likelihood = np.exp(-chi2/data.data.shape[0])  
@@ -250,9 +263,18 @@ for data in datas:
 
             chi2_betas = np.asarray(chi2_betas)
             
+            beta_best_fit = np.nan
+            
+            if chi2_betas.max() >= 0.1:
+                beta_best_fit = betas[chi2_betas == chi2_betas.max()][0]
+            
             print(chi2_betas)
+            print("beta best fit = ", beta_best_fit)
+                        
+            data.params_obs.update(beta_best_fit=beta_best_fit)
             
             chi2_names.append(chi2_betas)
+            
             
         time_elapsed = (time.perf_counter() - time_start)
         
@@ -260,9 +282,13 @@ for data in datas:
 
         data_counter+=1
        
-if load_sol_from_file == True:     
+if save_chi2 == True:     
+    
     chi2_names = np.asarray(chi2_names)
     
     out_filename = os.path.join(mydir.data_dir, "data_chi2", data_container_name)
+    
     np.save(out_filename, chi2_names)
 
+
+    
