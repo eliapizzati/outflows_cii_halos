@@ -71,11 +71,11 @@ load_sol_from_file = True
 
 to_file = False
 
-plot_hydro = False
+plot_hydro = True
 
-plot_emission = True
+plot_emission = False
 
-save_chi2 = True
+save_chi2 = False
 
 plot_eta = False
 
@@ -97,9 +97,9 @@ data_container_name = "other"
 
 for data in datas:
     
-    if data.params_obs["name"] not in names_other: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
+    #if data.params_obs["name"] not in names_other: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
     #if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
-    #if data.params_obs["name"] != "vuds_cosmos_5100969402":
+    if data.params_obs["name"] != "vuds_cosmos_5110377875":
         pass
     else:
         datas_real.append(data)

@@ -76,17 +76,18 @@ plot_emission = False
 
 plot_eta = False
 
-fesc = 0.2
+fesc = 0.0
 
 betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1,4.2,4.3,4.4,4.5])
+#betas = np.asarray([1.8,2.1,2.4,2.7,3.0,3.3,3.6,3.9,4.2,4.5])
 #betas = [3.0]
-betas = np.asarray([1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.2])
-betas = np.asarray([3.4,3.6,3.8,4.0,4.2,4.4,4.6,4.8,5.0])
+#betas = np.asarray([2.0,2.2,2.4,2.6,2.8,3.0,3.2,3.4,3.6,3.8,4.0,4.2,4.4,4.6,4.8,5.0])
+#betas = np.asarray([3.4,3.6,3.8,4.0,4.2,4.4,4.6,4.8,5.0])
 
 data = observational_data_fuji
 
 params = dict([("beta", 1.0), 
-           ("SFR", 50.),
+           ("SFR", 100.),
            ("f_esc", fesc), 
            ("v_c", 175.),
            ("redshift", data.params_obs["redshift"]),
@@ -100,8 +101,8 @@ if plot_hydro:
     fig_sol, axs_sol = pltc.plot_configurator(plot_type="sol")    
     fig_ion, axs_ion = pltc.plot_configurator(plot_type="ion")
 
-    #fig_sol.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
-    #fig_ion.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
+    fig_sol.suptitle("Fujimoto+19, v_c = {:.1f} km/h, SFR = {:.1f}".format(params["v_c"], params["SFR"]))
+    fig_ion.suptitle("Fujimoto+19, v_c = {:.1f} km/h, SFR = {:.1f}".format(params["v_c"], params["SFR"]))
 
 if plot_emission:
     fig_int_raw, ax_int_raw = pltc.plot_configurator(plot_type="int", xlim=10) 
@@ -110,8 +111,8 @@ if plot_emission:
     ax_int_raw.set_ylim((1e-3,1e2))
     ax_int_conv.set_ylim((1e-3,1e2))
  
-    #fig_int_raw.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
-    #fig_int_conv.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
+    fig_int_raw.suptitle("Fujimoto+19, v_c = {:.1f} km/h, SFR = {:.1f}".format(params["v_c"], params["SFR"]))
+    fig_int_conv.suptitle("Fujimoto+19, v_c = {:.1f} km/h, SFR = {:.1f}".format(params["v_c"], params["SFR"]))
 
 if plot_eta:
     
@@ -184,8 +185,8 @@ for beta_el in betas:
             intensity_raw_no_CMB = get_intensity_raw(sigma_CII_no_CMB, params, data.params_obs)
             intensity_conv_no_CMB = get_intensity_convolved(intensity_raw_no_CMB, params, data.params_obs, data, add_central_contribution=False)
                 
-            intensity_conv_no_CMB.plot(ax=ax_int_conv, color="C{}".format(beta_counter), linestyle='--')
-            intensity_raw_no_CMB.plot(ax=ax_int_raw, color="C{}".format(beta_counter), linestyle='--')
+            #intensity_conv_no_CMB.plot(ax=ax_int_conv, color="C{}".format(beta_counter), linestyle='--')
+            #intensity_raw_no_CMB.plot(ax=ax_int_raw, color="C{}".format(beta_counter), linestyle='--')
             
         if plot_eta: 
             ax_eta.plot(intensity_conv.h/1e3/nc.pc, intensity_conv.eta, label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
@@ -209,20 +210,20 @@ for beta_el in betas:
                 factor_lum = luminosity_central / np.trapz(2*np.pi*data.x_beam*data.beam, data.x_beam)
                 factor_data = data.data[0]/data.beam[0]
                 
-                #ax_int_conv.plot(data.x_beam/1e3/nc.pc, data.beam*factor_data, linestyle="--", color="gray")
+                ax_int_conv.plot(data.x_beam/1e3/nc.pc, data.beam*factor_data, linestyle="--", color="gray")
                 
                 
-    
+        ncol = 5
         if plot_hydro:
-                fig_sol.legend(loc="lower center", ncol=8, fontsize="small")
-                fig_ion.legend(loc="lower center", ncol=8, fontsize="small")
+                fig_sol.legend(loc="lower center", fontsize="small", ncol=ncol)
+                fig_ion.legend(loc="lower center", fontsize="small", ncol=ncol)
                 
         if plot_emission:
-                fig_int_raw.legend(loc="lower center", ncol=8, fontsize="small")
-                fig_int_conv.legend(loc="lower center", fontsize="small", ncol=5)
+                fig_int_raw.legend(loc="lower center", fontsize="small", ncol=ncol)
+                fig_int_conv.legend(loc="lower center", fontsize="small", ncol=ncol)
         
         if plot_eta:
-                fig_eta.legend(loc="lower center", fontsize="small", ncol=8)
+                fig_eta.legend(loc="lower center", fontsize="small", ncol=ncol)
     
     
         chi2 = get_chi2(intensity_conv, data)
