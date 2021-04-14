@@ -104,6 +104,13 @@ halo_masses, halo_mass_ratio = np.loadtxt(input_filename_behroozi, unpack=True, 
 stellar_masses = halo_masses + halo_mass_ratio
 
 
+    
+if __name__ == "__main__":
+    print("######################################################")
+    print("name", "\t", "SFR","\t", "log M star(1e10)","\t", "redshift", "\t", "v_c(1e5)")
+    print("######################################################")
+    
+
 for name, name_short in zip(names, names_short):
     
     
@@ -171,7 +178,8 @@ for name, name_short in zip(names, names_short):
                        ("v_c", np.sqrt(nc.gg*M_halo)),
                        ("sersic_effective_radius", 1.1),
                        ("sersic_index", 1.),
-                       ("beta_best_fit", None)])
+                       ("beta_best_fit", None),
+                       ("likelihood_best_fit", 0.)])
                     
     
     err = [err_down,err_up]
@@ -187,7 +195,7 @@ for name, name_short in zip(names, names_short):
         #observational_data.print_values()
 
         ax_star.scatter(log_M_star, log_SFR)
-        print(log_SFR,"\t", log_M_star,"\t", redshift, "\t", log_M_halo, "\t", round(v_c/1e5), "\t", R_halo/1e3/nc.pc)
+        print(name_short, "\t", round(10**log_SFR),"\t", round(10**log_M_star/1e10, 2),"\t", round(redshift,2), "\t", round(np.sqrt(nc.gg*M_halo)), "\t", round(v_c/1e5))
     
 
 #

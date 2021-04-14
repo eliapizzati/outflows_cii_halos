@@ -94,31 +94,36 @@ names_short_fit = ["DC_881725", "DC_630594", "DC_488399","DC_683613","vc_5110377
 betas_fit = [2.1,3.4,3.4,2.3,2.0,3.2,\
              2.9,3.1,3.6,\
              2.9,1.9,3.6,3.6,3.2]
+
+likelihoods_fit = [0.5, 0.6, 0.1, 0.3, 0.5, 0.1,\
+                   0.6, 0.3, 0.4,\
+                   0.3, 0.2, 0.1, 0.4, 0.1]
   
 for data in obs_data_list:
     
-    for name, beta in zip(names_short_fit, betas_fit):
+    for name, beta, likelihood in zip(names_short_fit, betas_fit, likelihoods_fit):
         if name == data.params_obs["name_short"]:
-            print(name, beta)
+            print(name, beta, likelihood)
             data.params_obs.update(beta_best_fit=beta)
-
+            data.params_obs.update(likelihood_best_fit=likelihood)
+            
     if data.params_obs["halo_class"] == "CII_halo":
         marker = "o"
         cii = ax.scatter(data.params_obs["SFR"], data.params_obs["beta_best_fit"],\
                marker=marker, color = cmap_rend_col((data.params_obs["v_c"]-v_c_min)/(v_c_max-v_c_min)),\
-               s=50)
+               s=200*data.params_obs["likelihood_best_fit"]**1.3)
 
     elif data.params_obs["halo_class"] == "wo_CII_halo":
         marker = "D"
         wo_cii = ax.scatter(data.params_obs["SFR"], data.params_obs["beta_best_fit"],\
                marker=marker, color = cmap_rend_col((data.params_obs["v_c"]-v_c_min)/(v_c_max-v_c_min)),\
-               s=50)
+               s=200*data.params_obs["likelihood_best_fit"]**1.3)
 
     elif data.params_obs["halo_class"] == "other":
         marker = "s"
         oth = ax.scatter(data.params_obs["SFR"], data.params_obs["beta_best_fit"],\
                marker=marker, color = cmap_rend_col((data.params_obs["v_c"]-v_c_min)/(v_c_max-v_c_min)),\
-               s=70)
+               s=200*data.params_obs["likelihood_best_fit"]**1.3)
        
 
 
