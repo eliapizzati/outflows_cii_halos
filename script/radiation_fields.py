@@ -16,14 +16,30 @@ import mydir
 
 
 def UVB_rates(redshift, quantity):
+    """
+    computes many quantities loading the UVB flux (use the Haardt&Madau2012 UVB)
+    
+    Parameters
+    ==========
+    redshift: float
+    
+    quantity: string
+        quantities can be "UV intensity", "H rate", "He rate", "CII rate", "CI rate"
+
+    
+    Returns
+    =======
+    UVB rate selected
+
+    """  
 
     #photoionization params (THE ORDER IS H, He, CI, CII)
     
-    nu_thr = np.asarray([1.097,1.983,0.909,1.97])*1e5 #cm^-1
+    nu_thr = np.asarray([1.097,1.983,0.909,1.97])*1e5 # in cm^-1
     
-    threshold = nu_thr**(-1) / nc.angs
+    threshold = nu_thr**(-1) # in cm
     
-    alfa_T = np.asarray([6.3,7.83,12.2,4.60])*1e-18 #cm^2
+    alfa_T = np.asarray([6.3,7.83,12.2,4.60])*1e-18 # in cm^2
     
     a = [2.99,2.05,2.0,3.0]
     
@@ -36,15 +52,15 @@ def UVB_rates(redshift, quantity):
         
     redshift_list, energy_exp, flux_exp_UVB = data_flux_UVB
         
-    energy_eV = 10**energy_exp #eV
+    energy_eV = 10**energy_exp # in eV
         
-    energy = energy_eV * nc.ev #erg
+    energy = energy_eV * nc.ev # in erg
         
-    wav_UVB = nc.hh * nc.cc / energy / nc.angs #Angstrom
+    wav_UVB = nc.hh * nc.cc / energy  # in cm 
     
-    flux_eV_UVB = 10**flux_exp_UVB #eV/s/cm2/Hz/sr
+    flux_eV_UVB = 10**flux_exp_UVB # in eV/s/cm2/Hz/sr
     
-    flux_UVB = flux_eV_UVB * nc.ev # erg/s/cm2/Hz/sr
+    flux_UVB = flux_eV_UVB * nc.ev # in erg/s/cm2/Hz/sr
     
     
     index_redshift = np.searchsorted(redshift_list, redshift) 
@@ -64,22 +80,21 @@ def UVB_rates(redshift, quantity):
     wav_z = np.asarray(wav_z)
     flux_UVB_z = np.asarray(flux_UVB_z)
     
+
     
-    
-    if quantity == "CII intensity":
+    if quantity == "UV intensity":
         
         wav_z_rev = np.flip(wav_z)
+  
+        line_UV_wav_rest_frame =  nc.cc / nc.line_UV_mixing_rest_frame  # in cm
     
-        line_CII_rest_frame = nc.line_CII_rest_frame # in Hz
-        line_CII_wav_rest_frame =  nc.cc / line_CII_rest_frame / nc.angs  # in Angs
-    
-        index_UVB = np.searchsorted(wav_z_rev, line_CII_wav_rest_frame)
+        index_UVB = np.searchsorted(wav_z_rev, line_UV_wav_rest_frame)
     
         intensity_UVB_z_rev = np.flip(flux_UVB_z)
         
-        intensity_UVB_CII = intensity_UVB_z_rev[index_UVB-1]
+        intensity_UVB_UV = intensity_UVB_z_rev[index_UVB-1]
 
-        return intensity_UVB_CII    
+        return intensity_UVB_UV   
     
         
     elif quantity == "H rate" or quantity == "He rate" or quantity == "CII rate" or quantity == "CI rate":
@@ -127,43 +142,45 @@ def UVB_rates(redshift, quantity):
         return Gamma_LW_UVB
     
     else:
-        raise ValueError("No correct quantity in input (quantities are CII intensity, H rate, He rate, CII rate, CI rate, LW rate)")
+        raise ValueError("No correct quantity in input (quantities are UV intensity, H rate, He rate, CII rate, CI rate, LW rate)")
     
         
 
 if __name__ == "__main__":
-
-   #photoionization params (THE ORDER IS H, He, CI, CII)
     
-    nu_thr = np.asarray([1.097,1.983,0.909,1.97])*1e5 #cm^-1
+    redshift = 5
     
-    threshold = nu_thr**(-1) / nc.angs
+    # photoionization params (THE ORDER IS H, He, CI, CII)
     
-    alfa_T = np.asarray([6.3,7.83,12.2,4.60])*1e-18 #cm^2
+    nu_thr = np.asarray([1.097,1.983,0.909,1.97])*1e5 # in cm^-1
+    
+    threshold = nu_thr**(-1) # in cm
+    
+    alfa_T = np.asarray([6.3,7.83,12.2,4.60])*1e-18 # in cm^2
     
     a = [2.99,2.05,2.0,3.0]
     
     b = [1.34,1.66,3.32,1.95]
     
     
-    #UV BACKGROUND
+    # UV BACKGROUND
         
     data_flux_UVB =  np.loadtxt(os.path.join(mydir.script_dir, "input_data", "krome_HMflux.dat"), unpack=True)
         
     redshift_list, energy_exp, flux_exp_UVB = data_flux_UVB
         
-    energy_eV = 10**energy_exp #eV
+    energy_eV = 10**energy_exp # eV
         
-    energy = energy_eV * nc.ev #erg
+    energy = energy_eV * nc.ev # erg
         
-    wav_UVB = nc.hh * nc.cc / energy / nc.angs #Angstrom
+    wav_UVB = nc.hh * nc.cc / energy # in cm
     
-    flux_eV_UVB = 10**flux_exp_UVB #eV/s/cm2/Hz/sr
+    flux_eV_UVB = 10**flux_exp_UVB # eV/s/cm2/Hz/sr
     
     flux_UVB = flux_eV_UVB * nc.ev # erg/s/cm2/Hz/sr
     
     
-    index_redshift = np.searchsorted(redshift_list, 5) 
+    index_redshift = np.searchsorted(redshift_list, redshift) 
     redshift_value = redshift_list[index_redshift-1]
         
     energy_eV_z =[]
@@ -183,14 +200,13 @@ if __name__ == "__main__":
     
     wav_z_rev = np.flip(wav_z)
     
-    line_CII_rest_frame = nc.line_CII_rest_frame # in Hz
-    line_CII_wav_rest_frame =  nc.cc / line_CII_rest_frame / nc.angs  # in Angs
+    line_UV_wav_rest_frame =  nc.cc / nc.line_UV_mixing_rest_frame # in cm
     
-    index_UVB = np.searchsorted(wav_z, line_CII_wav_rest_frame)
+    index_UVB = np.searchsorted(wav_z_rev, line_UV_wav_rest_frame)
     
     intensity_UVB_z_rev = np.flip(flux_UVB_z)
     
-    intensity_CII_UVB = intensity_UVB_z_rev[index_UVB-1]
+    intensity_UVB_UV = intensity_UVB_z_rev[index_UVB-1]
     
     
         
@@ -233,7 +249,7 @@ if __name__ == "__main__":
     print("Gamma_CI_UVB (s^-1) =", Gamma_CI_UVB) 
     print("Gamma_CII_UVB (s^-1) =", Gamma_CII_UVB) 
     print("Gamma_LW_UVB (s^-1) =", Gamma_LW_UVB)  
-    print("intensity_CII_UVB (erg/cm^2/s/Hz/sr) =", intensity_CII_UVB) 
+    print("intensity_UV_UVB (erg/cm^2/s/Hz/sr) =", intensity_UVB_UV) 
        
     print("#########     ###########")
     
@@ -246,11 +262,11 @@ if __name__ == "__main__":
         
     data_flux_gal = np.loadtxt(os.path.join(mydir.script_dir, "input_data", "flux.dat"), unpack=True, usecols = (0,36))
         
-    wav = data_flux_gal[0]  #Armstrong
+    wav = data_flux_gal[0] * nc.angs  # in cm
         
     exp_lum = data_flux_gal[1]
         
-    lum_wav = 10**(exp_lum) #erg/(s*A); missing SFR and f_esc, will add them later
+    lum_wav = 10**(exp_lum) / nc.angs # in erg/s/cm; missing SFR and f_esc, will add them later
     
     # CALCULATIONS
     
@@ -266,7 +282,7 @@ if __name__ == "__main__":
     
         alfa_crosssec = alfa_T[i] * ( b[i] * (threshold[i]/wav_thr)**(-a[i]) + (1-b[i]) * (threshold[i]/wav_thr)**(-1.-a[i]))
     
-        N_tot = np.trapz(lum_wav_thr*(wav_thr*nc.angs)*alfa_crosssec/ (nc.hh*nc.cc), wav_thr)
+        N_tot = np.trapz(lum_wav_thr* wav_thr * alfa_crosssec/ (nc.hh*nc.cc), wav_thr)
                 
         photoionization_rates_gal.append(N_tot / (4*np.pi*R_sample**2))  
     
@@ -275,20 +291,19 @@ if __name__ == "__main__":
        
     # LW photodestruction coefficient
     
-    flux_LW = 10**40.7
+    flux_LW = 10**40.7 / nc.angs # in erg/s/cm
     
-    Gamma_LW_1000 = 1.38e9 * flux_LW * (963*nc.angs)**2 / (4**2*np.pi**2*(R_sample)**2*nc.cc*nc.angs) 
+    Gamma_LW_1000 = 1.38e9 * flux_LW * (963*nc.angs)**2 / (4**2*np.pi**2*(R_sample)**2*nc.cc)  # in s^-1
     
-    # CII intensity (for the CMB suppression)
+    # UV intensity (for the CMB suppression)
     
-    intensity_gal = lum_wav * (wav*nc.angs)**2 / (4**2*np.pi**2*(R_sample)**2*nc.cc*nc.angs)
+    intensity_gal = lum_wav * wav**2 / (4**2*np.pi**2*(R_sample)**2*nc.cc) # in erg/s/cm^2/Hz/sr
         
-    line_CII_rest_frame = nc.line_CII_rest_frame # in Hz
-    line_CII_wav_rest_frame =  nc.cc / line_CII_rest_frame / nc.angs  # in Angs
+    line_UV_wav_rest_frame =  nc.cc / nc.line_UV_mixing_rest_frame  # in cm
     
-    index_gal = np.searchsorted(wav, line_CII_wav_rest_frame)
+    index_gal = np.searchsorted(wav, line_UV_wav_rest_frame)
         
-    intensity_CII_1000 = intensity_gal[index_gal-1]
+    intensity_UV_1000 = intensity_gal[index_gal-1]
     
     
     print("######### gal ###########")
@@ -297,7 +312,7 @@ if __name__ == "__main__":
     print("Gamma_CI_1000 (s^-1) =", Gamma_CI_1000) 
     print("Gamma_CII_1000 (s^-1) =", Gamma_CII_1000) 
     print("Gamma_LW_1000 (s^-1) =", Gamma_LW_1000)  
-    print("intensity_CII_1000 (erg/s/cm^2/Hz/sr) =", intensity_CII_1000)   
+    print("intensity_UV_1000 (erg/s/cm^2/Hz/sr) =", intensity_UV_1000)   
     print("#########     ###########")
           
           

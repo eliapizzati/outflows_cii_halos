@@ -96,21 +96,28 @@ day = 8.6400e4    # Day  [s]
 #
 #
 #
+# gas constants
 gamma = 5./3
 mus = 0.61 # mean molecular weight of the sun
 knorm = kk/(mus*mp) 
 A_C = 2.69e-4 # carbon percentage for Z=1
 A_H = 0.7 # hydrogen percentage for Z=1
 #
+# photoionization rates (and UV intensity) at 1 kpc (from gal flux)
 Gamma_H_1000 = 5.48031935502901e-09 # s^-1
 Gamma_He_1000 = 1.7687762344020628e-09 # s^-1
 Gamma_CI_1000 = 5.423253133640651e-08 # s^-1
 Gamma_CII_1000 = 9.56484853366846e-10 # s^-1
 Gamma_LW_1000 = 1.4229125141877616e-08 # s^-1
+intensity_UV_1000 = 1.3492085033628848e-17 # erg/s/cm^2/Hz/sr
+
 #
-CMB_temperature = 2.725 # K
-#
+# CMB suppression coefficients
 line_CII_rest_frame = 1900*1e9 #Hz
-#
-intensity_CII_1000 = 1.4999701261856988e-16 # erg/s/cm^2/Hz/sr
+line_UV_mixing_rest_frame = 22.4452673584*1e14 #Hz
+CMB_temperature = 2.725 # K
 T_star = 91.7 # K
+A_coeff_ul = 2.36e-6 # s^-1
+A_coeff_ku = 4.76e7 # s^-1
+A_coeff_kl = 2.41e8 # s^-1
+#

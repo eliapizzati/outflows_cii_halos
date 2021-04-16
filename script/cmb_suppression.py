@@ -62,61 +62,58 @@ def gamma_H_ul_vec(T_vec):
     return np.asarray(gamma_vec)
 
 
-def T_spin_func(n, T, I, x_e, z):
+def T_spin_func(n, T, I_UV, x_e, z, T_UV = 3.61e4):
     
     
     
     I_CMB = (2*nc.hh*nc.line_CII_rest_frame**3) /  \
             (nc.cc**2 * (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+z)*nc.CMB_temperature)) - 1.))
         
-    T_star = 91.7 # K
 
-    A_coeff = 2.36e-6 # s^-1
-
-    B_coeff = A_coeff * nc.cc**2 / (2*nc.hh*nc.line_CII_rest_frame**3)
+    B_coeff = nc.A_coeff_ul * nc.cc**2 / (2*nc.hh*nc.line_CII_rest_frame**3)
 
     C_ul_e = 8.63e-6 / 2. / np.sqrt(T) * gamma_ul(T) 
-    
     C_ul_H = gamma_H_ul(T) * 1e-10 / 1.3 
+    
+    A_tilde = nc.A_coeff_kl*nc.A_coeff_ku / (nc.A_coeff_kl + nc.A_coeff_ku)
+    P_UV_ul = A_tilde * nc.cc**2 / (2*nc.hh*nc.line_UV_mixing_rest_frame**3) * I_UV
 
     n_e = x_e * nc.A_H * n
     n_H = (1. - x_e) * nc.A_H * n
     
-    num = B_coeff * (I + I_CMB) + A_coeff + n_e * C_ul_e + n_H * C_ul_H
-    
-    den =  B_coeff * (I + I_CMB) + n_e * C_ul_e * np.exp(-T_star/T) + n_H * C_ul_H * np.exp(-T_star/T)
+    num = B_coeff * I_CMB + nc.A_coeff_ul + P_UV_ul + n_e * C_ul_e + n_H * C_ul_H    
+    den =  B_coeff * I_CMB + P_UV_ul * np.exp(-nc.T_star/T_UV) +\
+            n_e * C_ul_e * np.exp(-nc.T_star/T) + n_H * C_ul_H * np.exp(-nc.T_star/T)
 
-    T_spin = T_star / np.log(num/den)
+    T_spin = nc.T_star / np.log(num/den)
 
     return T_spin
 
 
     
-def T_spin_func_vec(n_vec, T_vec, I_vec, x_e_vec, z):
+def T_spin_func_vec(n_vec, T_vec, I_UV_vec, x_e_vec, z, T_UV = 3.61e4):
     
      
     
     I_CMB = (2*nc.hh*nc.line_CII_rest_frame**3) /  \
             (nc.cc**2 * (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+z)*nc.CMB_temperature)) - 1.))
         
-    T_star = 91.7 # K
-
-    A_coeff = 2.36e-6 # s^-1
-
-    B_coeff = A_coeff * nc.cc**2 / (2*nc.hh*nc.line_CII_rest_frame**3)
+    B_coeff = nc.A_coeff_ul * nc.cc**2 / (2*nc.hh*nc.line_CII_rest_frame**3)
 
     C_ul_e = 8.63e-6 / 2. / np.sqrt(T_vec) * gamma_ul_vec(T_vec) 
-    
     C_ul_H = gamma_H_ul_vec(T_vec) * 1e-10 / 1.3
 
+    A_tilde = nc.A_coeff_kl*nc.A_coeff_ku / (nc.A_coeff_kl + nc.A_coeff_ku)
+    P_UV_ul = A_tilde * nc.cc**2 / (2*nc.hh*nc.line_UV_mixing_rest_frame**3) * I_UV_vec
+    
     n_e = x_e_vec * nc.A_H * n_vec
     n_H = (1. - x_e_vec) * nc.A_H * n_vec
     
-    num = B_coeff * (I_vec + I_CMB) + A_coeff + n_e * C_ul_e + n_H * C_ul_H
-    
-    den =  B_coeff * (I_vec + I_CMB) + n_e * C_ul_e * np.exp(-T_star/T_vec) + n_H * C_ul_H * np.exp(-T_star/T_vec)
+    num = B_coeff * I_CMB + nc.A_coeff_ul + P_UV_ul + n_e * C_ul_e + n_H * C_ul_H 
+    den =  B_coeff * I_CMB + P_UV_ul * np.exp(-nc.T_star/T_UV) +\
+            n_e * C_ul_e * np.exp(-nc.T_star/T_vec) + n_H * C_ul_H * np.exp(-nc.T_star/T_vec)
 
-    T_spin = T_star / np.log(num/den)
+    T_spin = nc.T_star / np.log(num/den)
 
     return T_spin
 
@@ -222,7 +219,7 @@ if __name__ == "__main__":
     
     for T in temperatures:
 
-        T_spin_temp = T_spin_func(n_temp, T=T, I=0.,x_e=0.5, z=5.)
+        T_spin_temp = T_spin_func(n_temp, T=T, I_UV=0.,x_e=0.5, z=5.)
     
         eta_temp = eta_func(T_spin_temp, z=5.)
     
@@ -235,7 +232,7 @@ if __name__ == "__main__":
     
     ax.axhline(1., linestyle='--', color='gray')
 
-    ax.set_title("Eta dependence on n, T (I=0, x_e=0.5, z=5.)")    
+    ax.set_title("Eta dependence on n, T; I_UV=0, x_e=0.5, z=5.")    
     
     plt.subplots_adjust(left = 0.15,  # the left side of the subplots of the figure
         right = 0.98,   # the right side of the subplots of the figure
@@ -251,7 +248,7 @@ if __name__ == "__main__":
     cmap.set_array([])
     
     cb = fig.colorbar(cmap, orientation='vertical')
-    cb.set_label(r'$T$', rotation=0.)
+    cb.set_label(r'temperature', rotation=90.)
 
     fig.tight_layout()
     
@@ -274,7 +271,7 @@ if __name__ == "__main__":
     
     for z in redshifts:
 
-        T_spin_temp = T_spin_func(n_temp, T=1e3, I=0.,x_e=0.5, z=z)
+        T_spin_temp = T_spin_func(n_temp, T=1e3, I_UV=0.,x_e=0.5, z=z)
     
         eta_temp = eta_func(T_spin_temp, z=z)
     
@@ -287,7 +284,7 @@ if __name__ == "__main__":
     
     ax.axhline(1., linestyle='--', color='gray')
 
-    ax.set_title("Eta dependence on n, z (T=1000, I=0, x_e=0.5)")    
+    ax.set_title("Eta dependence on n, z; T=1000, I_UV=0, x_e=0.5")    
     
     plt.subplots_adjust(left = 0.15,  # the left side of the subplots of the figure
         right = 0.98,   # the right side of the subplots of the figure
@@ -303,7 +300,7 @@ if __name__ == "__main__":
     cmap.set_array([])
     
     cb = fig.colorbar(cmap, orientation='vertical')
-    cb.set_label(r'  $z$', rotation=0.)
+    cb.set_label(r'redshift', rotation=90.)
 
     fig.tight_layout()
     
@@ -326,7 +323,7 @@ if __name__ == "__main__":
     
     for x_e in x_es:
 
-        T_spin_temp = T_spin_func(n_temp, T=1e3, I=0.,x_e=x_e, z=5.)
+        T_spin_temp = T_spin_func(n_temp, T=1e3, I_UV=0.,x_e=x_e, z=5.)
     
         eta_temp = eta_func(T_spin_temp, z=5.)
     
@@ -339,7 +336,7 @@ if __name__ == "__main__":
     
     ax.axhline(1., linestyle='--', color='gray')
 
-    ax.set_title("Eta dependence on n, x_e (T=1000, I=0, z=5)")    
+    ax.set_title("Eta dependence on n, x_e; T=1000, I=0, z=5")    
     
     plt.subplots_adjust(left = 0.15,  # the left side of the subplots of the figure
         right = 0.98,   # the right side of the subplots of the figure
@@ -355,7 +352,7 @@ if __name__ == "__main__":
     cmap.set_array([])
     
     cb = fig.colorbar(cmap, orientation='vertical')
-    cb.set_label(r'  $x_e$', rotation=0.)
+    cb.set_label(r'ionization fraction', rotation=90.)
 
     fig.tight_layout()
     
@@ -369,31 +366,31 @@ if __name__ == "__main__":
     n_temp = np.logspace(-5,3, 10000)
     
     
-    I_s = np.logspace(-13,-22,10)
+    I_UVs = np.logspace(-13,-22,10)
     
-    I_min = min(I_s)
-    I_max = max(I_s)
+    I_min = min(I_UVs)
+    I_max = max(I_UVs)
     
     norm = colors.LogNorm(vmin=I_min/10**0.5, vmax=I_max*10**0.5)
     
     
-    for I in I_s:
-        print(I)
+    for I_UV in I_UVs:
+        print(I_UV)
 
-        T_spin_temp = T_spin_func(n_temp, T=1e3, I=I,x_e=0.5, z=5.)
+        T_spin_temp = T_spin_func(n_temp, T=1e3, I_UV=I_UV,x_e=0.5, z=5.)
     
         eta_temp = eta_func(T_spin_temp, z=5.)
     
-        ax.plot(n_temp, eta_temp,  color = cmap_rend_col((np.log10(I)-np.log10(I_min))/(np.log10(I_max)-np.log10(I_min))))
+        ax.plot(n_temp, eta_temp,  color = cmap_rend_col((np.log10(I_UV)-np.log10(I_min))/(np.log10(I_max)-np.log10(I_min))))
 
-    ax.set_xlabel("n [cm-3]")
+    ax.set_xlabel("n [cm^-3]")
     ax.set_ylabel("eta")
     ax.set_xscale("log")
     ax.set_yscale("log")
     
     ax.axhline(1., linestyle='--', color='gray')
 
-    ax.set_title("Eta dependence on n, I (T=1000, x_e=0.5, z=5)")    
+    ax.set_title("Eta dependence on n, I_UV; T=1000, x_e=0.5, z=5")    
     
     plt.subplots_adjust(left = 0.15,  # the left side of the subplots of the figure
         right = 0.98,   # the right side of the subplots of the figure
@@ -409,7 +406,34 @@ if __name__ == "__main__":
     cmap.set_array([])
     
     cb = fig.colorbar(cmap, orientation='vertical')
-    cb.set_label(r'  $I$', rotation=0.)
+    cb.set_label(r'I_UV [erg/cm^2/s/Hz/sr]', rotation=90.)
+
+    fig.tight_layout()
+    
+    # FIGURE 7
+    
+        
+    fig, ax = plt.subplots(figsize=(8.27,5.))
+
+    ax.set_xlabel("log( n_e [cm^-3] )")
+    ax.set_ylabel("log( I_UV [erg/s/cm^2/Hz/sr] )")
+    
+    n_es = np.logspace(-5,3, 10000)
+    I_UVs = np.logspace(-12,-19,1000)
+    
+    nn, II = np.meshgrid(n_es, I_UVs)
+    
+    T_spin = T_spin_func(n=nn/0.5, T=1e3, I_UV=II, x_e=0.5, z=5.)
+                    
+    im = plt.contourf(np.log10(nn),np.log10(II),T_spin, cmap=cm.inferno, norm=colors.PowerNorm(gamma=0.07),\
+                      vmin=nc.CMB_temperature*(1+5.), vmax=1e5, \
+                      levels = [16.35,16.43,16.5,17,18,19,20,25,30,50,100,200,500,1000,5000,10000])#locator=ticker.LogLocator(numdecs=100, numticks=100))
+
+    # Create colorbar
+    cbar = ax.figure.colorbar(im, ax=ax)
+    cbar.ax.set_ylabel("spin temperature [K]", rotation=90.)
+    
+    ax.set_title("T_spin dependence on n_e, I_UV; (T = 10^3 K, z = 5.)")
 
     fig.tight_layout()
     
