@@ -22,56 +22,11 @@ import time
 
 
 
+load_sol_from_file = False
 
-"""
-PARAMETER DESCRIPTION
+to_file = True
 
- - PARAMS
- 
-     - SFR: star formation rate in Msun/yr
-     
-     - beta: beta parameter
-     
-     - f_esc: escape fraction of ionizing photons
-
-     - v_c: circular velocity in km/s
-     
-     - redshift: redshift 
-     
-     - Zeta: metallicity (solar unity)
-     
-     - alfa: alpha parameter
-     
-     - R_in: inner radius in kpc
- 
- - PARAMS_OBS
-
-     - redshift: redshift of the CII line
-     
-     - line_FWHM: FWHM of the CII line
-         
-     - sersic_effective_radius: effective radius in kpc
-     
-     - sersic_index: sersic index
-     
-     - exp_effective_radius: effective radius in kpc
- 
-=======================
- 
-WORKFLOW:
-    
-    profiles = get_profiles(params)
-    
-    ionization_state = get_ionization_states(profiles, params)
-    
-    
-"""
-
-load_sol_from_file = True
-
-to_file = False
-
-plot_hydro = True
+plot_hydro = False
 
 plot_emission = False
 
@@ -79,8 +34,11 @@ save_chi2 = False
 
 plot_eta = False
 
+f_esc_ion = 0.0
 
-betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6])
+f_esc_FUV = 0.2
+
+betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0])
 #betas = np.asarray([1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1])
 #betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8])
 
@@ -93,13 +51,13 @@ chi2_names = []
 
 datas_real = []
 
-data_container_name = "other"
+data_container_name = "CII_halo"
 
 for data in datas:
     
-    #if data.params_obs["name"] not in names_other: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
+    if data.params_obs["name"] not in names_CII_halo: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
     #if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
-    if data.params_obs["name"] != "vuds_cosmos_5110377875":
+    #if data.params_obs["name"] != "vuds_cosmos_5110377875":
         pass
     else:
         datas_real.append(data)
@@ -110,7 +68,8 @@ for data in datas:
         params = dict([("NFW", False),
                    ("beta", 1.0), 
                    ("SFR", data.params_obs["SFR"]),
-                   ("f_esc", 0.), 
+                   ("f_esc_ion", f_esc_ion), 
+                   ("f_esc_FUV", f_esc_FUV), 
                    ("v_c", data.params_obs["v_c"]),
                    ("redshift", data.params_obs["redshift"]),
                    ("Zeta", 1.0),

@@ -185,9 +185,7 @@ class sol_profiles():
             
             folder = get_folder(self.params, self.name_prefix)
             
-            full_name =  self.name_prefix + name_core + extension
-            print(full_name)
-            np.savetxt(os.path.join(mydir.data_dir, folder,full_name), \
+            np.savetxt(os.path.join(mydir.data_dir, folder,self.name_prefix + name_core + extension), \
                                 (self.r,self.v,self.n,self.T))
             
           
