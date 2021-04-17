@@ -155,7 +155,7 @@ if __name__ == "__main__":
     nu_thr = np.asarray([1.097,1.983,0.909,1.97])*1e5 # in cm^-1
     
     threshold = nu_thr**(-1) # in cm
-    
+        
     alfa_T = np.asarray([6.3,7.83,12.2,4.60])*1e-18 # in cm^2
     
     a = [2.99,2.05,2.0,3.0]
@@ -218,12 +218,9 @@ if __name__ == "__main__":
     photoionization_rates_UVB = []
         
     for i in range(0,4):
-            
-            
+                 
         wav_thr = wav_z[wav_z<=threshold[i]]
     
-        print(wav_thr.shape)
-        print(wav_z.shape)
         flux_thr_UVB = flux_UVB_z[wav_z<=threshold[i]]
         
         alfa_crosssec = alfa_T[i] * ( b[i] * (threshold[i]/wav_thr)**(-a[i]) + (1-b[i]) * (threshold[i]/wav_thr)**(-1.-a[i]))
@@ -289,6 +286,29 @@ if __name__ == "__main__":
     
     Gamma_H_1000, Gamma_He_1000, Gamma_CI_1000, Gamma_CII_1000 = photoionization_rates_gal
        
+    threshold_H = threshold[0]
+    threshold_CI = threshold[2]
+    
+    mask_FUV = np.logical_and(wav <= threshold_CI, wav >= threshold_H)
+    mask_EUV = wav <= threshold_H
+    
+    
+    wav_FUV = wav[mask_FUV]
+    lum_wav_FUV = lum_wav[mask_FUV]
+    alfa_crosssec_FUV = alfa_T[2] * ( b[2] * (threshold[2]/wav_FUV)**(-a[2]) + (1-b[2]) * (threshold[2]/wav_FUV)**(-1.-a[2]))
+    N_tot_FUV = np.trapz(lum_wav_FUV* wav_FUV * alfa_crosssec_FUV/ (nc.hh*nc.cc), wav_FUV)
+
+
+    Gamma_CI_FUV_1000 = N_tot_FUV / (4*np.pi*R_sample**2)
+    
+    wav_EUV = wav[mask_EUV]
+    lum_wav_EUV = lum_wav[mask_EUV]
+    alfa_crosssec_EUV = alfa_T[2] * ( b[2] * (threshold[2]/wav_EUV)**(-a[2]) + (1-b[2]) * (threshold[2]/wav_EUV)**(-1.-a[2]))
+    N_tot_EUV = np.trapz(lum_wav_EUV* wav_EUV * alfa_crosssec_EUV/ (nc.hh*nc.cc), wav_EUV)
+
+    Gamma_CI_EUV_1000 = N_tot_EUV / (4*np.pi*R_sample**2)
+    
+    
     # LW photodestruction coefficient
     
     flux_LW = 10**40.7 / nc.angs # in erg/s/cm
@@ -310,6 +330,8 @@ if __name__ == "__main__":
     print("Gamma_H_1000 (s^-1) =", Gamma_H_1000) 
     print("Gamma_He_1000 (s^-1) =", Gamma_He_1000) 
     print("Gamma_CI_1000 (s^-1) =", Gamma_CI_1000) 
+    print("Gamma_CI_FUV_1000 (s^-1) =", Gamma_CI_FUV_1000) 
+    print("Gamma_CI_EUV_1000 (s^-1) =", Gamma_CI_EUV_1000) 
     print("Gamma_CII_1000 (s^-1) =", Gamma_CII_1000) 
     print("Gamma_LW_1000 (s^-1) =", Gamma_LW_1000)  
     print("intensity_UV_1000 (erg/s/cm^2/Hz/sr) =", intensity_UV_1000)   

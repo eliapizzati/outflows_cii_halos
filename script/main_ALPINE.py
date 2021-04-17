@@ -107,7 +107,8 @@ for data in datas:
         print(data.params_obs["name"], "(number {})".format(data_counter) )
         print("#####################")
     
-        params = dict([("beta", 1.0), 
+        params = dict([("NFW", False),
+                   ("beta", 1.0), 
                    ("SFR", data.params_obs["SFR"]),
                    ("f_esc", 0.), 
                    ("v_c", data.params_obs["v_c"]),
@@ -167,7 +168,7 @@ for data in datas:
             
             else:
             
-                profiles = load_from_file(params, type_class = "sol_profiles")
+                profiles = load_from_file(params, class_type = "profiles")
              
                 if profiles.check_nans() == True:
                     string_nans = "Integration error: presence of nans"

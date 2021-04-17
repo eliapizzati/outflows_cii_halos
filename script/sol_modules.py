@@ -50,11 +50,15 @@ def lamda(T, n, r, params, Plw, Ph1, Pg1):
     else: 
         raise ValueError("No SFR given")
     
-    if "f_esc" in params:
-        f_esc = params["f_esc"]
+    if "f_esc_ion" in params:
+        f_esc_ion = params["f_esc_ion"]
     else:
-        f_esc = 0.
+        f_esc_ion = 0.
         
+    if "f_esc_FUV" in params:
+        f_esc_FUV = params["f_esc_FUV"]
+    else:
+        f_esc_FUV = 0.
         
     if "Zeta" in params:
         Zeta = params["Zeta"]
@@ -73,11 +77,13 @@ def lamda(T, n, r, params, Plw, Ph1, Pg1):
         
     # ADDING THE GALACTIC FLUX CONTRIBUTION 
         
-    if f_esc != 0.0:
-        Plw += nc.Gamma_LW_1000 * (1000*nc.pc/r)**2  * SFR_pure*f_esc
-        Ph1 += nc.Gamma_H_1000 * (1000*nc.pc/r)**2 * SFR_pure*f_esc
-        Pg1 += nc.Gamma_He_1000 * (1000*nc.pc/r)**2 * SFR_pure*f_esc
+    if f_esc_ion != 0.0:
+        Ph1 += nc.Gamma_H_1000 * (1000*nc.pc/r)**2 * SFR_pure*f_esc_ion
+        Pg1 += nc.Gamma_He_1000 * (1000*nc.pc/r)**2 * SFR_pure*f_esc_ion
 
+    if f_esc_FUV != 0.0:
+        Plw += nc.Gamma_LW_1000 * (1000*nc.pc/r)**2  * SFR_pure*f_esc_FUV
+    
     return gc.frtgetcf_cool(T, n, Zeta, Plw, Ph1, Pg1, Pc6) - gc.frtgetcf_heat(T, n, Zeta, Plw, Ph1, Pg1, Pc6)
 
 
@@ -105,11 +111,35 @@ def diff_system(r, y, params, Plw, Ph1, Pg1):
     
     # params definition
      
-    if "v_c" in params:
-        v_c_pure = params["v_c"]
-    else: 
-        raise ValueError("No v_c given")
+    if "NFW" in params:    
+        
+        NFW = params["NFW"]
+        
+        if NFW == True:
+            
+            if "M_vir" in params:
+                 M_vir_pure = params["M_vir"]
+            else: 
+                raise ValueError("No M_vir given")
+            
+            if "R_vir" in params:
+                 R_vir_pure = params["R_vir"]
+            else: 
+                raise ValueError("No M_vir given")
+            
+            if "concentration" in params:
+                 concentration = params["concentration"]
+            else: 
+                raise ValueError("No M_vir given")
     
+        else:
+            if "v_c" in params:
+                v_c_pure = params["v_c"]
+            else: 
+                raise ValueError("No v_c given")
+    else:
+        raise ValueError("No NFW switcher; you need to select a gravity model (isothermal sphere vs NFW)")
+        
     # defining the equations 
     
     assert len(y.shape) == 1, 'Dimensionality of the input array is wrong'
@@ -125,7 +155,20 @@ def diff_system(r, y, params, Plw, Ph1, Pg1):
     
     q = rho*lamda(T, n, r, params, Plw, Ph1, Pg1) / (nc.mus * nc.mp)**2
     
-    v_c = v_c_pure * 1e5 #cm/s 
+    if NFW == True:
+        
+        A_NFW = np.log(1+concentration) - concentration / (1.+concentration)
+        
+        R_S = R_vir_pure * nc.pc * 1e3 /concentration
+        
+        M = (nc.ms * M_vir_pure /A_NFW) * \
+            ( np.log( (R_S + r)/R_S ) + R_S/(R_S + r) - 1)
+        
+        v_c = np.sqrt(nc.gg*M/r)
+        
+    else:
+        v_c = v_c_pure * 1e5 #cm/s 
+    
     v_e = v_c * np.sqrt(2) #cm/s 
 
     
@@ -172,21 +215,11 @@ def get_profiles(params, resol=1000):
     else: 
         raise ValueError("No SFR given")
         
-    if "v_c" in params:
-        v_c_pure = params["v_c"]
-    else: 
-        raise ValueError("No v_c given")
-    
     if "redshift" in params:
         redshift = params["redshift"]
     else: 
         raise ValueError("No redshift given")
 
-    if "f_esc" in params:
-        f_esc = params["f_esc"]
-    else:
-        f_esc = 0.
-        
     if "Zeta" in params:
         Zeta = params["Zeta"]
     else:
@@ -246,7 +279,7 @@ def get_profiles(params, resol=1000):
     r = sol.t #cm
     v = sol.y[0] #cm/s
     rho = sol.y[1]
-    n = rho / (nc.mus*nc.mp) #cm^-3
+    n = rho / (nc.mus*nc.mp) #cm^-3 # NB CHECK CONSISTENCY WITH METALLICITY
     T = sol.y[2] #K
     
     mask = v > 4.1e6

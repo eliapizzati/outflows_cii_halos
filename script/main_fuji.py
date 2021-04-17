@@ -10,73 +10,32 @@ import numpy as np
 import mydir
 import natconst as nc
 
-from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved, get_chi2
+from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, \
+                             get_intensity_convolved, get_chi2
 
 from model_classes import load_from_file
-from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo, observational_data_fuji
-import plot_config as pltc
 
+from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo, observational_data_fuji
+
+import plot_config as pltc
 
 import time
 
 
 
+load_sol_from_file = False
 
-"""
-PARAMETER DESCRIPTION
+to_file = True
 
- - PARAMS
- 
-     - SFR: star formation rate in Msun/yr
-     
-     - beta: beta parameter
-     
-     - f_esc: escape fraction of ionizing photons
+plot_hydro = False
 
-     - v_c: circular velocity in km/s
-     
-     - redshift: redshift 
-     
-     - Zeta: metallicity (solar unity)
-     
-     - alfa: alpha parameter
-     
-     - R_in: inner radius in kpc
- 
- - PARAMS_OBS
+plot_emission = False
 
-     - redshift: redshift of the CII line
-     
-     - line_FWHM: FWHM of the CII line
-         
-     - sersic_effective_radius: effective radius in kpc
-     
-     - sersic_index: sersic index
-     
-     - exp_effective_radius: effective radius in kpc
- 
-=======================
- 
-WORKFLOW:
-    
-    profiles = get_profiles(params)
-    
-    ionization_state = get_ionization_states(profiles, params)
-    
-    
-"""
+plot_eta = False
 
-load_sol_from_file = True
+f_esc_ion = 0.0
 
-to_file = False
-
-plot_hydro = True
-
-plot_emission = True
-
-plot_eta = True
-
-fesc = 0.0
+f_esc_FUV = 0.2
 
 betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1,4.2,4.3,4.4,4.5])
 #betas = np.asarray([1.8,2.1,2.4,2.7,3.0,3.3,3.6,3.9,4.2,4.5])
@@ -86,9 +45,11 @@ betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,
 
 data = observational_data_fuji
 
-params = dict([("beta", 1.0), 
+params = dict([("NFW", False),
+           ("beta", 1.0), 
            ("SFR", 100.),
-           ("f_esc", fesc), 
+           ("f_esc_ion", f_esc_ion), 
+           ("f_esc_FUV", f_esc_FUV), 
            ("v_c", 175.),
            ("redshift", data.params_obs["redshift"]),
            ("Zeta", 1.0),
@@ -117,6 +78,7 @@ if plot_emission:
 if plot_eta:
     
     fig_eta, ax_eta = pltc.plot_configurator(plot_type="eta", xlim=10) 
+    fig_eta.suptitle("Fujimoto+19, v_c = {:.1f} km/h, SFR = {:.1f}".format(params["v_c"], params["SFR"]))
     
     
 beta_counter = 0
@@ -130,6 +92,7 @@ for beta_el in betas:
     if load_sol_from_file == False:
     
         from sol_modules import get_profiles
+        
         profiles = get_profiles(params, resol=1000)
     
         if to_file:
@@ -147,7 +110,7 @@ for beta_el in betas:
     
     else:
     
-        profiles = load_from_file(params, type_class = "sol_profiles")
+        profiles = load_from_file(params, class_type = "profiles")
      
         if profiles.check_nans() == True:
             string_nans = "Integration error: presence of nans"

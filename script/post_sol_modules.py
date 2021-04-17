@@ -48,10 +48,16 @@ def get_ionization_states(profiles, params):
     else: 
         raise ValueError("No redshift given")
             
-    if "f_esc" in params:
-        f_esc = params["f_esc"]
+    if "f_esc_ion" in params:
+        f_esc_ion = params["f_esc_ion"]
     else:
-        f_esc = 0.
+        f_esc_ion = 0.
+        
+    if "f_esc_FUV" in params:
+        f_esc_FUV = params["f_esc_FUV"]
+    else:
+        f_esc_FUV = 0.
+
     
     # unpacking profiles 
     
@@ -65,11 +71,15 @@ def get_ionization_states(profiles, params):
     gamma_CI = UVB_rates(redshift, quantity="CI rate")
     gamma_CII = UVB_rates(redshift, quantity="CII rate")
                 
-    if f_esc != 0.0:
+    if f_esc_FUV != 0.0:
     
-        gamma_H += nc.Gamma_H_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc              
-        gamma_CI += nc.Gamma_CI_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc
-        gamma_CII += nc.Gamma_CII_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc
+        gamma_CI += nc.Gamma_CI_FUV_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc_FUV
+    
+    if f_esc_FUV != 0.0:
+  
+        gamma_H += nc.Gamma_H_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc_ion        
+        gamma_CI += nc.Gamma_CI_EUV_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc_ion
+        gamma_CII += nc.Gamma_CII_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc_ion
             
         
     beta_H = 4.18e-13 * (T/1e4)**(-0.75) #cm^3 s^-1
@@ -139,11 +149,31 @@ def get_surface_density(profiles, ionization_states, params, add_CMB_suppression
     else: 
         raise ValueError("No redshift given")
 
+    if "SFR" in params:
+        SFR_pure = params["SFR"]
+    else: 
+        raise ValueError("No SFR given")
+        
+    if "redshift" in params:
+        redshift = params["redshift"]
+    else: 
+        raise ValueError("No redshift given")
+            
+    if "f_esc_ion" in params:
+        f_esc_ion = params["f_esc_ion"]
+    else:
+        f_esc_ion = 0.
+        
+    if "f_esc_FUV" in params:
+        f_esc_FUV = params["f_esc_FUV"]
+    else:
+        f_esc_FUV = 0.
+    
     if "Zeta" in params:
         Zeta = params["Zeta"]
     else: 
         Zeta = 1.0
-        
+
     
     # unpacking profiles 
     
@@ -162,10 +192,10 @@ def get_surface_density(profiles, ionization_states, params, add_CMB_suppression
     
     if add_CMB_suppression == True:
         
-        intensity_tot = UVB_rates(redshift, quantity="CII intensity") +\
-                        nc.intensity_CII_1000 * (1000*nc.pc/profiles.r)**2 * params["SFR"]*params["f_esc"]
+        intensity_tot = UVB_rates(redshift, quantity="UV intensity") +\
+                        nc.intensity_UV_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc_FUV
         
-        T_spin = T_spin_func_vec(n_vec=profiles.n, T_vec=profiles.T, I_vec= intensity_tot, x_e_vec = ionization_states.x_e, z=redshift)
+        T_spin = T_spin_func_vec(n_vec=profiles.n, T_vec=profiles.T, I_UV_vec= intensity_tot, x_e_vec = ionization_states.x_e, z=redshift)
 
         eta = eta_func(T_spin=T_spin, z=redshift)
         
