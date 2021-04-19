@@ -23,15 +23,15 @@ import time
 
 
 
-load_sol_from_file = False
+load_sol_from_file = True
 
-to_file = True
+to_file = False
 
-plot_hydro = False
+plot_hydro = True
 
-plot_emission = False
+plot_emission = True
 
-plot_eta = False
+plot_eta = True
 
 f_esc_ion = 0.0
 
