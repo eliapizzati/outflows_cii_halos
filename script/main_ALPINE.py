@@ -66,7 +66,7 @@ for data in datas:
         print(data.params_obs["name"], "(number {})".format(data_counter) )
         print("#####################")
     
-        params = dict([("DM_model", None),
+        params = dict([("DM_model", "NFW"),
                    ("beta", 1.0), 
                    ("SFR", data.params_obs["SFR"]),
                    ("f_esc_ion", f_esc_ion), 
