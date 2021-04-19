@@ -16,6 +16,7 @@ import numpy as np
 from model_classes import sol_profiles
 from radiation_fields import UVB_rates
 
+from my_utils import get_circular_velocity_profile_NFW, get_virial_mass_from_vc
 
 # FUNCTIONS
         
@@ -111,34 +112,32 @@ def diff_system(r, y, params, Plw, Ph1, Pg1):
     
     # params definition
      
-    if "NFW" in params:    
+    if params["DM_model"] == "NFW":    
+
+        if "redshift" in params:
+            redshift = params["redshift"]
+        else: 
+            raise ValueError("No redshift given")
         
-        NFW = params["NFW"]
-        
-        if NFW == True:
-            
-            if "M_vir" in params:
-                 M_vir_pure = params["M_vir"]
-            else: 
-                raise ValueError("No M_vir given")
-            
-            if "R_vir" in params:
-                 R_vir_pure = params["R_vir"]
-            else: 
-                raise ValueError("No M_vir given")
-            
-            if "concentration" in params:
-                 concentration = params["concentration"]
-            else: 
-                raise ValueError("No M_vir given")
-    
-        else:
+        if "M_vir" in params:
+            M_vir_pure = params["M_vir"]
+        else: 
             if "v_c" in params:
                 v_c_pure = params["v_c"]
             else: 
                 raise ValueError("No v_c given")
+            
+            M_vir_pure = get_virial_mass_from_vc(v_c_pure*1e5, redshift)
+            
+    elif params["DM_model"] == "iso_sphere" or params["DM_model"] is None:
+
+            if "v_c" in params:
+                v_c_pure = params["v_c"]
+            else: 
+                raise ValueError("No v_c given")
+                
     else:
-        raise ValueError("No NFW switcher; you need to select a gravity model (isothermal sphere vs NFW)")
+        raise ValueError("No correct DM model; DM models are: NFW, iso_sphere (=None)")
         
     # defining the equations 
     
@@ -155,18 +154,12 @@ def diff_system(r, y, params, Plw, Ph1, Pg1):
     
     q = rho*lamda(T, n, r, params, Plw, Ph1, Pg1) / (nc.mus * nc.mp)**2
     
-    if NFW == True:
+    if params["DM_model"] == "NFW":    
         
-        A_NFW = np.log(1+concentration) - concentration / (1.+concentration)
-        
-        R_S = R_vir_pure * nc.pc * 1e3 /concentration
-        
-        M = (nc.ms * M_vir_pure /A_NFW) * \
-            ( np.log( (R_S + r)/R_S ) + R_S/(R_S + r) - 1)
-        
-        v_c = np.sqrt(nc.gg*M/r)
-        
-    else:
+        v_c = get_circular_velocity_profile_NFW(r, M_vir_pure, redshift)
+                
+    elif params["DM_model"] == "iso_sphere" or params["DM_model"] is None:
+
         v_c = v_c_pure * 1e5 #cm/s 
     
     v_e = v_c * np.sqrt(2) #cm/s 

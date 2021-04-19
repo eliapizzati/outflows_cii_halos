@@ -23,15 +23,15 @@ import time
 
 
 
-load_sol_from_file = False
+load_sol_from_file = True
 
-to_file = True
+to_file = False
 
-plot_hydro = False
+plot_hydro = True
 
-plot_emission = False
+plot_emission = True
 
-plot_eta = False
+plot_eta = True
 
 f_esc_ion = 0.0
 
@@ -46,7 +46,7 @@ betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,
 
 data = observational_data_fuji
 
-params = dict([("NFW", False),
+params = dict([("DM_model", "NFW"),
            ("beta", 1.0), 
            ("SFR", 50.),
            ("f_esc_ion", f_esc_ion), 

@@ -21,48 +21,31 @@ def get_name_core(params):
     
     name_base = "_beta{:.2f}_SFR{:.1f}".format(params["beta"], params["SFR"])
     
-    if params["NFW"] == True:
+    name_specs = "_vc{:.1f}".format(params["v_c"])
+            
+    if params["f_esc_FUV"] != 0.0:
+                
+        name_specs += "fescfuv{:.2f}".format(params["f_esc_FUV"])
+            
+    if params["f_esc_ion"] != 0.0:
+                
+        name_specs += "fescion{:.2f}".format(params["f_esc_ion"])
+    
+    if params["DM_model"] is not None:
         
-        pass
-    
-    elif params["NFW"] == False:
-
-        name_specs = "_vc{:.1f}".format(params["v_c"])
-            
-        if params["f_esc_FUV"] != 0.0:
-                
-            name_specs += "fescfuv{:.2f}".format(params["f_esc_FUV"])
-            
-        if params["f_esc_ion"] != 0.0:
-                
-            name_specs += "fescion{:.2f}".format(params["f_esc_ion"])
-    
-    else:
-            raise ValueError("No NFW switcher; you need to select a gravity model (isothermal sphere vs NFW)")
-     
+        name_specs += "_{}".format(params["DM_model"])
+        
     return str(name_base + name_specs)
 
 def get_folder(params, class_type):
     """
     class_type can be profiles, ionization, emission
     """
-    
-    if params["NFW"] == True:
-            
-            folder = 'data_{}_NFW'.format(class_type)
-            
-            if not os.path.exists(os.path.join(mydir.data_dir, folder)):
-                os.mkdir(os.path.join(mydir.data_dir, folder))
-            
-    elif params["NFW"] == False:
-            
-            folder = 'data_{}'.format(class_type)
+        
+    folder = 'data_{}'.format(class_type)
 
-            if not os.path.exists(os.path.join(mydir.data_dir, folder)):
-                os.mkdir(os.path.join(mydir.data_dir, folder))
-            
-    else:
-            raise ValueError("No NFW switcher; you need to select a gravity model (isothermal sphere vs NFW)")
+    if not os.path.exists(os.path.join(mydir.data_dir, folder)):
+        os.mkdir(os.path.join(mydir.data_dir, folder))
 
     return folder
 

@@ -22,17 +22,17 @@ import time
 
 
 
-load_sol_from_file = False
+load_sol_from_file = True
 
-to_file = True
+to_file = False
 
-plot_hydro = False
+plot_hydro = True
 
-plot_emission = False
+plot_emission = True
 
 save_chi2 = False
 
-plot_eta = False
+plot_eta = True
 
 f_esc_ion = 0.0
 
@@ -65,12 +65,13 @@ for data in datas:
         print(data.params_obs["name"], "(number {})".format(data_counter) )
         print("#####################")
     
-        params = dict([("NFW", False),
+        params = dict([("DM_model", None),
                    ("beta", 1.0), 
                    ("SFR", data.params_obs["SFR"]),
                    ("f_esc_ion", f_esc_ion), 
                    ("f_esc_FUV", f_esc_FUV), 
                    ("v_c", data.params_obs["v_c"]),
+                   ("M_vir", data.params_obs["M_vir"]),
                    ("redshift", data.params_obs["redshift"]),
                    ("Zeta", 1.0),
                    ("alfa", 1.0),

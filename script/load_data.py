@@ -18,6 +18,7 @@ from astropy.table import Table
 import mydir
 import natconst as nc 
 
+from my_utils import get_circular_velocity_profile_NFW, get_virial_radius
 from data_classes import obs_data
 
 from astropy.cosmology import Planck15 as cosmo
@@ -109,7 +110,7 @@ stellar_masses = halo_masses + halo_mass_ratio
     
 if __name__ == "__main__":
     print("######################################################")
-    print("name", "\t", "SFR","\t", "log M star(1e10)","\t", "redshift", "\t", "v_c(1e5)")
+    print("name", "\t", "SFR","\t", "Mstar(1e10)","\t", "Mhalo(1e11)","\t", "redshift", "\t", "v_c(1e5)")
     print("######################################################")
     
 
@@ -128,12 +129,13 @@ for name, name_short in zip(names, names_short):
     log_M_halo = halo_masses[index_masses]
     
     M_halo = 10**log_M_halo # in solar masses
+        
+    R_vir = get_virial_radius(M_halo, redshift)
     
-    R_halo = (0.784/cosmo.h) * 1e3 * nc.pc * (10./(1.+redshift)) * cosmo.Om(0.) * (M_halo*cosmo.h/1e8)**(1./3) # in cm
+    #v_c = 23.4 * (M_halo/1e8)**(1./3) * ((1.+redshift)/10)**(1./2) * cosmo.h**(1./3) * 1e5
+    v_c = np.sqrt(nc.gg*M_halo*nc.ms/R_vir)
     
-    #v_c = np.sqrt(nc.gg*M_halo * nc.ms/R_halo)
-    v_c = 23.4 * (M_halo/1e8)**(1./3) * ((1.+redshift)/10)**(1./2) * cosmo.h**(1./3) * 1e5
-
+    
     
     input_filename_CII = os.path.join(mydir.script_dir, "input_data", "{}.dat".format(name))
     input_filename_psf = os.path.join(mydir.script_dir, "input_data", "{}_psf.dat".format(name))
@@ -176,8 +178,9 @@ for name, name_short in zip(names, names_short):
                        ("redshift", redshift),
                        ("line_FWHM", CII_FWHM*nc.km),
                        ("M_star", 10**log_M_star),
+                       ("M_vir", M_halo),
                        ("SFR", 10**log_SFR),
-                       ("v_c", np.sqrt(nc.gg*M_halo)),
+                       ("v_c", v_c/1e5),
                        ("sersic_effective_radius", 1.1),
                        ("sersic_index", 1.),
                        ("beta_best_fit", None),
@@ -197,7 +200,8 @@ for name, name_short in zip(names, names_short):
         #observational_data.print_values()
 
         ax_star.scatter(log_M_star, log_SFR)
-        print(name_short, "\t", round(10**log_SFR),"\t", round(10**log_M_star/1e10, 2),"\t", round(redshift,2), "\t", round(np.sqrt(nc.gg*M_halo)), "\t", round(v_c/1e5))
+        print(name_short, "\t", round(10**log_SFR),"\t", round(10**log_M_star/1e10, 2),"\t", round(M_halo/1e11,2),\
+              "\t", round(redshift,2), "\t", round(v_c/1e5))
     
 
 #

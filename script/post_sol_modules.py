@@ -13,7 +13,9 @@ import mydir
 import numpy as np
 
 from model_classes import sol_profiles, ion_profiles, lum_profile
-from utils import twod_making
+
+from my_utils import twod_making
+
 from cmb_suppression import T_spin_func_vec, eta_func
 from radiation_fields import UVB_rates
 
@@ -75,7 +77,7 @@ def get_ionization_states(profiles, params):
     
         gamma_CI += nc.Gamma_CI_FUV_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc_FUV
     
-    if f_esc_FUV != 0.0:
+    if f_esc_ion != 0.0:
   
         gamma_H += nc.Gamma_H_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc_ion        
         gamma_CI += nc.Gamma_CI_EUV_1000 * (1000*nc.pc/profiles.r)**2 * SFR_pure*f_esc_ion
