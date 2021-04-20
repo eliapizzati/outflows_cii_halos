@@ -71,7 +71,7 @@ for v_c, SFR, z, counter_data in zip(v_cs, SFRs, redshifts, range(len(obs_data_l
             params.update(f_esc_FUV = f_esc_FUV)
             params.update(v_c = v_c)
             params.update(SFR = SFR)
-            params.update(redshift = redshift)
+            params.update(redshift = z)
             
             if verbose:
                 print("run with beta = {:.1f}, f_esc_FUV = {:.2f}, v_c = {:.1f}, SFR = {:.1f}, z = {:.1f}".format(\
