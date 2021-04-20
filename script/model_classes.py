@@ -25,11 +25,11 @@ def get_name_core(params):
             
     if params["f_esc_FUV"] != 0.0:
                 
-        name_specs += "fescfuv{:.2f}".format(params["f_esc_FUV"])
+        name_specs += "_fescfuv{:.2f}".format(params["f_esc_FUV"])
             
     if params["f_esc_ion"] != 0.0:
                 
-        name_specs += "fescion{:.2f}".format(params["f_esc_ion"])
+        name_specs += "_fescion{:.2f}".format(params["f_esc_ion"])
     
     if params["DM_model"] is not None:
         
@@ -49,7 +49,7 @@ def get_folder(params, class_type):
 
     return folder
 
-def load_from_file(params, filename = None, class_type = "profiles", extension = ".dat", category = None):
+def load_from_file(params, filename = None, class_type = "profiles", extension = ".dat", category = None, verbose = True):
     """
     class_type can be profiles, ionization, emission
     """
@@ -64,11 +64,15 @@ def load_from_file(params, filename = None, class_type = "profiles", extension =
 
             folder = get_folder(params, class_type)
             
-            data = np.loadtxt(os.path.join(mydir.data_dir, folder, name_prefix + name_core + extension))     
+            path = os.path.join(mydir.data_dir, folder, name_prefix + name_core + extension)
+            
+            data = np.loadtxt(path)     
                 
         elif filename is not None:
             
             data = np.loadtxt(filename)
+            
+            path = filename
             
         try:
             r, v, n, T = data
@@ -88,11 +92,17 @@ def load_from_file(params, filename = None, class_type = "profiles", extension =
 
             folder = get_folder(params, class_type)
             
-            data = np.loadtxt(os.path.join(mydir.data_dir, folder, name_prefix + name_core + extension))     
+            path = os.path.join(mydir.data_dir, folder, name_prefix + name_core + extension)
+            
+            data = np.loadtxt(path)     
                 
+                 
         elif filename is not None:
             
-            data = np.loadtxt(filename)            
+            data = np.loadtxt(filename) 
+            
+            path = filename
+
 
         try:
             r, x_e, x_CII = data
@@ -122,11 +132,16 @@ def load_from_file(params, filename = None, class_type = "profiles", extension =
 
             folder = get_folder(params, class_type)
             
-            data = np.loadtxt(os.path.join(mydir.data_dir, folder, name_prefix + name_core + extension))     
+            path = os.path.join(mydir.data_dir, folder, name_prefix + name_core + extension)
+            
+            data = np.loadtxt(path)     
                 
+                 
         elif filename is not None:
             
             data = np.loadtxt(filename)            
+            
+            path = filename
 
         try:
             h, var = data
@@ -138,6 +153,8 @@ def load_from_file(params, filename = None, class_type = "profiles", extension =
     else:
         raise ValueError("No correct class selected, which kind of file are you searching for?")
                 
+    print("INFO: loading data from {}".format(path))
+
     return profile
     
 
@@ -158,9 +175,8 @@ class sol_profiles():
         self.params = params
         
         self.name_prefix = "profiles"
-        
 
-    def to_file(self, filename = None, extension = ".dat"):
+    def to_file(self, filename = None, extension = ".dat", verbose = True):
         
         if filename is None:
                             
@@ -168,15 +184,22 @@ class sol_profiles():
             
             folder = get_folder(self.params, self.name_prefix)
             
-            np.savetxt(os.path.join(mydir.data_dir, folder,self.name_prefix + name_core + extension), \
-                                (self.r,self.v,self.n,self.T))
+            path = os.path.join(mydir.data_dir, folder, self.name_prefix + name_core + extension)
+            
+            np.savetxt(path, (self.r,self.v,self.n,self.T))
             
           
         elif filename is not None:
             
             np.savetxt(filename, (self.r,self.v,self.n,self.T))
+        
+            path = filename
+            
+        if verbose:
+            print("INFO: saving data to {}".format(path))
+            
       
-        return
+        return       
 
 
     
@@ -255,7 +278,7 @@ class ion_profiles():
         self.name_prefix = "ionization"
         
                
-    def to_file(self, filename = None, extension = ".dat"):
+    def to_file(self, filename = None, extension = ".dat", verbose = True):
         
         if filename is None:
                             
@@ -263,13 +286,20 @@ class ion_profiles():
             
             folder = get_folder(self.params, self.name_prefix)
             
-            np.savetxt(os.path.join(mydir.data_dir, folder, self.name_prefix + name_core + extension), \
-                                (self.r,self.x_e,self.x_CII))
+            path = os.path.join(mydir.data_dir, folder, self.name_prefix + name_core + extension)
+            
+            np.savetxt(path, (self.r,self.x_e,self.x_CII))
             
           
         elif filename is not None:
             
             np.savetxt(filename, (self.r,self.x_e,self.x_CII))
+        
+            path = filename
+            
+        if verbose:
+            print("INFO: saving data to {}".format(path))
+            
       
         return
     
@@ -355,7 +385,7 @@ class lum_profile():
         else:
             raise ValueError("No correct category given")
     
-    def to_file(self, filename = None, extension = ".dat"):
+    def to_file(self, filename = None, extension = ".dat", verbose = True):
         
         if filename is None:
                             
@@ -363,13 +393,20 @@ class lum_profile():
             
             folder = get_folder(self.params, self.name_prefix)
             
-            np.savetxt(os.path.join(mydir.data_dir, folder, self.name_prefix + name_core + extension), \
-                                (self.h,self.var))
+            path = os.path.join(mydir.data_dir, folder, self.name_prefix + name_core + extension)
+            
+            np.savetxt(path, (self.h,self.var))
             
           
         elif filename is not None:
             
             np.savetxt(filename, (self.h,self.var))
+        
+            path = filename
+            
+        if verbose:
+            print("INFO: saving data to {}".format(path))
+            
       
         return
     
