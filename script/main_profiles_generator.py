@@ -39,7 +39,7 @@ betas = np.linspace(1.0,4.0, 31)
 
 params = dict([("DM_model", "NFW"),
            ("beta", 1.0), 
-           ("SFR", ),
+           ("SFR", 50.),
            ("f_esc_ion", f_esc_ion), 
            ("f_esc_FUV", 0.0), 
            ("v_c", 175.),
@@ -49,9 +49,6 @@ params = dict([("DM_model", "NFW"),
            ("R_in", 0.3)])    
 
     
-
-
-
 for v_c, SFR, z, counter_data in zip(v_cs, SFRs, redshifts, range(len(obs_data_list))):
     
     if verbose:
