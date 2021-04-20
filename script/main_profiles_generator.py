@@ -52,16 +52,16 @@ params = dict([("DM_model", "NFW"),
 for v_c, SFR, z, counter_data in zip(v_cs, SFRs, redshifts, range(len(obs_data_list))):
     
     if verbose:
-          print("#################################")
+          print("#################################################################################")
           print("updating  obs parameters (v_c, SFR, z), number {}/{}".format(counter_data, len(obs_data_list)))
-          print("#################################")  
+          print("#################################################################################")
     
     for f_esc_FUV, counter_fesc in zip(f_esc_FUVs, range(len(f_esc_FUVs))):
     
         if verbose:
-                print("#################################")
+                print("#################################################################################")
                 print("updating  f_esc_FUV, number {}/{}".format(counter_fesc, len(f_esc_FUVs)))
-                print("#################################")
+                print("#################################################################################")
            
         for beta in betas:
             
@@ -69,6 +69,9 @@ for v_c, SFR, z, counter_data in zip(v_cs, SFRs, redshifts, range(len(obs_data_l
 
             params.update(beta = beta)
             params.update(f_esc_FUV = f_esc_FUV)
+            params.update(v_c = v_c)
+            params.update(SFR = SFR)
+            params.update(redshift = redshift)
             
             if verbose:
                 print("run with beta = {:.1f}, f_esc_FUV = {:.2f}, v_c = {:.1f}, SFR = {:.1f}, z = {:.1f}".format(\
