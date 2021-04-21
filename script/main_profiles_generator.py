@@ -40,7 +40,8 @@ f_esc_ion = 0.0
 
 f_esc_FUVs = [0.0]#,0.05,0.1,0.2]
 
-betas = np.linspace(1.0,4.0, 31)
+#○betas = np.linspace(1.0,4.0, 31)
+betas = np.linspace(4.0,5.0, 11)
 
 #v_cs = np.linspace(175.,300., 26)
 
@@ -81,8 +82,8 @@ for v_c, SFR, z, counter_data in zip(v_cs, SFRs, redshifts, range(len(obs_data_l
             params.update(redshift = z)
             
             if verbose:
-                print("run with beta = {:.1f}, f_esc_FUV = {:.2f}, v_c = {:.1f}, SFR = {:.1f}, z = {:.1f}".format(\
-                      beta, f_esc_FUV, v_c, SFR, z))
+                print("run with beta = {:.1f}, f_esc_FUV = {:.2f} ({:d}/{:d}), v_c = {:.1f}, SFR = {:.1f}, z = {:.1f} ({:d}/{:d})".format(\
+                      beta, f_esc_FUV, counter_fesc, len(f_esc_FUVs), v_c, SFR, z, counter_data, len(obs_data_list)))
             
             profiles = get_profiles(params, resol=1000)
         
