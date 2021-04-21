@@ -79,9 +79,9 @@ def get_concentration(M_vir, z):
     
     return 10**logc
 
-def get_virial_radius(M_vir, z):
+def get_virial_radius(M_vir, z, overdensity=200.):
     """
-    gets the virial radius given the virial mass (using the M_200 and R_200 definitions)
+    gets the virial radius given the virial mass 
     
     Parameters
     ==========    
@@ -91,13 +91,17 @@ def get_virial_radius(M_vir, z):
     z: float
         redshift
     
+    overdensity: float
+        overdensity used for the halo definition (default definition is 200)
+
+    
     Returns
     =======
     float
         virial radius in cm
 
     """    
-    return np.cbrt(3*M_vir*nc.ms/(cosmo.critical_density(z).value * 4*np.pi*200))
+    return np.cbrt(3*M_vir*nc.ms/(cosmo.critical_density(z).value * 4*np.pi*overdensity))
 
 
 def get_mass_profile_NFW(r,M_vir,z):
@@ -160,7 +164,7 @@ def get_circular_velocity_profile_NFW(r,M_vir,z):
     return np.sqrt(nc.gg*M_r*nc.ms/r)
     
 
-def get_virial_mass_from_vc(v_c, z):
+def get_virial_mass_from_vc(v_c, z, overdensity=200.):
     """
     gets the virial mass from the parameter v_c (maximun circular velocity)
     
@@ -172,10 +176,36 @@ def get_virial_mass_from_vc(v_c, z):
     z: float
         redshift
     
+    overdensity: float
+        overdensity used for the halo definition (default definition is 200)
+    
     Returns
     =======
     float
         virial mass in solar masses
 
     """
-    return v_c**3 / nc.gg**1.5 * (4*np.pi*200*cosmo.critical_density(z).value/3)**(-0.5) / nc.ms
+    return v_c**3 / nc.gg**1.5 * (4*np.pi*overdensity*cosmo.critical_density(z).value/3)**(-0.5) / nc.ms
+
+
+def get_vc_from_virial_mass(M_vir, z):
+    """
+    gets the parameter v_c (maximun circular velocity) from the virial mass
+    
+    Parameters
+    ==========    
+    M_vir: float
+        halo mass in solar masses
+    
+    z: float
+        redshift
+        
+    Returns
+    =======
+    float
+        v_c in cm/s
+
+    """
+    R_vir = get_virial_radius(M_vir, z)
+    
+    return np.sqrt(nc.gg*M_vir*nc.ms/R_vir)

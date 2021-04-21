@@ -18,7 +18,7 @@ from astropy.table import Table
 import mydir
 import natconst as nc 
 
-from my_utils import get_circular_velocity_profile_NFW, get_virial_radius
+from my_utils import get_circular_velocity_profile_NFW, get_virial_radius, get_vc_from_virial_mass
 from data_classes import obs_data
 
 from astropy.cosmology import Planck15 as cosmo
@@ -102,11 +102,12 @@ table_data = fits_table_hdu[1].data
 
 evt_data = Table(table_data)
 
-halo_masses, halo_mass_ratio = np.loadtxt(input_filename_behroozi, unpack=True, usecols=(0,1))  
+halo_masses, halo_mass_ratio, halo_mass_ratio_err_up, halo_mass_ratio_err_down = np.loadtxt(input_filename_behroozi, \
+                                                                                            unpack=True)
 
 stellar_masses = halo_masses + halo_mass_ratio
-
-
+stellar_masses_lim_up = halo_masses + halo_mass_ratio + halo_mass_ratio_err_up
+stellar_masses_lim_down = halo_masses + halo_mass_ratio - halo_mass_ratio_err_down
     
 if __name__ == "__main__":
     print("######################################################")
@@ -121,19 +122,33 @@ for name, name_short in zip(names, names_short):
     redshift = evt_data[evt_data["name"] == name]["zCII"][0]
     CII_FWHM = evt_data[evt_data["name"] == name]["CII_FWHM"][0]
     log_M_star = evt_data[evt_data["name"] == name]["logMstar"][0]
+    log_M_star_lim_up = evt_data[evt_data["name"] == name]["logMstar_higheff1sig"][0]
+    log_M_star_lim_down = evt_data[evt_data["name"] == name]["logMstar_loweff1sig"][0]
     log_SFR = evt_data[evt_data["name"] == name]["logSFR_SED"][0]
-    
+    log_SFR_lim_up = evt_data[evt_data["name"] == name]["logSFR_SED_higheff1sig"][0]
+    log_SFR_lim_down = evt_data[evt_data["name"] == name]["logSFR_SED_loweff1sig"][0]
     
     index_masses = np.searchsorted(stellar_masses, log_M_star)
+    index_masses_up = np.searchsorted(stellar_masses, log_M_star_lim_up)
+    index_masses_down = np.searchsorted(stellar_masses, log_M_star_lim_down)
+    
     
     log_M_halo = halo_masses[index_masses]
+    log_M_halo_lim_up = halo_masses[index_masses_up]
+    log_M_halo_lim_down = halo_masses[index_masses_down]
     
     M_halo = 10**log_M_halo # in solar masses
-        
+    M_halo_lim_up = 10**log_M_halo_lim_up
+    M_halo_lim_down = 10**log_M_halo_lim_down
+    
     R_vir = get_virial_radius(M_halo, redshift)
+    R_vir_lim_up = get_virial_radius(M_halo_lim_up, redshift)
+    R_vir_lim_down = get_virial_radius(M_halo_lim_down, redshift)
     
     #v_c = 23.4 * (M_halo/1e8)**(1./3) * ((1.+redshift)/10)**(1./2) * cosmo.h**(1./3) * 1e5
-    v_c = np.sqrt(nc.gg*M_halo*nc.ms/R_vir)
+    v_c = get_vc_from_virial_mass(M_halo, redshift)
+    v_c_lim_up = np.sqrt(nc.gg*M_halo_lim_up*nc.ms/R_vir_lim_down)
+    v_c_lim_down = np.sqrt(nc.gg*M_halo_lim_down*nc.ms/R_vir_lim_up)
     
     
     
@@ -179,7 +194,11 @@ for name, name_short in zip(names, names_short):
                        ("line_FWHM", CII_FWHM*nc.km),
                        ("M_star", 10**log_M_star),
                        ("M_vir", M_halo),
+                       ("M_vir_err_up", M_halo_lim_up-M_halo),            
+                       ("M_vir_err_down", M_halo-M_halo_lim_down),
                        ("SFR", 10**log_SFR),
+                       ("SFR_err_up", 10**log_SFR_lim_up-10**log_SFR),
+                       ("SFR_err_down", 10**log_SFR-10**log_SFR_lim_down),
                        ("v_c", v_c/1e5),
                        ("sersic_effective_radius", 1.1),
                        ("sersic_index", 1.),
@@ -200,8 +219,8 @@ for name, name_short in zip(names, names_short):
         #observational_data.print_values()
 
         ax_star.scatter(log_M_star, log_SFR)
-        print(name_short, "\t", round(10**log_SFR),"\t", round(10**log_M_star/1e10, 2),"\t", round(M_halo/1e11,2),\
-              "\t", round(redshift,2), "\t", round(v_c/1e5))
+        print(name_short, "\t", round(10**log_SFR, 1),"\t", round(10**log_M_star/1e10, 3),"\t", round(M_halo/1e11,3), "\p", round(M_halo_lim_up/1e11,3), "\m", round(M_halo_lim_down/1e11,3),\
+              "\t", round(redshift,2), "\t", round(v_c/1e5,1), "\p", round(v_c_lim_up/1e5), "\m",  round(v_c_lim_down/1e5), halo_class)
     
 
 #

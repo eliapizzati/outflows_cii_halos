@@ -9,33 +9,60 @@ Created on Tue Apr 20 16:39:49 2021
 
 import os
 import numpy as np
+import logging
 
 
 from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo, names_other,  observational_data_fuji
 from sol_modules import get_profiles
-            
+from my_utils import get_vc_from_virial_mass
+import mydir
 
 import time
 
 
 verbose = True
+err_switcher = True
 
-v_cs = []
+
+filename_log = str(input("filename for the logger:"))
+
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', \
+                    datefmt='%m/%d/%Y %I:%M:%S %p',\
+                    level=logging.DEBUG,\
+                    filename=os.path.join(mydir.log_dir, "{}.log".format(filename_log)))
+
+
 redshifts = []
 SFRs = [] 
+M_virs = []
+datas = []
 
 halo_class = input("which halo class (CII_halo, wo_CII_halo, other)?")
 
+if err_switcher: 
+    err = input("which error (none, up, down)?")
+    
 for data in obs_data_list:
     if data.params_obs["halo_class"] != halo_class: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
     #if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
     #if data.params_obs["name"] != "vuds_cosmos_5110377875":
         pass
 
-    v_cs.append(data.params_obs["v_c"])
     redshifts.append(data.params_obs["redshift"])
     SFRs.append(data.params_obs["SFR"])
+    datas.append(data)
     
+    if err_switcher:
+        if err == "none":
+            M_virs.append(data.params_obs["M_vir"])
+        elif err == "up":
+            M_virs.append(data.params_obs["M_vir"]+data.params_obs["M_vir_err_up"])
+        elif err == "down":
+            M_virs.append(data.params_obs["M_vir"]-data.params_obs["M_vir_err_down"])
+    else:
+        M_virs.append(data.params_obs["M_vir"])
+        
+        
 f_esc_ion = 0.0
 
 f_esc_FUVs = [0.0]#,0.05,0.1,0.2]
@@ -51,39 +78,44 @@ params = dict([("DM_model", "NFW"),
            ("f_esc_ion", f_esc_ion), 
            ("f_esc_FUV", 0.0), 
            ("v_c", 175.),
+           ("M_vir", 1e11),
            ("redshift", 5.),
            ("Zeta", 1.0),
            ("alfa", 1.0),
            ("R_in", 0.3)])    
 
     
-for v_c, SFR, z, counter_data in zip(v_cs, SFRs, redshifts, range(len(obs_data_list))):
+for SFR, M_vir, z, counter_data in zip(SFRs, M_virs, redshifts, range(len(datas))):
     
     if verbose:
           print("#################################################################################")
-          print("updating  obs parameters (v_c, SFR, z), number {}/{}".format(counter_data, len(obs_data_list)))
+          print("updating  obs parameters (v_c, M_vir, SFR, z), number {}/{}".format(counter_data+1, len(datas)))
           print("#################################################################################")
     
     for f_esc_FUV, counter_fesc in zip(f_esc_FUVs, range(len(f_esc_FUVs))):
     
         if verbose:
                 print("#################################################################################")
-                print("updating  f_esc_FUV, number {}/{}".format(counter_fesc, len(f_esc_FUVs)))
+                print("updating  f_esc_FUV, number {}/{}".format(counter_fesc+1, len(f_esc_FUVs)))
                 print("#################################################################################")
            
         for beta in betas:
             
             time_start = time.perf_counter()
 
+            v_c = get_vc_from_virial_mass(M_vir, z)/1e5
+            
             params.update(beta = beta)
             params.update(f_esc_FUV = f_esc_FUV)
             params.update(v_c = v_c)
+            params.update(M_vir = M_vir)
             params.update(SFR = SFR)
             params.update(redshift = z)
             
             if verbose:
-                print("run with beta = {:.1f}, f_esc_FUV = {:.2f} ({:d}/{:d}), v_c = {:.1f}, SFR = {:.1f}, z = {:.1f} ({:d}/{:d})".format(\
-                      beta, f_esc_FUV, counter_fesc, len(f_esc_FUVs), v_c, SFR, z, counter_data, len(obs_data_list)))
+                print("run with beta = {:.1f}, f_esc_FUV = {:.2f} ({:d}/{:d}), M_vir = {.2e},\
+                      v_c = {:.1f}, SFR = {:.1f}, z = {:.1f} ({:d}/{:d})".format(\
+                      beta, f_esc_FUV, counter_fesc+1, len(f_esc_FUVs), M_vir, v_c, SFR, z, counter_data+1, len(datas)))
             
             profiles = get_profiles(params, resol=1000)
         
