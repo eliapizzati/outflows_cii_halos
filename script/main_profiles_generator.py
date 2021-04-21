@@ -114,7 +114,7 @@ for SFR, M_vir, z, counter_data in zip(SFRs, M_virs, redshifts, range(len(datas)
             params.update(redshift = z)
             
             if verbose:
-                print("run with beta = {:.1f}, f_esc_FUV = {:.2f} ({:d}/{:d}), M_vir = {.2e},\
+                print("run with beta = {:.1f}, f_esc_FUV = {:.2f} ({:d}/{:d}), M_vir = {:.2e},\
                       v_c = {:.1f}, SFR = {:.1f}, z = {:.1f} ({:d}/{:d})".format(\
                       beta, f_esc_FUV, counter_fesc+1, len(f_esc_FUVs), M_vir, v_c, SFR, z, counter_data+1, len(datas)))
             
