@@ -150,7 +150,7 @@ def diff_system(r, y, params, Plw, Ph1, Pg1):
     c_S2 = nc.gamma*nc.knorm * T
     c_T2 = nc.knorm * T
     
-    n = rho / (nc.mus * nc.mp) #in cgs unit
+    n = rho / (nc.mus * nc.mp) #in cgs unit # NB CHECK CONSISTENCY WITH METALLICITY
     
     q = rho*lamda(T, n, r, params, Plw, Ph1, Pg1) / (nc.mus * nc.mp)**2
     
