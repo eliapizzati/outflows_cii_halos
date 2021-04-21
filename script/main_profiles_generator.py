@@ -89,16 +89,16 @@ params = dict([("DM_model", "NFW"),
 for SFR, M_vir, z, counter_data in zip(SFRs, M_virs, redshifts, range(len(datas))):
     
     if verbose:
-          print("#################################################################################")
-          print("updating  obs parameters (v_c, M_vir, SFR, z), number {}/{}".format(counter_data+1, len(datas)))
-          print("#################################################################################")
+          logging.info("#################################################################################")
+          logging.info("updating  obs parameters (v_c, M_vir, SFR, z), number {}/{}".format(counter_data+1, len(datas)))
+          logging.info("#################################################################################")
     
     for f_esc_FUV, counter_fesc in zip(f_esc_FUVs, range(len(f_esc_FUVs))):
     
         if verbose:
-                print("#################################################################################")
-                print("updating  f_esc_FUV, number {}/{}".format(counter_fesc+1, len(f_esc_FUVs)))
-                print("#################################################################################")
+                logging.info("#################################################################################")
+                logging.info("updating  f_esc_FUV, number {}/{}".format(counter_fesc+1, len(f_esc_FUVs)))
+                logging.info("#################################################################################")
            
         for beta in betas:
             
@@ -114,9 +114,9 @@ for SFR, M_vir, z, counter_data in zip(SFRs, M_virs, redshifts, range(len(datas)
             params.update(redshift = z)
             
             if verbose:
-                print("run with beta = {:.1f}, f_esc_FUV = {:.2f} ({:d}/{:d}), M_vir = {:.2e},\
-                      v_c = {:.1f}, SFR = {:.1f}, z = {:.1f} ({:d}/{:d})".format(\
-                      beta, f_esc_FUV, counter_fesc+1, len(f_esc_FUVs), M_vir, v_c, SFR, z, counter_data+1, len(datas)))
+                logging.info("run with beta = {:.1f}, f_esc_FUV = {:.2f} ({:d}/{:d}), M_vir = {:.2e}, v_c = {:.1f}, SFR = {:.1f}, z = {:.1f} ({:d}/{:d})"\
+                      .format(beta, f_esc_FUV, counter_fesc+1, len(f_esc_FUVs), \
+                              M_vir, v_c, SFR, z, counter_data+1, len(datas)))
             
             profiles = get_profiles(params, resol=1000)
         
@@ -127,11 +127,11 @@ for SFR, M_vir, z, counter_data in zip(SFRs, M_virs, redshifts, range(len(datas)
             else:
                 string_nans = "Integration successful"
                     
-            print("beta=", beta, "\t", string_nans)
+            logging.info("beta=", beta, "\t", string_nans)
             
             time_elapsed = (time.perf_counter() - time_start)
         
-            print("total time elapsed (s)=", time_elapsed)
+            logging.info("total time elapsed (s)=", time_elapsed)
 
 
 
