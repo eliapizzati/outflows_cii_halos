@@ -24,14 +24,21 @@ v_cs = []
 redshifts = []
 SFRs = [] 
 
+halo_class = input("which halo class (CII_halo, wo_CII_halo, other)?")
+
 for data in obs_data_list:
+    if data.params_obs["halo_class"] != halo_class: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
+    #if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
+    #if data.params_obs["name"] != "vuds_cosmos_5110377875":
+        pass
+
     v_cs.append(data.params_obs["v_c"])
     redshifts.append(data.params_obs["redshift"])
     SFRs.append(data.params_obs["SFR"])
     
 f_esc_ion = 0.0
 
-f_esc_FUVs = [0.0,0.05,0.1,0.2]
+f_esc_FUVs = [0.0]#,0.05,0.1,0.2]
 
 betas = np.linspace(1.0,4.0, 31)
 
