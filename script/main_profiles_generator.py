@@ -127,11 +127,11 @@ for SFR, M_vir, z, counter_data in zip(SFRs, M_virs, redshifts, range(len(datas)
             else:
                 string_nans = "Integration successful"
                     
-            logging.info("beta=", beta, "\t", string_nans)
+            logging.info("beta= %.2f \t %s", beta, string_nans)
             
             time_elapsed = (time.perf_counter() - time_start)
         
-            logging.info("total time elapsed (s)=", time_elapsed)
+            logging.info("total time elapsed (s) = %.1f", time_elapsed)
 
 
 
