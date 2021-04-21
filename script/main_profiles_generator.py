@@ -29,7 +29,8 @@ filename_log = str(input("filename for the logger:"))
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', \
                     datefmt='%m/%d/%Y %I:%M:%S %p',\
                     level=logging.DEBUG,\
-                    filename=os.path.join(mydir.log_dir, "{}.log".format(filename_log)))
+                    handlers=[logging.FileHandler(os.path.join(mydir.log_dir, "{}.log".format(filename_log))),\
+                              logging.StreamHandler()])
 
 
 redshifts = []
