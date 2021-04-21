@@ -48,19 +48,20 @@ for data in obs_data_list:
     #if data.params_obs["name"] != "vuds_cosmos_5110377875":
         pass
 
-    redshifts.append(data.params_obs["redshift"])
-    SFRs.append(data.params_obs["SFR"])
-    datas.append(data)
-    
-    if err_switcher:
-        if err == "none":
-            M_virs.append(data.params_obs["M_vir"])
-        elif err == "up":
-            M_virs.append(data.params_obs["M_vir"]+data.params_obs["M_vir_err_up"])
-        elif err == "down":
-            M_virs.append(data.params_obs["M_vir"]-data.params_obs["M_vir_err_down"])
     else:
-        M_virs.append(data.params_obs["M_vir"])
+        redshifts.append(data.params_obs["redshift"])
+        SFRs.append(data.params_obs["SFR"])
+        datas.append(data)
+        
+        if err_switcher:
+            if err == "none":
+                M_virs.append(data.params_obs["M_vir"])
+            elif err == "up":
+                M_virs.append(data.params_obs["M_vir"]+data.params_obs["M_vir_err_up"])
+            elif err == "down":
+                M_virs.append(data.params_obs["M_vir"]-data.params_obs["M_vir_err_down"])
+        else:
+            M_virs.append(data.params_obs["M_vir"])
         
         
 f_esc_ion = 0.0
