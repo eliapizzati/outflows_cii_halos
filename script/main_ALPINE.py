@@ -26,13 +26,13 @@ load_sol_from_file = True
 
 to_file = False
 
-plot_hydro = True
+plot_hydro = False
 
 plot_emission = True
 
 save_chi2 = False
 
-plot_eta = True
+plot_eta = False
 
 f_esc_ion = 0.0
 
@@ -42,6 +42,7 @@ betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,
                     3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0])
 #betas = np.asarray([1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1])
 #betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8])
+betas = np.asarray([4.0,4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9])
 
 
 datas = obs_data_list
@@ -56,7 +57,7 @@ data_container_name = "other"
 
 for data in datas:
     
-    if data.params_obs["name"] not in names_other: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
+    if data.params_obs["name"] not in names_CII_halo: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
     #if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
     #if data.params_obs["name"] != "vuds_cosmos_5110377875":
         pass

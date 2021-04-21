@@ -69,7 +69,7 @@ f_esc_ion = 0.0
 f_esc_FUVs = [0.0]#,0.05,0.1,0.2]
 
 #○betas = np.linspace(1.0,4.0, 31)
-betas = np.linspace(1.0,2.0, 11)
+betas = np.linspace(1.0,4.0, 31)
 
 #v_cs = np.linspace(175.,300., 26)
 
