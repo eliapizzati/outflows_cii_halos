@@ -15,11 +15,13 @@ import mydir
 
 from load_data import names_wo_CII_halo_short, names_CII_halo_short, names_other_short, obs_data_list
 
-names_plot = names_other_short
+names_plot = names_wo_CII_halo_short
 
-betas_plot = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6])
+betas_plot = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,\
+                         3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9])
 
-data_container_name = "other"
+
+data_container_name = "wo_CII_halo_NFW"
 
 
 out_filename = os.path.join(mydir.data_dir, "data_chi2", "{}.npy".format(data_container_name))
@@ -33,10 +35,10 @@ im = ax.imshow(chi2_names, cmap=cm.viridis,norm=colors.PowerNorm(gamma=0.2), int
                origin='lower', aspect='auto') #extent=extent)
 
 # We want to show all ticks...
-ax.set_xticks(np.arange(len(betas_plot)))
+ax.set_xticks(np.arange(0,len(betas_plot),2))
 ax.set_yticks(np.arange(len(names_plot)))
 # ... and label them with the respective list entries
-ax.set_xticklabels(betas_plot)
+ax.set_xticklabels(betas_plot[::2])
 ax.set_yticklabels(names_plot)
 
 

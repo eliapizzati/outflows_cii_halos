@@ -33,16 +33,29 @@ logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', \
                               logging.StreamHandler()])
 
 
-redshifts = []
-SFRs = [] 
-M_virs = []
-datas = []
-
 halo_class = input("which halo class (CII_halo, wo_CII_halo, other)?")
 
 if err_switcher: 
     err = input("which error (none, up, down)?")
     
+
+f_esc_ion = 0.0
+
+f_esc_FUVs = [0.0]#,0.05,0.1,0.2]
+
+#○betas = np.linspace(1.0,4.0, 31)
+betas = np.linspace(5.0,6.0, 11)
+
+#v_cs = np.linspace(175.,300., 26)
+
+
+
+redshifts = []
+SFRs = [] 
+M_virs = []
+datas = []
+
+
 for data in obs_data_list:
     if data.params_obs["halo_class"] != halo_class: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
     #if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
@@ -64,15 +77,7 @@ for data in obs_data_list:
         else:
             M_virs.append(data.params_obs["M_vir"])
         
-        
-f_esc_ion = 0.0
 
-f_esc_FUVs = [0.0]#,0.05,0.1,0.2]
-
-#○betas = np.linspace(1.0,4.0, 31)
-betas = np.linspace(1.0,4.0, 31)
-
-#v_cs = np.linspace(175.,300., 26)
 
 params = dict([("DM_model", "NFW"),
            ("beta", 1.0), 
