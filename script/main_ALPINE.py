@@ -11,11 +11,14 @@ import numpy as np
 import mydir
 import natconst as nc
 
-from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved, get_chi2
+from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, \
+                      get_intensity_convolved, get_chi2
 
 from model_classes import load_from_file
-from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo, names_other,  observational_data_fuji
+from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
+                      names_other,  observational_data_fuji
 import plot_config as pltc
+from my_utils import get_vc_from_virial_mass
 
 
 import time
@@ -30,19 +33,22 @@ plot_hydro = False
 
 plot_emission = True
 
-save_chi2 = True
+save_chi2 = False
 
 plot_eta = False
+
+plot_vc_uncertainty = True
 
 f_esc_ion = 0.0
 
 f_esc_FUV = 0.0
 
-betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,\
-                    3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9])
+betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,\
+                    3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9,\
+                    5.0,5.1,5.2,5.3,5.4,5.5,5.6,5.7,5.8,5.9])
 #betas = np.asarray([1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1])
 #betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8])
-#betas = np.asarray([4.0,4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9])
+betas = np.asarray([3.0,3.3,3.6,3.9])
 
 
 datas = obs_data_list
@@ -53,11 +59,11 @@ chi2_names = []
 
 datas_real = []
 
-data_container_name = "other_NFW"
+data_container_name = "wo_CII_halo_NFW"
 
 for data in datas:
     
-    if data.params_obs["name"] not in names_other: #or data.params_obs["name"] != "DEIMOS_COSMOS_881725":
+    if data.params_obs["name"] not in names_CII_halo:
     #if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
     #if data.params_obs["name"] != "vuds_cosmos_5110377875":
         pass
@@ -173,6 +179,40 @@ for data in datas:
                 if plot_eta: 
                     ax_eta.plot(intensity_conv.h/1e3/nc.pc, intensity_conv.eta, label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
 
+                if plot_vc_uncertainty:
+                    
+                    M_vir_up = data.params_obs["M_vir"]+data.params_obs["M_vir_err_up"]
+                    v_c_up = get_vc_from_virial_mass(M_vir_up, params["redshift"])/1e5
+                    
+                    M_vir_down = data.params_obs["M_vir"]-data.params_obs["M_vir_err_down"]
+                    v_c_down = get_vc_from_virial_mass(M_vir_down, params["redshift"])/1e5
+
+                    params.update(M_vir = M_vir_up)
+                    params.update(v_c = v_c_up)
+                    print("{:.1f}".format(v_c_up))
+                    
+                    profiles_up = load_from_file(params, class_type = "profiles")
+                    ionization_state_up = get_ionization_states(profiles_up, params)
+                    sigma_CII_up = get_surface_density(profiles_up, ionization_state_up, params, rmax=30, h_resol=500, add_CMB_suppression=True)
+                    intensity_raw_up = get_intensity_raw(sigma_CII_up, params, data.params_obs)
+                    intensity_conv_up = get_intensity_convolved(intensity_raw_up, params, data.params_obs, data, add_central_contribution=False)
+
+                    params.update(M_vir = M_vir_down)
+                    params.update(v_c = v_c_down)
+
+                    
+                    profiles_down = load_from_file(params, class_type = "profiles")
+                    ionization_state_down = get_ionization_states(profiles_down, params)
+                    sigma_CII_down = get_surface_density(profiles_down, ionization_state_down, params, rmax=30, h_resol=500, add_CMB_suppression=True)
+                    intensity_raw_down = get_intensity_raw(sigma_CII_down, params, data.params_obs)
+                    intensity_conv_down = get_intensity_convolved(intensity_raw_down, params, data.params_obs, data, add_central_contribution=False)
+
+                    ax_int_conv.plot(intensity_conv_up.h/(1000*nc.pc), intensity_conv_up.var, color="C{}".format(beta_counter))
+
+                    ax_int_conv.plot(intensity_conv_down.h/(1000*nc.pc), intensity_conv_down.var, color="C{}".format(beta_counter))
+
+                    ax_int_conv.fill_between(intensity_conv.h/(1000*nc.pc), intensity_conv_down.var, intensity_conv_up.var, color="C{}".format(beta_counter), alpha=0.2)
+                    
             beta_counter+=1
                 
             

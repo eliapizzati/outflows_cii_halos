@@ -15,13 +15,14 @@ import mydir
 
 from load_data import names_wo_CII_halo_short, names_CII_halo_short, names_other_short, obs_data_list
 
-names_plot = names_wo_CII_halo_short
+names_plot = names_other_short
 
-betas_plot = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,\
-                         3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9])
+betas_plot = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,\
+                    3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9,\
+                    5.0,5.1,5.2,5.3,5.4,5.5,5.6,5.7,5.8,5.9])
 
 
-data_container_name = "wo_CII_halo_NFW"
+data_container_name = "other_NFW"
 
 
 out_filename = os.path.join(mydir.data_dir, "data_chi2", "{}.npy".format(data_container_name))
@@ -35,10 +36,10 @@ im = ax.imshow(chi2_names, cmap=cm.viridis,norm=colors.PowerNorm(gamma=0.2), int
                origin='lower', aspect='auto') #extent=extent)
 
 # We want to show all ticks...
-ax.set_xticks(np.arange(0,len(betas_plot),2))
+ax.set_xticks(np.arange(0,len(betas_plot),3))
 ax.set_yticks(np.arange(len(names_plot)))
 # ... and label them with the respective list entries
-ax.set_xticklabels(betas_plot[::2])
+ax.set_xticklabels(betas_plot[::3])
 ax.set_yticklabels(names_plot)
 
 
@@ -94,12 +95,12 @@ names_short_fit = ["DC_396844", "DC_488399", "DC_630594","DC_683613", "DC_880016
                    "DC_494057", "DC_494763", "DC_834764", "vc_5100969402","vc_5100994794","ve_530029038"]
 
 betas_fit = [3.4,4.3,4.2,3.1,3.8,2.4,4.9,2.6,\
-             4.9,4.9,4.2,3.6,3.2,\
-             4.0,4.9,4.4,4.9,4.4,2.2]
+             5.1,5.5,4.2,3.6,3.2,\
+             4.0,5.2,4.4,5.6,4.4,2.1]
 
-likelihoods_fit = [0.05, 0.2, 0.5, 0.1, 0.1, 0.5,0.05,0.1,\
-                   0.05, 0.05, 0.4,0.4,0.5,\
-                   0.35, 0.05, 0.35, 0.05, 0.15, 0.2 ]
+likelihoods_fit = [0.05, 0.2, 0.5, 0.1, 0.1, 0.5,0.02,0.1,\
+                   0.1, 0.3, 0.4,0.4,0.5,\
+                   0.35, 0.05, 0.35, 0.7, 0.17, 0.23 ]
   
 for data in obs_data_list:
     
@@ -129,7 +130,7 @@ for data in obs_data_list:
        
 
 
-ax.set_ylim(1.3,5.0)
+ax.set_ylim(1.3,6.0)
 ax.set_xlabel("SFR")
 ax.set_ylabel("beta")
 
@@ -147,7 +148,7 @@ cmap = cm.ScalarMappable(norm=norm, cmap=cmap_rend_col)
 cmap.set_array([])
 
 cb = fig.colorbar(cmap, orientation='vertical')
-cb.set_label(r'$v_c$', rotation=0.)
+cb.set_label(r'    $v_c$', rotation=0.)
 
 
 plt.legend([cii, wo_cii, oth], ["CII", "wo CII", "other"])##

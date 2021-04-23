@@ -23,17 +23,17 @@ import time
 
 
 
-load_sol_from_file = True
+load_sol_from_file = False
 
-to_file = False
+to_file = True
 
-plot_hydro = True
+plot_hydro = False
 
-plot_emission = True
+plot_emission = False
 
-plot_eta = True
+plot_eta = False
 
-f_esc_ion = 0.0
+f_esc_ion = 0.2
 
 f_esc_FUV = 0.2
 
@@ -46,7 +46,7 @@ betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,
 
 data = observational_data_fuji
 
-params = dict([("DM_model", "NFW"),
+params = dict([("DM_model", None),
            ("beta", 1.0), 
            ("SFR", 50.),
            ("f_esc_ion", f_esc_ion), 
@@ -63,8 +63,8 @@ if plot_hydro:
     fig_sol, axs_sol = pltc.plot_configurator(plot_type="sol")    
     fig_ion, axs_ion = pltc.plot_configurator(plot_type="ion")
 
-    fig_sol.suptitle("Fujimoto+19, v_c = {:.1f} km/h, SFR = {:.1f}".format(params["v_c"], params["SFR"]))
-    fig_ion.suptitle("Fujimoto+19, v_c = {:.1f} km/h, SFR = {:.1f}".format(params["v_c"], params["SFR"]))
+    fig_sol.suptitle("v_c = {:.1f} km/h, SFR = {:.1f}".format(params["v_c"], params["SFR"]))
+    fig_ion.suptitle("v_c = {:.1f} km/h, SFR = {:.1f}".format(params["v_c"], params["SFR"]))
 
 if plot_emission:
     fig_int_raw, ax_int_raw = pltc.plot_configurator(plot_type="int", xlim=10) 
