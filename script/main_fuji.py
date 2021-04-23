@@ -33,7 +33,7 @@ plot_emission = False
 
 plot_eta = False
 
-f_esc_ion = 0.2
+f_esc_ion = 0.
 
 f_esc_FUV = 0.2
 
