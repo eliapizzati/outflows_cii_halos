@@ -23,15 +23,15 @@ import time
 
 
 
-load_sol_from_file = False
+load_sol_from_file = True
 
-to_file = True
+to_file = False
 
-plot_hydro = False
+plot_hydro = True
 
-plot_emission = False
+plot_emission = True
 
-plot_eta = False
+plot_eta = True
 
 f_esc_ion = 0.
 
@@ -42,11 +42,12 @@ betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,
 #betas = np.asarray([1.8,2.1,2.4,2.7,3.0,3.3,3.6,3.9,4.2,4.5])
 #betas = [3.0]
 #betas = np.asarray([2.0,2.2,2.4,2.6,2.8,3.0,3.2,3.4,3.6,3.8,4.0,4.2,4.4,4.6,4.8,5.0])
-#betas = np.asarray([3.4,3.6,3.8,4.0,4.2,4.4,4.6,4.8,5.0])
+betas = np.asarray([1.3,1.6,1.9,2.2,2.5,2.8,3.1,3.4,3.7,4.0])
+betas = np.asarray([1.6,4.0])
 
 data = observational_data_fuji
 
-params = dict([("DM_model", "NFW"),
+params = dict([("DM_model", None),
            ("beta", 1.0), 
            ("SFR", 50.),
            ("f_esc_ion", f_esc_ion), 
@@ -63,8 +64,10 @@ if plot_hydro:
     fig_sol, axs_sol = pltc.plot_configurator(plot_type="sol")    
     fig_ion, axs_ion = pltc.plot_configurator(plot_type="ion")
 
-    fig_sol.suptitle("v_c = {:.1f} km/h, SFR = {:.1f}".format(params["v_c"], params["SFR"]))
-    fig_ion.suptitle("v_c = {:.1f} km/h, SFR = {:.1f}".format(params["v_c"], params["SFR"]))
+    fig_sol.suptitle("v_c = {:.1f} km/s, SFR = {:.1f}, f_escFUV = {:.1f}, f_escION = {:.1f}"\
+                     .format(params["v_c"], params["SFR"], params["f_esc_FUV"], params["f_esc_ion"]))
+    fig_ion.suptitle("v_c = {:.1f} km/s, SFR = {:.1f}, f_escFUV = {:.1f}, f_escION = {:.1f}"\
+                     .format(params["v_c"], params["SFR"], params["f_esc_FUV"], params["f_esc_ion"]))
 
 if plot_emission:
     fig_int_raw, ax_int_raw = pltc.plot_configurator(plot_type="int", xlim=10) 
@@ -73,13 +76,16 @@ if plot_emission:
     ax_int_raw.set_ylim((1e-3,1e2))
     ax_int_conv.set_ylim((1e-3,1e2))
  
-    fig_int_raw.suptitle("Fujimoto+19, v_c = {:.1f} km/h, SFR = {:.1f}".format(params["v_c"], params["SFR"]))
-    fig_int_conv.suptitle("Fujimoto+19, v_c = {:.1f} km/h, SFR = {:.1f}".format(params["v_c"], params["SFR"]))
+    fig_int_raw.suptitle("v_c = {:.1f} km/s, SFR = {:.1f}, f_escFUV = {:.1f}, f_escION = {:.1f}"\
+                     .format(params["v_c"], params["SFR"], params["f_esc_FUV"], params["f_esc_ion"]))
+    fig_int_conv.suptitle("v_c = {:.1f} km/s, SFR = {:.1f}, f_escFUV = {:.1f}, f_escION = {:.1f}"\
+                     .format(params["v_c"], params["SFR"], params["f_esc_FUV"], params["f_esc_ion"]))
 
 if plot_eta:
     
     fig_eta, ax_eta = pltc.plot_configurator(plot_type="eta", xlim=10) 
-    fig_eta.suptitle("Fujimoto+19, v_c = {:.1f} km/h, SFR = {:.1f}".format(params["v_c"], params["SFR"]))
+    fig_eta.suptitle("v_c = {:.1f} km/s, SFR = {:.1f}, f_escFUV = {:.1f}, f_escION = {:.1f}"\
+                     .format(params["v_c"], params["SFR"], params["f_esc_FUV"], params["f_esc_ion"]))
     
     
 beta_counter = 0
@@ -138,6 +144,14 @@ for beta_el in betas:
             profiles.plot(ax=axs_sol, label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
             ionization_state.plot(ax=axs_ion,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
 
+            try_radius=np.linspace(.3,30.,1000)
+            axs_sol[0].plot(np.log10(try_radius), np.sqrt(395.1**2-2*(175*1.51)**2*(np.log10(try_radius)+0.484))/1e3, color="black")
+            axs_sol[0].plot(np.log10(try_radius), np.sqrt(664**2-2*(175*1.51)**2*(np.log10(try_radius)+0.375))/1e3, color="black")
+
+
+            axs_sol[1].plot(np.log10(try_radius), np.log10(10**1.38*(10**(-0.484)/try_radius)**2*395.1/np.sqrt(395.1**2-2*(175*1.51)**2*(np.log10(try_radius)+0.484))), color="black")
+            axs_sol[1].plot(np.log10(try_radius), np.log10(10**0.553*(10**(-0.375)/try_radius)**2*664/np.sqrt(664**2-2*(175*1.51)**2*(np.log10(try_radius)+0.375))), color="black")
+            
         if plot_emission:                
             #sigma_CII.plot(ax=ax_sigma)            
 
@@ -163,10 +177,12 @@ for beta_el in betas:
         if plot_emission:
                 # data   
 
-                ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
+                fuji = ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
                              markerfacecolor='maroon',markeredgecolor='maroon', marker='o',\
                              linestyle='', ecolor = 'maroon')
                 
+                ax_int_conv.legend([fuji], ["Fujimoto+19"])##
+
                 # central contribution
             
                 luminosity_central = nc.ls * 1e7 * params["SFR"]

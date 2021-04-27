@@ -29,7 +29,7 @@ load_sol_from_file = True
 
 to_file = False
 
-plot_hydro = False
+plot_hydro = True
 
 plot_emission = True
 
@@ -37,7 +37,7 @@ save_chi2 = False
 
 plot_eta = False
 
-plot_vc_uncertainty = True
+plot_vc_uncertainty = False
 
 f_esc_ion = 0.0
 
@@ -48,7 +48,11 @@ betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,
                     5.0,5.1,5.2,5.3,5.4,5.5,5.6,5.7,5.8,5.9])
 #betas = np.asarray([1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1])
 #betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8])
-betas = np.asarray([3.0,3.3,3.6,3.9])
+#betas = np.asarray([3.0,3.3,3.6,3.9])
+#betas = np.asarray([2.6,2.9,3.2,3.5,3.8,4.1,4.4,4.7])
+#betas = np.asarray([1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1])
+#betas = np.asarray([4.4,4.5,4.6,4.7,4.8,4.9,5.0,5.1,5.2,5.3,5.4,5.5,5.6,5.7,5.8,5.9])
+#betas = np.asarray([2.6,2.7,2.8,2.9,3.0])
 
 
 datas = obs_data_list
@@ -59,11 +63,11 @@ chi2_names = []
 
 datas_real = []
 
-data_container_name = "wo_CII_halo_NFW"
+data_container_name = "CII_halo_NFW"
 
 for data in datas:
     
-    if data.params_obs["name"] not in names_CII_halo:
+    if data.params_obs["name"] not in names_CII_halo or data.params_obs["name_short"] != "DC_396844":
     #if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
     #if data.params_obs["name"] != "vuds_cosmos_5110377875":
         pass
@@ -73,7 +77,7 @@ for data in datas:
         print(data.params_obs["name"], "(number {})".format(data_counter) )
         print("#####################")
     
-        params = dict([("DM_model", "NFW"),
+        params = dict([("DM_model", None),
                    ("beta", 1.0), 
                    ("SFR", data.params_obs["SFR"]),
                    ("f_esc_ion", f_esc_ion), 
@@ -95,13 +99,13 @@ for data in datas:
             fig_ion.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
         
         if plot_emission:
-            #fig_int_raw, ax_int_raw = pltc.plot_configurator(plot_type="int", xlim=15) 
+            fig_int_raw, ax_int_raw = pltc.plot_configurator(plot_type="int", xlim=15) 
             fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=15)
         
-            #ax_int_raw.set_ylim((1e-3,1e2))
+            ax_int_raw.set_ylim((1e-3,1e2))
             ax_int_conv.set_ylim((1e-3,1e2))
  
-            #fig_int_raw.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
+            fig_int_raw.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
             fig_int_conv.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
     
         if plot_eta:
@@ -163,10 +167,11 @@ for data in datas:
                     profiles.plot(ax=axs_sol, label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
                     ionization_state.plot(ax=axs_ion,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
 
+
                 if plot_emission:                
                     #sigma_CII.plot(ax=ax_sigma)            
     
-                    #intensity_raw.plot(ax=ax_int_raw,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
+                    intensity_raw.plot(ax=ax_int_raw,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
                 
                     intensity_conv.plot(ax=ax_int_conv,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
                 
@@ -207,12 +212,43 @@ for data in datas:
                     intensity_raw_down = get_intensity_raw(sigma_CII_down, params, data.params_obs)
                     intensity_conv_down = get_intensity_convolved(intensity_raw_down, params, data.params_obs, data, add_central_contribution=False)
 
+                    params.update(M_vir = data.params_obs["M_vir"])
+                    params.update(v_c = data.params_obs["v_c"])
+                    
                     ax_int_conv.plot(intensity_conv_up.h/(1000*nc.pc), intensity_conv_up.var, color="C{}".format(beta_counter))
-
                     ax_int_conv.plot(intensity_conv_down.h/(1000*nc.pc), intensity_conv_down.var, color="C{}".format(beta_counter))
-
                     ax_int_conv.fill_between(intensity_conv.h/(1000*nc.pc), intensity_conv_down.var, intensity_conv_up.var, color="C{}".format(beta_counter), alpha=0.2)
                     
+                    ax_int_raw.plot(intensity_raw_up.h/(1000*nc.pc), intensity_raw_up.var, color="C{}".format(beta_counter))
+                    ax_int_raw.plot(intensity_raw_down.h/(1000*nc.pc), intensity_raw_down.var, color="C{}".format(beta_counter))
+                    ax_int_raw.fill_between(intensity_raw.h/(1000*nc.pc), intensity_raw_down.var, intensity_raw_up.var, color="C{}".format(beta_counter), alpha=0.2)
+                    
+                    if plot_hydro:
+                        profiles_up.plot(ax=axs_sol,color="C{}".format(beta_counter))
+                        profiles_down.plot(ax=axs_sol, color="C{}".format(beta_counter))
+                        
+                        profiles_up_extended_v = np.interp(profiles_down.r, profiles_up.r, profiles_up.v) #right=0.)
+                        profiles_up_extended_n = np.interp(profiles_down.r, profiles_up.r, profiles_up.n)# right=0.)
+                        profiles_up_extended_T = np.interp(profiles_down.r, profiles_up.r, profiles_up.T)#right=0.)
+                        
+                        axs_sol[0].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),profiles_down.v/10**8,profiles_up_extended_v/10**8,\
+                               color="C{}".format(beta_counter), alpha=0.2)       
+                        axs_sol[1].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),np.log10(profiles_down.n), np.log10(profiles_up_extended_n),\
+                               color="C{}".format(beta_counter), alpha=0.2)
+                        axs_sol[2].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),np.log10(profiles_down.T),np.log10(profiles_up_extended_T),\
+                               color="C{}".format(beta_counter), alpha=0.2)
+    
+                        ionization_state_up.plot(ax=axs_ion,color="C{}".format(beta_counter))
+                        ionization_state_down.plot(ax=axs_ion, color="C{}".format(beta_counter))
+    
+                        ion_up_extended_xe = np.interp(ionization_state_down.r, ionization_state_up.r, ionization_state_up.x_e) #right=0.)
+                        ion_up_extended_xCII = np.interp(ionization_state_down.r, ionization_state_up.r, ionization_state_up.x_CII)# right=0.)
+    
+                        axs_ion[0].fill_between(np.log10(ionization_state_down.r/(1000*nc.pc)),1.-ionization_state_down.x_e,1.-ion_up_extended_xe,\
+                               color="C{}".format(beta_counter), alpha=0.2) 
+                        axs_ion[1].fill_between(np.log10(ionization_state_down.r/(1000*nc.pc)),ionization_state_down.x_CII,ion_up_extended_xCII,\
+                               color="C{}".format(beta_counter), alpha=0.2)
+    
             beta_counter+=1
                 
             
@@ -221,14 +257,16 @@ for data in datas:
                 if plot_emission:
                         # data   
     
-                        ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
+                        alpine = ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
                                      markerfacecolor='maroon',markeredgecolor='maroon', marker='o',\
                                      linestyle='', ecolor = 'maroon')
                         
-                        ax_int_conv.errorbar(observational_data_fuji.x/(1000*nc.pc), observational_data_fuji.data, yerr=observational_data_fuji.err, \
+                        fuji = ax_int_conv.errorbar(observational_data_fuji.x/(1000*nc.pc), observational_data_fuji.data, yerr=observational_data_fuji.err, \
                                      markerfacecolor='navy',markeredgecolor='navy', marker='d',\
                                      linestyle='', ecolor = 'navy')
                         
+                        ax_int_conv.legend([alpine, fuji], [data.params_obs["name_short"], "Fujimoto+19"])##
+
                         # central contribution
                     
                         luminosity_central = nc.ls * 1e7 * data.params_obs["SFR"]
@@ -246,7 +284,7 @@ for data in datas:
                         fig_ion.legend(loc="lower center", ncol=8, fontsize="small")
                         
                 if plot_emission:
-                        #fig_int_raw.legend(loc="lower center", ncol=8, fontsize="small")
+                        fig_int_raw.legend(loc="lower center", ncol=8, fontsize="small")
                         fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
         
             

@@ -36,7 +36,8 @@ logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', \
 halo_class = input("which halo class (CII_halo, wo_CII_halo, other)?")
 
 if err_switcher: 
-    err = input("which error (none, up, down)?")
+    err_side = input("which error (none, up, down)?")
+    err_quantity = input("which quantity to consider for the error computation (v_c, SFR)?")
     
 
 f_esc_ion = 0.0
@@ -64,19 +65,38 @@ for data in obs_data_list:
 
     else:
         redshifts.append(data.params_obs["redshift"])
-        SFRs.append(data.params_obs["SFR"])
         datas.append(data)
         
         if err_switcher:
-            if err == "none":
+            
+            if err_quantity == "v_c":
+                
+                if err_side == "none":
+                    M_virs.append(data.params_obs["M_vir"])
+                elif err_side == "up":
+                    M_virs.append(data.params_obs["M_vir"]+data.params_obs["M_vir_err_up"])
+                elif err_side == "down":
+                    M_virs.append(data.params_obs["M_vir"]-data.params_obs["M_vir_err_down"])
+                
+                SFRs.append(data.params_obs["SFR"])
+
+            elif err_quantity == "SFR":
+                
+                if err_side == "none":
+                    SFRs.append(data.params_obs["SFR"])
+                elif err_side == "up":
+                    SFRs.append(data.params_obs["SFR"]+data.params_obs["SFR_err_up"])
+                elif err_side == "down":
+                    SFRs.append(data.params_obs["SFR"]-data.params_obs["SFR_err_down"])
+                
                 M_virs.append(data.params_obs["M_vir"])
-            elif err == "up":
-                M_virs.append(data.params_obs["M_vir"]+data.params_obs["M_vir_err_up"])
-            elif err == "down":
-                M_virs.append(data.params_obs["M_vir"]-data.params_obs["M_vir_err_down"])
+
+            else:
+                raise ValueError("No correct quantity given (v_c or SFR)")
         else:
             M_virs.append(data.params_obs["M_vir"])
-        
+            SFRs.append(data.params_obs["SFR"])
+
 
 
 params = dict([("DM_model", "NFW"),
