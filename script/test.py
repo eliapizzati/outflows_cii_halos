@@ -97,7 +97,11 @@ show_profile    = True
 for integrator in integrator_list:
 
     print(integrator)
+    time_profile = time.perf_counter()
     profiles = get_profiles(params, resol=1000,print_time=True,integrator=integrator)
+    time_profile = (time.perf_counter() - time_profile)
+
+    print("total profile time (s)=", time_profile)
 
     if show_profile:
       profiles.plot(label=integrator)
