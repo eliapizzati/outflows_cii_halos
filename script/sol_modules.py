@@ -180,7 +180,7 @@ def diff_system(r, y, params, Plw, Ph1, Pg1):
 
 
 
-def get_profiles(params, resol=1000, print_time=False):
+def get_profiles(params, resol=1000, print_time=False, integrator="RK45"):
     """
     computes the profiles for v, n, T as a function of r
     
@@ -266,7 +266,7 @@ def get_profiles(params, resol=1000, print_time=False):
     if print_time:
       t_ivp = time.perf_counter()
 
-    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(params,Plw,Ph1,Pg1),method = "BDF")
+    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(params,Plw,Ph1,Pg1),method = integrator)
     
     if print_time:
       time_ivp = (time.perf_counter() - t_ivp)
