@@ -13,6 +13,7 @@ import os
 
 import natconst as nc
 import mydir
+from my_utils import to_habing_flux 
 
 
 def UVB_rates(redshift, quantity):
@@ -247,7 +248,7 @@ if __name__ == "__main__":
     print("Gamma_CII_UVB (s^-1) =", Gamma_CII_UVB) 
     print("Gamma_LW_UVB (s^-1) =", Gamma_LW_UVB)  
     print("intensity_UV_UVB (erg/cm^2/s/Hz/sr) =", intensity_UVB_UV) 
-       
+    print("intensity_UV_UVB (G_0) =", to_habing_flux(intensity_UVB_UV))          
     print("#########     ###########")
     
     
@@ -335,6 +336,7 @@ if __name__ == "__main__":
     print("Gamma_CII_1000 (s^-1) =", Gamma_CII_1000) 
     print("Gamma_LW_1000 (s^-1) =", Gamma_LW_1000)  
     print("intensity_UV_1000 (erg/s/cm^2/Hz/sr) =", intensity_UV_1000)   
+    print("intensity_UV_1000 (G_0) =", to_habing_flux(intensity_UV_1000))   
     print("#########     ###########")
           
           

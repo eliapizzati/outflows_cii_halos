@@ -435,6 +435,13 @@ if __name__ == "__main__":
     
     ax.set_title("T_spin dependence on n_e, I_UV; (T = 10^3 K, z = 5.)")
 
+    ax2 = ax.twinx()
+    
+    habing_g0 = 4*np.pi*I_UVs*(13.6-6.)*nc.ev/nc.hh/nc.cc/5.29e-14
+    
+    ax2.set_yticks(np.log10(habing_g0[::100]))
+    ax2.set_ylabel("G_0")
+
     fig.tight_layout()
     
 

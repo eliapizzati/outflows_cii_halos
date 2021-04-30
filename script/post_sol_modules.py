@@ -398,18 +398,71 @@ def get_chi2(intensity_convolved, obs_data):
     return chi2
 
     
+
+
+def get_luminosity_CII(sigma_CII, r_min = None, r_max = None):
+    """
+    computes the total CII luminosity between two radii (from the CII sutface density)
+    
+    Parameters
+    ==========
+    sigma_CII: lum_profile class element
+    
+    r_min: float, optional
+        minimum radius in cm (if None, the integral is computed for all elements in sigma_CII)    
+    
+    r_max: float, optional
+        maximum radius in cm (if None, the integral is computed for all elements in sigma_CII)
+    
+    Returns
+    =======
+    lum_CII: float representing the luminosity of CII in erg/s
+
+    """    
+    
+    mask = np.logical_and(sigma_CII.h > r_min, sigma_CII.h < r_max)
+    
+    
+    lum_CII = np.trapz(sigma_CII.var[mask]*2*np.pi*sigma_CII.h[mask], sigma_CII.h[mask])
+    
+    return lum_CII
     
 
     
-#    #CALCULATION OF THE CARBON AND IONIZED CARBON HALO MASSES
-#    
-#    p = n*nc.mp*mu
-#
-#    M_C = np.trapz(4*np.pi*r**2*p*A_C, r)
-#
-#    M_CII = np.trapz(4*np.pi*r**2*p*A_C*x_CII, r)
-#    print('M_C  ',beta, M_C/nc.ms/1e6)
-#    print('M_CII',beta, M_CII/nc.ms/1e6)
+    
+    
+    
+def get_halo_mass(profiles, params, r_min = None, r_max = None):
+    """
+    computes the total Carbon (and CII) mass enclosed between two radii 
+    
+    Parameters
+    ==========
+    sol_profiles: sol_profiles class element
+    
+    r_min: float, optional
+        minimum radius in cm (if None, the integral is computed for all elements in profiles)    
+    
+    r_max: float, optional
+        maximum radius in cm (if None, the integral is computed for all elements in profiles)
+    
+    Returns
+    =======
+    C_mass, CII_mass: floats representing the total Carbon mass and the total CII mass (in solar masses)
+
+    """ 
+    
+    rho = profiles.n*nc.mp*nc.mus
+
+    mask = np.logical_and(profiles.r > r_min, profiles.r < r_max)
+
+    M_C = np.trapz(4*np.pi*profiles.r[mask]**2*rho[mask]*nc.A_C, profiles.r[mask])
+
+    ionizations = get_ionization_states(profiles, params)
+    
+    M_CII = np.trapz(4*np.pi*profiles.r[mask]**2*rho[mask]*nc.A_C*ionizations.x_CII[mask], profiles.r[mask])
+    
+    return M_C/nc.ms/1e6, M_CII/nc.ms/1e6
         
     
 

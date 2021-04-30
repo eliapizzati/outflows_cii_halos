@@ -53,6 +53,12 @@ def twod_making(profile, x_axis, nimage=1000):
     return x_ext, y_ext, z
 
 
+def to_habing_flux(I_UV):
+    
+    return  4*np.pi*I_UV*(13.6-6.)*nc.ev/nc.hh/nc.cc/5.29e-14
+
+
+
 def get_concentration(M_vir, z):
     """
     concentration parameter from Dutton&Macciò2014

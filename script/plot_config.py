@@ -104,7 +104,7 @@ def plot_configurator(plot_type = "sol", bottom=0.28, wspace=0.2, xlim=18):
         ax.set_xlabel("b [kpc]", size=size)
         
         if plot_type == "sigma":
-            ax.set_ylabel(r"log ($\Sigma_{CII}$ [erg/cm s^2])", size=size)
+            ax.set_ylabel(r"log ($\Sigma_{CII}$ [erg/cm^2 s])", size=size)
             ax.set_yscale("log")
         
         elif plot_type == "int":
