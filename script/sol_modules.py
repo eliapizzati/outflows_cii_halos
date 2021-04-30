@@ -273,7 +273,7 @@ def get_profiles(params, resol=1000, print_time=False):
       print("total time ivp (s)=", time_ivp)
 
     if sol.success == False:
-        print('Integration stopped before reaching the end of the array")
+        print('Integration stopped before reaching the end of the array')
     elif sol.success == True:
         print('Integration completed successfully')
     
