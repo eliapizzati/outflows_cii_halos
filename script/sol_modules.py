@@ -7,6 +7,7 @@ Created on Fri Mar  5 16:12:54 2021
 import os
 import natconst as nc
 import mydir 
+import time
 
 
 import scipy.integrate as si
@@ -179,7 +180,7 @@ def diff_system(r, y, params, Plw, Ph1, Pg1):
 
 
 
-def get_profiles(params, resol=1000):
+def get_profiles(params, resol=1000, print_time=False):
     """
     computes the profiles for v, n, T as a function of r
     
@@ -262,8 +263,15 @@ def get_profiles(params, resol=1000):
     
     r_eval = np.linspace(r_bound[0],r_bound[1],resol)
 
-    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(params,Plw,Ph1,Pg1))
+    if print_time:
+      t_ivp = time.perf_counter()
+
+    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(params,Plw,Ph1,Pg1),method = "BDF")
     
+    if print_time:
+      time_ivp = (time.perf_counter() - t_ivp)
+      print("total time ivp (s)=", time_ivp)
+
     if sol.success == False:
         print('Error in integration procedure')
     elif sol.success == True:

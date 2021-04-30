@@ -86,7 +86,7 @@ print("##################################")
 
 # getting the profiles using the integrator in sol_modules.py (this is the step that needs to be optimized)
 
-profiles = get_profiles(params, resol=1000)
+profiles = get_profiles(params, resol=1000,print_time=True)
 
 if profiles.check_nans() == True:
     string_nans = "Integration error: presence of nans"
