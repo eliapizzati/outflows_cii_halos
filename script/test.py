@@ -86,10 +86,25 @@ print("##################################")
 
 # getting the profiles using the integrator in sol_modules.py (this is the step that needs to be optimized)
 
-#integrator="RK45"
-integrator="BDF"
+import matplotlib.pyplot as plt
 
-profiles = get_profiles(params, resol=1000,print_time=True,integrator=integrator)
+integrator_list = ["RK45","BDF","LSODA"]
+integrator_list = ["BDF","LSODA"]
+#integrator_list = ["LSODA"]
+
+show_profile    = True
+
+for integrator in integrator_list:
+
+    print(integrator)
+    profiles = get_profiles(params, resol=1000,print_time=True,integrator=integrator)
+
+    if show_profile:
+      profiles.plot(label=integrator)
+
+if show_profile:
+  plt.legend(frameon=False)
+  plt.show()
 
 if profiles.check_nans() == True:
     string_nans = "Integration error: presence of nans"

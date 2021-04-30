@@ -266,7 +266,7 @@ def get_profiles(params, resol=1000, print_time=False, integrator="RK45"):
     if print_time:
       t_ivp = time.perf_counter()
 
-    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(params,Plw,Ph1,Pg1),method = integrator)
+    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(params,Plw,Ph1,Pg1),method = integrator) #,rtol=1.0e-3
     
     if print_time:
       time_ivp = (time.perf_counter() - t_ivp)
