@@ -55,7 +55,7 @@ def cooling(T, n, Plw, Ph1, Pg1):
             He photoionization rate
         """    
     
-        Pc6 = 5e-17.
+        Pc6 = 5e-17
         Zeta = 1.
     
         return gc.frtgetcf_cool(T, n, Zeta, Plw, Ph1, Pg1, Pc6)
@@ -79,7 +79,7 @@ def heating(T, n, Plw, Ph1, Pg1):
             He photoionization rate    
         """    
         
-        Pc6 = 5e-17.
+        Pc6 = 5e-17
         Zeta = 1.
     
         return gc.frtgetcf_heat(T, n, Zeta, Plw, Ph1, Pg1, Pc6)
