@@ -92,20 +92,23 @@ if load_from_file == False:
     
 
     
-    def to_file(var_vec, T_vec, n, Plw, Ph1, Pg1):
+    def to_file(name_base, var_vec, T_vec, n, Plw, Ph1, Pg1):
         
         folder = 'data_cooling'
         
         if not os.path.exists(os.path.join(mydir.data_dir, folder)):
             os.mkdir(os.path.join(mydir.data_dir, folder))
 
-        name = "cooling_n{:.1e}_plw{:.1e}_ph1{:.1e}_pg1{:.1e}"\
-                .format(n, Plw, Ph1, Pg1)
+        name = "{}_n{:.1e}_plw{:.1e}_ph1{:.1e}_pg1{:.1e}"\
+                .format(name_base, n, Plw, Ph1, Pg1)
                 
         
         path = os.path.join(mydir.data_dir, folder, name)
 
         np.savetxt(path, (T_vec,var_vec))
+        
+        print("INFO: saving data to {}".format(path))
+        return
 
     
     temperatures = np.logspace(3,8,1000)
@@ -120,16 +123,22 @@ if load_from_file == False:
     ph1s = np.insert(ph1s, 0, 0.)
     pg1s = np.insert(pg1s, 0, 0.)
     
-                        
+    print("###############################################")
+    print("STARTING ITERATIONS")      
+    print("###############################################")
+          
+    i=0              
     for n, plw, ph1, pg1 in itertools.product(densities, plws, ph1s, pg1s):
         
         cooling_values = cooling_vec(temperatures, n, plw, ph1, pg1)
         heating_values = heating_vec(temperatures, n, plw, ph1, pg1)
         
-        to_file(cooling_values, temperatures, n, plw, ph1, pg1)
-        to_file(heating_values, temperatures, n, plw, ph1, pg1)
+        to_file("cooling",cooling_values, temperatures, n, plw, ph1, pg1)
+        to_file("heating",heating_values, temperatures, n, plw, ph1, pg1)
         
-    
+        i+=1
+        print("ITERATION {} OF {}".format(i, len(n)*len(plws)*len(ph1s)*len(pg1s)))
+        
 
         
 
