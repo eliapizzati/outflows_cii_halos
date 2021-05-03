@@ -137,7 +137,7 @@ if load_from_file == False:
         to_file("heating",heating_values, temperatures, n, plw, ph1, pg1)
         
         i+=1
-        print("ITERATION {} OF {}".format(i, len(n)*len(plws)*len(ph1s)*len(pg1s)))
+        print("ITERATION {} OF {}".format(i, densities.size*plws.size*ph1s.size*pg1s.size))
         
 
         
