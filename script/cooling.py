@@ -39,7 +39,7 @@ if load_from_file == False:
     
     import gnedincooling as gc
 
-    gc.frtinitcf(0, '/home/elia.pizzati/projects/university/thesis/cf_table.I2.dat')
+    gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
 
     def cooling(T, n, Plw, Ph1, Pg1):
