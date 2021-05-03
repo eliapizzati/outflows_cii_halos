@@ -265,7 +265,7 @@ def get_profiles(params, resol=1000):
     sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(params,Plw,Ph1,Pg1))
     
     if sol.success == False:
-        print('Integration stopped before reaching the end of the array")
+        print('Integration stopped before reaching the end of the array')
     elif sol.success == True:
         print('Integration completed successfully')
     
