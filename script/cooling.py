@@ -111,7 +111,7 @@ if load_from_file == False:
         if not os.path.exists(os.path.join(mydir.data_dir, folder)):
             os.mkdir(os.path.join(mydir.data_dir, folder))
 
-        name = "{}_n{:.1e}_plw{:.1e}_ph{:.1e}_pg{:.1e}"\
+        name = "{}_n{:.1e}_plw{:.1e}_ph{:.1e}_pg{:.1e}.dat"\
                 .format(name_base, n, Plw, Ph1, Pg1)
                 
         
@@ -150,7 +150,7 @@ if load_from_file == True:
         
         folder = 'data_cooling'
         
-        name = "{}_n{:.1e}_plw{:.1e}_ph{:.1e}_pg{:.1e}"\
+        name = "{}_n{:.1e}_plw{:.1e}_ph{:.1e}_pg{:.1e}.dat"\
                 .format(name_base, n, Plw, Ph1, Pg1)
                 
         path = os.path.join(mydir.data_dir, folder, name)
