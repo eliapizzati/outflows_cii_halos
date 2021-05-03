@@ -36,7 +36,7 @@ def UVB_rates(redshift, quantity):
 
     #photoionization params (THE ORDER IS H, He, CI, CII)
     
-    nu_thr = np.asarray([1.097,1.983,0.909,1.97])*1e5 # in cm^-1
+    nu_thr = np.asarray([1.097,1.983,0.909,1.97, 3.81])*1e5 # in cm^-1
     
     threshold = nu_thr**(-1) # in cm
     
@@ -106,7 +106,7 @@ def UVB_rates(redshift, quantity):
             
         photoionization_rates_UVB = []
             
-        for i in range(0,4):
+        for i in range(0,5):
                 
                 
             wav_thr = wav_z[wav_z<=threshold[i]]
@@ -151,17 +151,17 @@ if __name__ == "__main__":
     
     redshift = 5
     
-    # photoionization params (THE ORDER IS H, He, CI, CII)
+    # photoionization params (THE ORDER IS H, He, CI, CII, CVI?)
     
-    nu_thr = np.asarray([1.097,1.983,0.909,1.97])*1e5 # in cm^-1
+    nu_thr = np.asarray([1.097,1.983,0.909,1.97, 3.81])*1e5 # in cm^-1
     
     threshold = nu_thr**(-1) # in cm
         
-    alfa_T = np.asarray([6.3,7.83,12.2,4.60])*1e-18 # in cm^2
+    alfa_T = np.asarray([6.3,7.83,12.2,4.60,1.0])*1e-18 # in cm^2
     
-    a = [2.99,2.05,2.0,3.0]
+    a = [2.99,2.05,2.0,3.0, 1.0]
     
-    b = [1.34,1.66,3.32,1.95]
+    b = [1.34,1.66,3.32,1.95, 1.0]
     
     
     # UV BACKGROUND
@@ -218,7 +218,7 @@ if __name__ == "__main__":
         
     photoionization_rates_UVB = []
         
-    for i in range(0,4):
+    for i in range(0,5):
                  
         wav_thr = wav_z[wav_z<=threshold[i]]
     
@@ -231,7 +231,7 @@ if __name__ == "__main__":
         photoionization_rates_UVB.append(N_tot)  
     
     
-    Gamma_H_UVB, Gamma_He_UVB, Gamma_CI_UVB, Gamma_CII_UVB = photoionization_rates_UVB
+    Gamma_H_UVB, Gamma_He_UVB, Gamma_CI_UVB, Gamma_CII_UVB, Gamma_CVI_UVB = photoionization_rates_UVB
     
  
     # LW photodestruction coefficient
@@ -246,6 +246,7 @@ if __name__ == "__main__":
     print("Gamma_He_UVB (s^-1) =", Gamma_He_UVB) 
     print("Gamma_CI_UVB (s^-1) =", Gamma_CI_UVB) 
     print("Gamma_CII_UVB (s^-1) =", Gamma_CII_UVB) 
+    print("Gamma_CVI_UVB (s^-1) =", Gamma_CVI_UVB) 
     print("Gamma_LW_UVB (s^-1) =", Gamma_LW_UVB)  
     print("intensity_UV_UVB (erg/cm^2/s/Hz/sr) =", intensity_UVB_UV) 
     print("intensity_UV_UVB (G_0) =", to_habing_flux(intensity_UVB_UV))          
@@ -272,7 +273,7 @@ if __name__ == "__main__":
     
     photoionization_rates_gal = []
         
-    for i in range(0,4):
+    for i in range(0,5):
         
         wav_thr = wav[wav<=threshold[i]]
     
@@ -285,7 +286,7 @@ if __name__ == "__main__":
         photoionization_rates_gal.append(N_tot / (4*np.pi*R_sample**2))  
     
     
-    Gamma_H_1000, Gamma_He_1000, Gamma_CI_1000, Gamma_CII_1000 = photoionization_rates_gal
+    Gamma_H_1000, Gamma_He_1000, Gamma_CI_1000, Gamma_CII_1000, Gamma_CVI_1000 = photoionization_rates_gal
        
     threshold_H = threshold[0]
     threshold_CI = threshold[2]
@@ -334,6 +335,7 @@ if __name__ == "__main__":
     print("Gamma_CI_FUV_1000 (s^-1) =", Gamma_CI_FUV_1000) 
     print("Gamma_CI_EUV_1000 (s^-1) =", Gamma_CI_EUV_1000) 
     print("Gamma_CII_1000 (s^-1) =", Gamma_CII_1000) 
+    print("Gamma_CVI_1000 (s^-1) =", Gamma_CVI_1000) 
     print("Gamma_LW_1000 (s^-1) =", Gamma_LW_1000)  
     print("intensity_UV_1000 (erg/s/cm^2/Hz/sr) =", intensity_UV_1000)   
     print("intensity_UV_1000 (G_0) =", to_habing_flux(intensity_UV_1000))   
