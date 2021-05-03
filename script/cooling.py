@@ -11,6 +11,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
+from matplotlib import ticker, cm, colors
 
 import natconst as nc
 import mydir
@@ -21,6 +22,17 @@ import mydir
 load_from_file = False
 
 
+temperatures = np.logspace(3,8,1000)
+
+densities = np.logspace(-5,3, 5)
+
+plws = np.logspace(-14,-7, 4)
+ph1s = np.logspace(-14,-7, 4)
+pg1s = np.logspace(-14,-7, 4)
+
+plws = np.insert(plws, 0, 0.)
+ph1s = np.insert(ph1s, 0, 0.)
+pg1s = np.insert(pg1s, 0, 0.)
 
 
 if load_from_file == False:
@@ -99,7 +111,7 @@ if load_from_file == False:
         if not os.path.exists(os.path.join(mydir.data_dir, folder)):
             os.mkdir(os.path.join(mydir.data_dir, folder))
 
-        name = "{}_n{:.1e}_plw{:.1e}_ph1{:.1e}_pg1{:.1e}"\
+        name = "{}_n{:.1e}_plw{:.1e}_ph{:.1e}_pg{:.1e}"\
                 .format(name_base, n, Plw, Ph1, Pg1)
                 
         
@@ -111,17 +123,6 @@ if load_from_file == False:
         return
 
     
-    temperatures = np.logspace(3,8,1000)
-    
-    densities = np.logspace(-5,3, 17)
-
-    plws = np.logspace(-14,-7, 8)
-    ph1s = np.logspace(-14,-7, 8)
-    pg1s = np.logspace(-14,-7, 8)
-    
-    plws = np.insert(plws, 0, 0.)
-    ph1s = np.insert(ph1s, 0, 0.)
-    pg1s = np.insert(pg1s, 0, 0.)
     
     print("###############################################")
     print("STARTING ITERATIONS")      
@@ -145,4 +146,67 @@ if load_from_file == False:
 if load_from_file == True:
     
     
-    pass
+    def from_file(name_base, n, Plw, Ph1, Pg1):
+        
+        folder = 'data_cooling'
+        
+        name = "{}_n{:.1e}_plw{:.1e}_ph{:.1e}_pg{:.1e}"\
+                .format(name_base, n, Plw, Ph1, Pg1)
+                
+        path = os.path.join(mydir.data_dir, folder, name)
+
+        T_vec, var_vec = np.loadtxt(path)
+        
+        print("INFO: loading data from {}".format(path))
+        
+        return T_vec, var_vec
+
+    
+    fig, ax = plt.subplots(figsize=(8.27,5.))
+
+    cmap_rend_col = cm.get_cmap('viridis')
+    
+    
+    
+    n_min = min(densities)
+    n_max = max(densities)
+    
+    norm = colors.Normalize(vmin=n_min, vmax=n_max)
+   
+    
+    for n in densities:
+        
+        T_vec, cooling_vec = from_file("cooling", n, 0.,0.,0.)
+
+        T_vec, heating_vec = from_file("heating", n, 0.,0.,0.)
+    
+        ax.plot(T_vec, cooling_vec,  color = cmap_rend_col((n-n_min)/(n_max-n_min)))
+        ax.plot(T_vec, cooling_vec,  color = cmap_rend_col((n-n_min)/(n_max-n_min)), linestyle=':')
+
+
+    ax.set_xlabel("T [K]")
+    ax.set_ylabel("cooling")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    
+    #ax.axhline(1., linestyle='--', color='gray')
+
+    #ax.set_title("Eta dependence on n, T; I_UV=0, x_e=0.5, z=5.")    
+    
+    plt.subplots_adjust(left = 0.15,  # the left side of the subplots of the figure
+        right = 0.98,   # the right side of the subplots of the figure
+        bottom = 0.15,  # the bottom of the subplots of the figure
+        top = 0.9,     # the top of the subplots of the figure
+        wspace = 0.1,  # the amount of width reserved for space between subplots,
+        # expressed as a fraction of the average axis width
+        hspace = 0.1)  # the amount of height reserved for space between subplots,
+                      # expressed as a fraction of the average axis height
+
+    
+    cmap = cm.ScalarMappable(norm=norm, cmap=cmap_rend_col)
+    cmap.set_array([])
+    
+    cb = fig.colorbar(cmap, orientation='vertical')
+    cb.set_label(r'temperature', rotation=90.)
+
+    fig.tight_layout()
