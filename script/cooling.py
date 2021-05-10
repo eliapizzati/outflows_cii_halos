@@ -293,43 +293,27 @@ if plotting:
         
     if quantity == "n":
         quantity_array = densities
+        other_values = np.delete(values, 0)
         
-        if load_from_file == True:
-            
-            plw = plws[-1]
-            ph1 = ph1s[0]
-            pg1 = pg1s[0]
-            pc6 = pc6s[0]
-            
-            values = [plw,ph1,pg1,pc6]
-
-        else:
-            
-            log_plw = float(input("log plw [s^-1]?"))
-            plw = 10**plw
-            log_plw = float(input("log plw [s^-1]?"))
-            plw = 10**plw
-            log_plw = float(input("log plw [s^-1]?"))
-            plw = 10**plw
-            
-            
-            values = [plw,ph1,pg1,pc6]
-
     elif quantity == "plw":
         quantity_array = plws
+        other_values = np.delete(values, 1)
 
     elif quantity == "ph1":
         quantity_array = ph1s
+        other_values = np.delete(values, 2)
 
     elif quantity == "pg1":
         quantity_array = pg1s
+        other_values = np.delete(values, 3)
 
     elif quantity == "pc6":
         quantity_array = pc6s
+        other_values = np.delete(values, 4)
 
 
     
-    plot_quantity(quantity, quantity_array, values = values)
+    plot_quantity(quantity, quantity_array, values = other_values)
     
 
     
