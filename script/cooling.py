@@ -223,7 +223,7 @@ def plot_quantity(quantity, quantity_array, values):
                 linestyle=':')
 
     for q in quantity_array:
-        print(q)
+
         if quantity == "n":
             n = q
         elif quantity == "plw":
@@ -232,7 +232,7 @@ def plot_quantity(quantity, quantity_array, values):
             ph1 = q
         elif quantity == "pg1":
             pg1 = q
-        elif quantity == "pg1":
+        elif quantity == "pc6":
             pc6 = q
 
             
