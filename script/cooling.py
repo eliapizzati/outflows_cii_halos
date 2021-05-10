@@ -44,9 +44,9 @@ pg1s = np.logspace(-14,-7, 8)
 
 pc6s = np.array([0.])
 
-plws = np.insert(plws, 0, 0.)
-ph1s = np.insert(ph1s, 0, 0.)
-pg1s = np.insert(pg1s, 0, 0.)
+#plws = np.insert(plws, 0, 0.)
+#ph1s = np.insert(ph1s, 0, 0.)
+#pg1s = np.insert(pg1s, 0, 0.)
 
 
 
