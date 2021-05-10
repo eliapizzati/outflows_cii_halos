@@ -32,15 +32,15 @@ ph1 = float(input("Ph1 value [default to zero] : ") or "0.")
 pg1 = float(input("Pg1 value [default to zero] : ") or "0.")
 pc6 = float(input("Pc6 value [default to zero] : ") or "0.")
 
-r1 = plw
-r2 = (ph1/plw)**0.353 * (pg1/plw)**0.923 * (pc6/plw)**0.263
-r3 = (ph1/plw)**-0.103 * (pg1/plw)**-0.375 * (pc6/plw)**0.976
+#r1 = plw
+#r2 = (ph1/plw)**0.353 * (pg1/plw)**0.923 * (pc6/plw)**0.263
+#r3 = (ph1/plw)**-0.103 * (pg1/plw)**-0.375 * (pc6/plw)**0.976
 
-print("#############################")
-print("r1 =", r1)     
-print("r2 =", r2)
-print("r3 =", r3)      
-print("#############################")
+#print("#############################")
+#print("r1 =", r1)     
+#print("r2 =", r2)
+#print("r3 =", r3)      
+#print("#############################")
 
 values = np.asarray([n, plw, ph1, pg1, pc6])
 
