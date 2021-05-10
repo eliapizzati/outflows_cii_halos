@@ -241,6 +241,13 @@ def plot_quantity(quantity, quantity_array, values):
     fig.tight_layout()
     
     if save_plot:
+        folder = 'plot_cooling'
+        
+        if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
+            os.mkdir(os.path.join(mydir.plot_dir, folder))
+
+        path = os.path.join(mydir.plot_dir, folder,  name)
+
         plt.savefig(name)
     
 
