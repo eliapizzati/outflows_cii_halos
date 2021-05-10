@@ -26,7 +26,7 @@ plotting = True
 
 quantity = input("which quantity (n,plw,ph1,pg1,pc6)?")   
 
-n = float(input("n value [default to zero] : ") or "1.")
+n = float(input("n value [default to unity] : ") or "1.")
 plw = float(input("Plw value [default to zero] : ") or "0.")
 ph1 = float(input("Ph1 value [default to zero] : ") or "0.")
 pg1 = float(input("Pg1 value [default to zero] : ") or "0.")
@@ -194,6 +194,18 @@ def plot_quantity(quantity, quantity_array, values):
     
     norm = colors.LogNorm(vmin=v_min/10**0.5, vmax=v_max*10**0.5)
        
+    
+    if load_from_file == True:        
+        T_vec, cooling_vec = from_file("cooling", n, plw,ph1,pg1, pc6)
+        T_vec, heating_vec = from_file("heating", n, plw,ph1,pg1, pc6)
+    else:
+        T_vec, cooling_vec = cooling_vectorized(temperatures,n, plw,ph1,pg1,pc6)
+        T_vec, heating_vec = heating_vectorized(temperatures,n, plw,ph1,pg1,pc6)
+           
+    ax.plot(T_vec, cooling_vec,  color = "gray")
+    ax.plot(T_vec, heating_vec,   color = "gray",\
+                linestyle=':')
+
     for q in quantity_array:
 
         if quantity == "n":
