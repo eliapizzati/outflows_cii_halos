@@ -293,27 +293,22 @@ if plotting:
         
     if quantity == "n":
         quantity_array = densities
-        other_values = np.delete(values, 0)
         
     elif quantity == "plw":
         quantity_array = plws
-        other_values = np.delete(values, 1)
 
     elif quantity == "ph1":
         quantity_array = ph1s
-        other_values = np.delete(values, 2)
 
     elif quantity == "pg1":
         quantity_array = pg1s
-        other_values = np.delete(values, 3)
 
     elif quantity == "pc6":
         quantity_array = pc6s
-        other_values = np.delete(values, 4)
 
 
     
-    plot_quantity(quantity, quantity_array, values = other_values)
+    plot_quantity(quantity, quantity_array, values = values)
     
 
     
