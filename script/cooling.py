@@ -111,7 +111,7 @@ def cooling_vectorized(T_vec, n, Plw, Ph1, Pg1, Pc6):
         cooling_values = [cooling(T, n, Plw, Ph1, Pg1, Pc6) for T in T_vec]
         
         print("INFO: loading cooling function with values: n={:.1e}, plw={:.1e}, ph1={:.1e}, pg1={:.1e}, pc6={:.1e}".\
-              format(n, plw, ph1, pg1, pc6 ))
+              format(n, Plw, Ph1, Pg1, Pc6 ))
 
         return T_vec, np.asarray(cooling_values)
     
@@ -120,7 +120,7 @@ def heating_vectorized(T_vec, n, Plw, Ph1, Pg1, Pc6):
         heating_values = [heating(T, n, Plw, Ph1, Pg1, Pc6) for T in T_vec]
         
         print("INFO: loading heating function with values: n={:.1e}, plw={:.1e}, ph1={:.1e}, pg1={:.1e}, pc6={:.1e}".\
-              format(n, plw, ph1, pg1, pc6 ))
+              format(n, Plw, Ph1, Pg1, Pc6 ))
         
         return T_vec, np.asarray(heating_values)
     
