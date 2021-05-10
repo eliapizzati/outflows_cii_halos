@@ -249,6 +249,9 @@ def plot_quantity(quantity, quantity_array, values):
         path = os.path.join(mydir.plot_dir, folder,  name)
 
         plt.savefig(path)
+        
+        print("INFO: saving plot to {}".format(path))
+
     
 
     
