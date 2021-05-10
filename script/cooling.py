@@ -24,7 +24,15 @@ save_plot = True
 load_from_file = False
 plotting = True
 
-values = np.asarray([1e1, 1e-13, 1e-13, 1e-13, 0.])
+quantity = input("which quantity (n,plw,ph1,pg1,pc6)?")   
+
+n = float(input("n value [default to zero] : ") or "1.")
+plw = float(input("Plw value [default to zero] : ") or "0.")
+ph1 = float(input("Ph1 value [default to zero] : ") or "0.")
+pg1 = float(input("Pg1 value [default to zero] : ") or "0.")
+pc6 = float(input("Pc6 value [default to zero] : ") or "0.")
+
+values = np.asarray([n, plw, ph1, pg1, pc6])
 
 temperatures = np.logspace(3,8,1000)
 
@@ -291,7 +299,6 @@ if plotting:
         gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))            
             
     
-    quantity = input("which quantity (n,plw,ph1,pg1,pc6)?")   
     
         
     if quantity == "n":
