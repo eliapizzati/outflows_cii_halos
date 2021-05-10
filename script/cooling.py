@@ -92,13 +92,13 @@ def cooling_vectorized(T_vec, n, Plw, Ph1, Pg1, Pc6):
         
         cooling_values = [cooling(T, n, Plw, Ph1, Pg1, Pc6) for T in T_vec]
         
-        return np.asarray(cooling_values)
+        return T_vec, np.asarray(cooling_values)
     
 def heating_vectorized(T_vec, n, Plw, Ph1, Pg1, Pc6): 
         
         heating_values = [heating(T, n, Plw, Ph1, Pg1, Pc6) for T in T_vec]
         
-        return np.asarray(heating_values)
+        return T_vec, np.asarray(heating_values)
     
 
     
@@ -248,7 +248,7 @@ def plot_quantity(quantity, quantity_array, values):
 
         path = os.path.join(mydir.plot_dir, folder,  name)
 
-        plt.savefig(name)
+        plt.savefig(path)
     
 
     
@@ -266,8 +266,8 @@ if save_to_file == True:
     
     for n, plw, ph1, pg1, pc6 in itertools.product(densities, plws, ph1s, pg1s, pc6s):
         
-        cooling_values = cooling_vectorized(temperatures, n, plw, ph1, pg1, pc6)
-        heating_values = heating_vectorized(temperatures, n, plw, ph1, pg1, pc6)
+        temperatures, cooling_values = cooling_vectorized(temperatures, n, plw, ph1, pg1, pc6)
+        temperatures, heating_values = heating_vectorized(temperatures, n, plw, ph1, pg1, pc6)
         
         to_file("cooling",cooling_values, temperatures, n, plw, ph1, pg1, pc6)
         to_file("heating",heating_values, temperatures, n, plw, ph1, pg1, pc6)
