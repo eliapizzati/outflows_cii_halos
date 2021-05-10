@@ -101,7 +101,7 @@ gamma = 5./3
 mus = 0.61 # mean molecular weight of the sun
 knorm = kk/(mus*mp) 
 A_C = 2.69e-4 # carbon percentage for Z=1
-A_H = 0.7 # hydrogen percentage for Z=1
+A_H = 0.76 # hydrogen percentage for Z=1
 #
 # photoionization rates (and UV intensity) at 1 kpc (from gal flux)
 Gamma_H_1000 = 5.48031935502901e-09 # s^-1
