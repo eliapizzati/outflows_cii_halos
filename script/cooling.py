@@ -19,9 +19,9 @@ import mydir
 import plot_config
 
 
-save_to_file = True
-load_from_file = False
-plotting = False
+save_to_file = False
+load_from_file = True
+plotting = True
 
 temperatures = np.logspace(3,8,1000)
 
@@ -302,9 +302,9 @@ if plotting:
     
     cmap_rend_col = cm.get_cmap('plasma')
     
-    n = densities[0]
+    n = densities[3]
     plw = plws[2]
-    pg1 = pg1s[0]
+    pg1 = pg1s[2]
     
     ph1_min = min(ph1s[1::])
     ph1_max = max(ph1s[1::])

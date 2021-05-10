@@ -40,11 +40,11 @@ def UVB_rates(redshift, quantity):
     
     threshold = nu_thr**(-1) # in cm
     
-    alfa_T = np.asarray([6.3,7.83,12.2,4.60])*1e-18 # in cm^2
+    alfa_T = np.asarray([6.3,7.83,12.2,4.60,1.0])*1e-18 # in cm^2
     
-    a = [2.99,2.05,2.0,3.0]
+    a = [2.99,2.05,2.0,3.0,1.0]
     
-    b = [1.34,1.66,3.32,1.95]
+    b = [1.34,1.66,3.32,1.95,1.0]
     
     
     #UV BACKGROUND
@@ -120,7 +120,7 @@ def UVB_rates(redshift, quantity):
             photoionization_rates_UVB.append(N_tot)  
         
         
-        Gamma_H_UVB, Gamma_He_UVB, Gamma_CI_UVB, Gamma_CII_UVB = photoionization_rates_UVB
+        Gamma_H_UVB, Gamma_He_UVB, Gamma_CI_UVB, Gamma_CII_UVB, Gamma_CVI_UVB = photoionization_rates_UVB
         
         if quantity == "H rate":
             return Gamma_H_UVB
