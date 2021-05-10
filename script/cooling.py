@@ -32,6 +32,16 @@ ph1 = float(input("Ph1 value [default to zero] : ") or "0.")
 pg1 = float(input("Pg1 value [default to zero] : ") or "0.")
 pc6 = float(input("Pc6 value [default to zero] : ") or "0.")
 
+r1 = plw
+r2 = (ph1/plw)**0.353 * (pg1/plw)**0.923 * (pc6/plw)**0.263
+r3 = (ph1/plw)**-0.103 * (pg1/plw)**-0.375 * (pc6/plw)**0.976
+
+print("#############################")
+print("r1 =", r1)     
+print("r2 =", r2)
+print("r3 =", r3)      
+print("#############################")
+
 values = np.asarray([n, plw, ph1, pg1, pc6])
 
 temperatures = np.logspace(3,8,1000)
@@ -100,11 +110,17 @@ def cooling_vectorized(T_vec, n, Plw, Ph1, Pg1, Pc6):
         
         cooling_values = [cooling(T, n, Plw, Ph1, Pg1, Pc6) for T in T_vec]
         
+        print("INFO: loading cooling function with values: n={:.1e}, plw={:.1e}, ph1={:.1e}, pg1={:.1e}, pc6={:.1e}".\
+              format(n, plw, ph1, pg1, pc6 ))
+
         return T_vec, np.asarray(cooling_values)
     
 def heating_vectorized(T_vec, n, Plw, Ph1, Pg1, Pc6): 
         
         heating_values = [heating(T, n, Plw, Ph1, Pg1, Pc6) for T in T_vec]
+        
+        print("INFO: loading heating function with values: n={:.1e}, plw={:.1e}, ph1={:.1e}, pg1={:.1e}, pc6={:.1e}".\
+              format(n, plw, ph1, pg1, pc6 ))
         
         return T_vec, np.asarray(heating_values)
     
