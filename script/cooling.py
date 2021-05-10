@@ -223,7 +223,7 @@ def plot_quantity(quantity, quantity_array, values):
                 linestyle=':')
 
     for q in quantity_array:
-
+        print(q)
         if quantity == "n":
             n = q
         elif quantity == "plw":
