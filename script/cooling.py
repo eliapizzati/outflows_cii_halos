@@ -38,11 +38,11 @@ temperatures = np.logspace(3,8,1000)
 
 densities = np.logspace(-5,3, 9)
 
-plws = np.logspace(-14,-7, 8)
-ph1s = np.logspace(-14,-7, 8)
-pg1s = np.logspace(-14,-7, 8)
+plws = np.logspace(-15,-5, 11)
+ph1s = np.logspace(-15,-5, 11)
+pg1s = np.logspace(-15,-5, 11)
 
-pc6s = np.array([0.])
+pc6s = np.logspace(-25,-15, 11)
 
 #plws = np.insert(plws, 0, 0.)
 #ph1s = np.insert(ph1s, 0, 0.)
@@ -238,7 +238,7 @@ def plot_quantity(quantity, quantity_array, values):
     
     ax.set_xscale("log")
     ax.set_yscale("log")
-    ax.set_ylim((1e-25,1e-21))
+    ax.set_ylim((1e-27,1e-21))
         
     plt.subplots_adjust(left = 0.15,  # the left side of the subplots of the figure
         right = 0.98,   # the right side of the subplots of the figure
