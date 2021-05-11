@@ -206,11 +206,7 @@ class sol_profiles():
     
         
     def plot(self, ax=None, savefig=False, size=14, label = None, extension = ".png", **kwargs):
-        
-        name_core = get_name_core(self.params)
-            
-        folder = get_folder(self.params, self.name_prefix)
-        
+                
         if ax is None:
             
             fig, axs = plt.subplots(1, 3, sharex=True, figsize=(1.5*12.27,1.5*5.))
@@ -242,7 +238,10 @@ class sol_profiles():
                 fig.legend(loc="lower center")
             
             if savefig:
-                
+                name_core = get_name_core(self.params)
+            
+                folder = get_folder(self.params, self.name_prefix)
+<
                 plt.savefig(os.path.join(mydir.plot_dir, folder,self.name_prefix + name_core + extension))
                 
                 
@@ -307,9 +306,6 @@ class ion_profiles():
             
     def plot(self, ax=None, savefig=False, size=14, label = None, extension = ".png", **kwargs):
                 
-        name_core = get_name_core(self.params)
-        
-        folder = get_folder(self.params, self.name_prefix)
         
         if ax is None:
             
@@ -338,6 +334,9 @@ class ion_profiles():
                 fig.legend(loc="lower center")
             
             if savefig:
+                name_core = get_name_core(self.params)
+        
+                folder = get_folder(self.params, self.name_prefix)
                 
                 plt.savefig(os.path.join(mydir.plot_dir, folder,self.name_prefix + name_core + extension))
                 
@@ -414,9 +413,6 @@ class lum_profile():
     
     def plot(self, ax=None, data = None, savefig=False, size=14, label = None, extension = ".png", **kwargs):
         
-        name_core = get_name_core(self.params)
-        
-        folder = get_folder(self.params, self.name_prefix)
         
         if ax is None:
             
@@ -451,6 +447,10 @@ class lum_profile():
                 fig.legend(loc="lower center")
             
             if savefig:
+                
+                name_core = get_name_core(self.params)
+        
+                folder = get_folder(self.params, self.name_prefix)
                 
                 plt.savefig(os.path.join(mydir.plot_dir, folder,self.name_prefix + name_core + extension))
                 
