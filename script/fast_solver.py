@@ -90,7 +90,7 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     M_r = M_vir_pure/A_NFW * (np.log(1.+r/r_s)+r_s/(r_s+r) - 1)
 
     v_c = np.sqrt(gg*M_r*ms/(r*1e3*pc)) / 1e5 #in km/s
-    
+    print(v_c)
     v_e = v_c * np.sqrt(2)  # in km/s
     
 
@@ -107,7 +107,7 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     return output
 
 
-def stopping_condition(t, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta): 
+def stopping_condition(t, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s): 
     return y[0] - 50. # in km/s
 
 stopping_condition.terminal = True
