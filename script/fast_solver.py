@@ -297,8 +297,8 @@ def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45"):
 params = dict([("DM_model", "NFW"),
                    ("beta", 3.0), 
                    ("SFR", 50.),
-                   ("f_esc_ion", 0.0), 
-                   ("f_esc_FUV", 0.0), 
+                   ("f_esc_ion", 0.2), 
+                   ("f_esc_FUV", 0.2), 
                    ("M_vir", 5e11),
                    ("redshift", 5.0),
                    ("Zeta", 1.0),
@@ -321,7 +321,7 @@ fig_sol, axs_sol = pltc.plot_configurator(plot_type="sol")
 
 
 integrator_list = ["RK45", "BDF", "LSODA"]
-integrator_list = ["BDF"]
+#integrator_list = ["BDF"]
 #integrator_list = ["LSODA"]
 
 show_profile    = True
