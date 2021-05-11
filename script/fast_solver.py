@@ -75,9 +75,9 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     knorm_kmsK = kk/(mus*mp) / 1e10 # in (km/s)**2 / K 
     print("##############################")
 
-    c_S2 = gamma*knorm_kmsK * T # in (km/s)^2
+    c_S2 = gamma*knorm_kmsK * abs(T) # in (km/s)^2
     print("cs", np.sqrt(c_S2))
-    c_T2 = knorm_kmsK * T    # in (km/s)^2
+    c_T2 = knorm_kmsK * abs(T)    # in (km/s)^2
     
     # cooling part
         
@@ -89,7 +89,7 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     
     lamda = gc.frtgetcf_cool(T, n, Zeta, Plw, Ph1, Pg1, Pc6) - gc.frtgetcf_heat(T, n, Zeta, Plw, Ph1, Pg1, Pc6)
 
-    q = n*lamda / (mus * mp) / 1e10 # in (km/s)^2/s
+    q = n * lamda / (mus * mp) / 1e10 # in (km/s)^2/s
     print("q", q)
     
     M_r = M_vir_pure/A_NFW * (np.log(1.+r/r_s)+r_s/(r_s+r) - 1)
@@ -204,7 +204,7 @@ def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45"):
     A_NFW = np.log(1+c) - c/(1.+c)
     
     
-    r_s = get_virial_radius(M_vir_pure, redshift)/ 1e3 / nc.pc # in kpc
+    r_s = get_virial_radius(M_vir_pure, redshift) / c / 1e3 / nc.pc # in kpc
 
     
     # UVB part
