@@ -312,6 +312,11 @@ integrator_list = ["RK45","BDF","LSODA"]
 
 show_profile    = True
 
+folder = "plot_fast_solver"
+
+if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
+    os.mkdir(os.path.join(mydir.plot_dir, folder))
+
 for integrator in integrator_list:
 
     print(integrator)
@@ -326,7 +331,7 @@ for integrator in integrator_list:
 
 if show_profile:
   plt.legend(frameon=False)
-  plt.savefig(os.path.join(mydir.plot_dir, "plot_fast_solver", "profiles.png"))
+  plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles.png"))
 
 if profiles.check_nans() == True:
     string_nans = "Integration error: presence of nans"
