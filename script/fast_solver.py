@@ -31,7 +31,7 @@ gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
 # SYSTEM OF EQUATIONS
 
-def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta):
+def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s):
     """
     differential system for the Euler equations
     
@@ -87,28 +87,10 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
 
     q = n*lamda / (mus * mp) / 1e10 # in (km/s)^2/s
     
-    # gravity part
-        
-    b = -0.097 + 0.024 * redshift
-    a = 0.537 + (1.025 - 0.537) * np.exp(-0.718*redshift**1.08)
-    
-    logc = a + b * np.log10(M_vir_pure*cosmo_h/1e12)
-    
-    c = 10**logc
-
-    A_NFW = np.log(1+c) - c/(1.+c)
-    
-    hubble2 =  2.1962761244736533e-18**2 * (0.30712*(1+redshift)**3 + 5.384308416949404e-05*(1+redshift)**4 +  0.6913912010962934)
-    
-    critical_density = 3*hubble2 / (8*np.pi*gg) # in g/cm^3
-    print("critical density", critical_density)
-    r_s = np.cbrt(3*M_vir_pure*ms/(critical_density * 4*np.pi*200)) / c / 1e3 / pc # in kpc
-    print("r_s", r_s)
     M_r = M_vir_pure/A_NFW * (np.log(1.+r/r_s)+r_s/(r_s+r) - 1)
-    print("M_r", M_r)
+
     v_c = np.sqrt(gg*M_r*ms/(r*1e3*pc)) / 1e5 #in km/s
     
-    print("v_c", v_c)                
     v_e = v_c * np.sqrt(2)  # in km/s
     
 
@@ -203,13 +185,34 @@ def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45"):
             
             M_vir_pure = get_virial_mass_from_vc(v_c_pure*1e5, redshift)
 
+
+    # getting some preliminar values 
     
-    # getting the BC
+    # gravity part
+        
+    b = -0.097 + 0.024 * redshift
+    a = 0.537 + (1.025 - 0.537) * np.exp(-0.718*redshift**1.08)
+    
+    logc = a + b * np.log10(M_vir_pure*cosmo_h/1e12)
+    
+    c = 10**logc
+
+    A_NFW = np.log(1+c) - c/(1.+c)
+    
+    hubble2 =  2.1962761244736533e-18**2 * (0.30712*(1+redshift)**3 + 5.384308416949404e-05*(1+redshift)**4 +  0.6913912010962934)
+    
+    critical_density = 3*hubble2 / (8*np.pi*gg) # in g/cm^3
+    
+    r_s = np.cbrt(3*M_vir_pure*nc.ms/(critical_density * 4*np.pi*200)) / c / 1e3 / nc.pc # in kpc
+
+    
+    # UVB part
     
     Plw = UVB_rates(redshift, quantity="LW rate")
     Ph1 = UVB_rates(redshift, quantity="H rate")
     Pg1 = UVB_rates(redshift, quantity="He rate")  
     
+    # getting the BC
     
     SFR = SFR_pure/nc.year #1/s
     
@@ -250,7 +253,7 @@ def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45"):
       t_ivp = time.perf_counter()
 
     sol = si.solve_ivp(diff_system_fast, r_bound, y0, t_eval=r_eval,\
-                       args=( SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta),\
+                       args=( SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s),\
                        method = integrator, events=stopping_condition) #,rtol=1.0e-3
     
     if print_time:
