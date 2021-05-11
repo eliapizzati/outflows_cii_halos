@@ -73,9 +73,10 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     T = y[2] # temperature in K
         
     knorm_kmsK = kk/(mus*mp) / 1e10 # in (km/s)**2 / K 
+    print("##############################")
 
     c_S2 = gamma*knorm_kmsK * T # in (km/s)^2
-    print(np.sqrt(c_S2))
+    print("cs", np.sqrt(c_S2))
     c_T2 = knorm_kmsK * T    # in (km/s)^2
     
     # cooling part
@@ -89,18 +90,21 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     lamda = gc.frtgetcf_cool(T, n, Zeta, Plw, Ph1, Pg1, Pc6) - gc.frtgetcf_heat(T, n, Zeta, Plw, Ph1, Pg1, Pc6)
 
     q = n*lamda / (mus * mp) / 1e10 # in (km/s)^2/s
-    print(q)
+    print("q", q)
     
     M_r = M_vir_pure/A_NFW * (np.log(1.+r/r_s)+r_s/(r_s+r) - 1)
 
     v_c = np.sqrt(gg*M_r*ms/(r*1e3*pc)) / 1e5 #in km/s
-    print(v_c)
+    print("v_c", v_c)
     v_e = v_c * np.sqrt(2)  # in km/s
     
 
     # final system
-    print(v)
-    
+    print("v", v)
+    print("T", T)
+    print("n", n)
+    print("##############################")
+
     derivative_a = (2*v/r)*(c_S2 - v_e**2/4) / (v**2-c_S2) + (gamma-1.) * q * pc / (v**2-c_S2)*1e2
     
     derivative_b = (2*n/r)*(v_e**2/4 - v**2) / (v**2-c_S2) - n / (1e2*v/pc) * (gamma-1.) * q / (v**2-c_S2)
