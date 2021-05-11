@@ -97,7 +97,7 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     v_c = np.sqrt(gg*M_r*ms/(r*1e3*pc)) / 1e5 #in km/s
     print("v_c", v_c)
     v_e = v_c * np.sqrt(2)  # in km/s
-    
+    print("slow", )
 
     # final system
     print("v", v)
@@ -105,7 +105,7 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     print("n", n)
     print("##############################")
 
-    derivative_a = (2*v/r)*(c_S2 - v_e**2/4) / (v**2-c_S2) + (gamma-1.) * q * pc / (v**2-c_S2)*1e2
+    derivative_a = (2*v/r)*(c_S2 - v_e**2/4) / (v**2-c_S2) + (gamma-1.) * q / ((v**2-c_S2)*1e2/pc)
     
     derivative_b = (2*n/r)*(v_e**2/4 - v**2) / (v**2-c_S2) - n / (1e2*v/pc) * (gamma-1.) * q / (v**2-c_S2)
 
