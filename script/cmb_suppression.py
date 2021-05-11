@@ -393,7 +393,7 @@ if __name__ == "__main__":
     ax.set_title("Eta dependence on n, I_UV; T=1000, x_e=0.5, z=5")    
     
     plt.subplots_adjust(left = 0.15,  # the left side of the subplots of the figure
-        right = 0.98,   # the right side of the subplots of the figure
+        right = 0.7,   # the right side of the subplots of the figure
         bottom = 0.15,  # the bottom of the subplots of the figure
         top = 0.9,     # the top of the subplots of the figure
         wspace = 0.1,  # the amount of width reserved for space between subplots,
@@ -440,7 +440,7 @@ if __name__ == "__main__":
     habing_g0 = 4*np.pi*I_UVs*(13.6-6.)*nc.ev/nc.hh/nc.cc/5.29e-14
     
     ax2.set_yticks(np.log10(habing_g0[::100]))
-    ax2.set_ylabel("G_0")
+    ax2.set_ylabel("log G_0")
 
     fig.tight_layout()
     
