@@ -101,14 +101,14 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     hubble2 =  2.1962761244736533e-18**2 * (0.30712*(1+redshift)**3 + 5.384308416949404e-05*(1+redshift)**4 +  0.6913912010962934)
     
     critical_density = 3*hubble2 / (8*np.pi*gg) # in g/cm^3
-    
+    print("critical density", critical_density)
     r_s = np.cbrt(3*M_vir_pure*ms/(critical_density * 4*np.pi*200)) / c / 1e3 / pc # in kpc
-    
+    print("r_s", r_s)
     M_r = M_vir_pure/A_NFW * (np.log(1.+r/r_s)+r_s/(r_s+r) - 1)
-
+    print("M_r", M_r)
     v_c = np.sqrt(gg*M_r*ms/(r*1e3*pc))
     
-    print(v_c)                
+    print("v_c", v_c)                
     v_e = v_c * np.sqrt(2) / 1e5 # in km/s
     
 
