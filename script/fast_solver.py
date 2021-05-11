@@ -75,6 +75,7 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     knorm_kmsK = kk/(mus*mp) / 1e10 # in (km/s)**2 / K 
 
     c_S2 = gamma*knorm_kmsK * T # in (km/s)^2
+    print(np.sqrt(c_S2))
     c_T2 = knorm_kmsK * T    # in (km/s)^2
     
     # cooling part
@@ -88,6 +89,7 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     lamda = gc.frtgetcf_cool(T, n, Zeta, Plw, Ph1, Pg1, Pc6) - gc.frtgetcf_heat(T, n, Zeta, Plw, Ph1, Pg1, Pc6)
 
     q = n*lamda / (mus * mp) / 1e10 # in (km/s)^2/s
+    print(q)
     
     M_r = M_vir_pure/A_NFW * (np.log(1.+r/r_s)+r_s/(r_s+r) - 1)
 
@@ -97,12 +99,13 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     
 
     # final system
+    print(v)
     
-    derivative_a = (2*v/r)*(c_S2 - v_e**2/4) / (v**2-c_S2) + (gamma-1) * q * pc / (v**2-c_S2)*1e2
+    derivative_a = (2*v/r)*(c_S2 - v_e**2/4) / (v**2-c_S2) + (gamma-1.) * q * pc / (v**2-c_S2)*1e2
     
-    derivative_b = (2*n/r)*(v_e**2/4 - v**2) / (v**2-c_S2) - n / (1e2*v/pc) * (gamma-1) * q / (v**2-c_S2)
+    derivative_b = (2*n/r)*(v_e**2/4 - v**2) / (v**2-c_S2) - n / (1e2*v/pc) * (gamma-1.) * q / (v**2-c_S2)
 
-    derivative_c = (gamma-1) * (2*T/r) * (v_e**2/4-v**2) / (v**2-c_S2) - (gamma-1)*q / (knorm_kmsK*(1e2*v/pc)) * (v**2-c_T2) / (v**2-c_S2)        
+    derivative_c = (gamma-1.) * (2*T/r) * (v_e**2/4-v**2) / (v**2-c_S2) - (gamma-1.)*q / (knorm_kmsK*(1e2*v/pc)) * (v**2-c_T2) / (v**2-c_S2)        
     
     output = np.asarray([derivative_a,derivative_b,derivative_c])
         
@@ -334,24 +337,20 @@ for integrator in integrator_list:
     print("total profile time new (s)=", time_profile)
     
     
-    time_profile = time.perf_counter()
-    profiles_old = get_profiles(params, resol=1000,print_time=True,integrator=integrator)
-    time_profile = (time.perf_counter() - time_profile)
-
-    print("total profile time old (s)=", time_profile)
+#    time_profile = time.perf_counter()
+#    profiles_old = get_profiles(params, resol=1000,print_time=True,integrator=integrator)
+#    time_profile = (time.perf_counter() - time_profile)
+#
+#    print("total profile time old (s)=", time_profile)
 
 if show_profile:
     profiles_new.plot(ax=axs_sol, label=integrator)
-    profiles_old.plot(ax=axs_sol)
+#    profiles_old.plot(ax=axs_sol)
 
 if show_profile:
     fig_sol.legend(loc="lower center", ncol=8, fontsize="small")
     plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles.png"))
 
-if profiles_new.check_nans() == True:
-    string_nans = "Integration error: presence of nans"
-else:
-    string_nans = "Integration successful"
     
     
 
