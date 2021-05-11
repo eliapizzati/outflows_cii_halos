@@ -321,7 +321,7 @@ fig_sol, axs_sol = pltc.plot_configurator(plot_type="sol")
 
 
 integrator_list = ["RK45", "BDF", "LSODA"]
-#integrator_list = ["BDF","LSODA"]
+integrator_list = ["BDF"]
 #integrator_list = ["LSODA"]
 
 show_profile    = True
@@ -353,7 +353,7 @@ for integrator in integrator_list:
 
 if show_profile:
     fig_sol.legend(loc="lower center", ncol=8, fontsize="small")
-    plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles_2.png"))
+    plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles_3.png"))
 
     
     
