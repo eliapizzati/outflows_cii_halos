@@ -320,7 +320,7 @@ import matplotlib.pyplot as plt
 fig_sol, axs_sol = pltc.plot_configurator(plot_type="sol")    
 
 
-integrator_list = ["RK45", "BDF", "LSODA"]
+integrator_list = ["RK45", "BDF", "LSODA", "RK23"]
 #integrator_list = ["BDF"]
 #integrator_list = ["LSODA"]
 
