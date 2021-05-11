@@ -306,7 +306,7 @@ print("##################################")
 
 import matplotlib.pyplot as plt
 
-integrator_list = ["RK45","BDF","LSODA"]
+integrator_list = ["RK45"]
 #integrator_list = ["BDF","LSODA"]
 #integrator_list = ["LSODA"]
 
