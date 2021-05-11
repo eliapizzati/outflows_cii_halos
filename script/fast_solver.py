@@ -341,15 +341,15 @@ for integrator in integrator_list:
     print("total profile time new (s)=", time_profile)
     
     
-#    time_profile = time.perf_counter()
-#    profiles_old = get_profiles(params, resol=1000,print_time=True,integrator=integrator)
-#    time_profile = (time.perf_counter() - time_profile)
-#
-#    print("total profile time old (s)=", time_profile)
+    time_profile = time.perf_counter()
+    profiles_old = get_profiles(params, resol=1000,print_time=True,integrator=integrator)
+    time_profile = (time.perf_counter() - time_profile)
+
+    print("total profile time old (s)=", time_profile)
 
 if show_profile:
     profiles_new.plot(ax=axs_sol, label=integrator)
-#    profiles_old.plot(ax=axs_sol)
+    profiles_old.plot(ax=axs_sol)
 
 if show_profile:
     fig_sol.legend(loc="lower center", ncol=8, fontsize="small")
