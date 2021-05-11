@@ -72,8 +72,8 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
         
     knorm_kmsK = kk/(mus*mp) / 1e10 # in (km/s)**2 / K 
 
-    c_S2 = gamma*knorm * T # in (km/s)^2
-    c_T2 = knorm * T    # in (km/s)^2
+    c_S2 = gamma*knorm_kmsK * T # in (km/s)^2
+    c_T2 = knorm_kmsK * T    # in (km/s)^2
     
     # cooling part
         
@@ -104,7 +104,7 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     
     r_s = np.cbrt(3*M_vir_pure*ms/(critical_density * 4*np.pi*200)) / c / 1e3 / pc # in kpc
     
-    M = M_vir_pure/A_NFW * (np.log(1.+r/r_s)+r_s/(r_s+r) - 1)
+    M_r = M_vir_pure/A_NFW * (np.log(1.+r/r_s)+r_s/(r_s+r) - 1)
 
     v_c = np.sqrt(gg*M_r*ms/(r*1e3*pc))
                     
