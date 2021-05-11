@@ -267,6 +267,10 @@ def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45"):
     n_cm3 = sol.y[1] # in cm-3
     T_K = sol.y[2] # in K
     
+    print(sol.t_events)
+    
+    print(sol.y_events)
+    
     # getting back to the old dimensions
     
     r = r_kpc * 1e3 * nc.pc # in cm
@@ -291,7 +295,7 @@ params = dict([("DM_model", "NFW"),
                    ("SFR", 50.),
                    ("f_esc_ion", 0.0), 
                    ("f_esc_FUV", 0.0), 
-                   ("v_c", 250.),
+                   ("M_vir", 5e11),
                    ("redshift", 5.0),
                    ("Zeta", 1.0),
                    ("alfa", 1.0),
@@ -339,6 +343,7 @@ if profiles.check_nans() == True:
     string_nans = "Integration error: presence of nans"
 else:
     string_nans = "Integration successful"
+    
     
 
 
