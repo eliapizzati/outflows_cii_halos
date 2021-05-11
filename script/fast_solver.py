@@ -106,10 +106,10 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     print("r_s", r_s)
     M_r = M_vir_pure/A_NFW * (np.log(1.+r/r_s)+r_s/(r_s+r) - 1)
     print("M_r", M_r)
-    v_c = np.sqrt(gg*M_r*ms/(r*1e3*pc))
+    v_c = np.sqrt(gg*M_r*ms/(r*1e3*pc)) / 1e5 #in km/s
     
     print("v_c", v_c)                
-    v_e = v_c * np.sqrt(2) / 1e5 # in km/s
+    v_e = v_c * np.sqrt(2)  # in km/s
     
 
     # final system
