@@ -241,7 +241,7 @@ class sol_profiles():
                 name_core = get_name_core(self.params)
             
                 folder = get_folder(self.params, self.name_prefix)
-<
+
                 plt.savefig(os.path.join(mydir.plot_dir, folder,self.name_prefix + name_core + extension))
                 
                 
