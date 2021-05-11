@@ -353,7 +353,7 @@ for integrator in integrator_list:
 
 if show_profile:
     fig_sol.legend(loc="lower center", ncol=8, fontsize="small")
-    plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles.png"))
+    plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles_2.png"))
 
     
     
