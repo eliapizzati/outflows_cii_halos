@@ -247,7 +247,7 @@ def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45"):
     if print_time:
       t_ivp = time.perf_counter()
 
-    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval,\
+    sol = si.solve_ivp(diff_system_fast, r_bound, y0, t_eval=r_eval,\
                        args=( SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta),\
                        method = integrator, events=stopping_condition) #,rtol=1.0e-3
     
@@ -316,7 +316,7 @@ for integrator in integrator_list:
 
     print(integrator)
     time_profile = time.perf_counter()
-    profiles = get_profiles(params, resol=1000,print_time=True,integrator=integrator)
+    profiles = get_profiles_fast(params, resol=1000,print_time=True,integrator=integrator)
     time_profile = (time.perf_counter() - time_profile)
 
     print("total profile time (s)=", time_profile)
