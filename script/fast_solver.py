@@ -17,7 +17,8 @@ import numpy as np
 
 from model_classes import sol_profiles
 from radiation_fields import UVB_rates
-from my_utils import get_virial_mass_from_vc
+from my_utils import get_virial_mass_from_vc, get_concentration, get_virial_radius
+
 
 # FUNCTIONS
         
@@ -58,7 +59,6 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     pc = 3.08572e18   # Parsec [cm]
     ms = 1.99e33      # Solar mass [g]
     gg = 6.672e-8   # Gravitational constant
-    cosmo_h = 0.6777
 
     Gamma_H_1000 = 5.48031935502901e-09 # s^-1
     Gamma_He_1000 = 1.7687762344020628e-09 # s^-1
@@ -190,20 +190,12 @@ def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45"):
     
     # gravity part
         
-    b = -0.097 + 0.024 * redshift
-    a = 0.537 + (1.025 - 0.537) * np.exp(-0.718*redshift**1.08)
-    
-    logc = a + b * np.log10(M_vir_pure*cosmo_h/1e12)
-    
-    c = 10**logc
+    c = get_concentration(M_vir_pure, redshift)
 
     A_NFW = np.log(1+c) - c/(1.+c)
     
-    hubble2 =  2.1962761244736533e-18**2 * (0.30712*(1+redshift)**3 + 5.384308416949404e-05*(1+redshift)**4 +  0.6913912010962934)
     
-    critical_density = 3*hubble2 / (8*np.pi*gg) # in g/cm^3
-    
-    r_s = np.cbrt(3*M_vir_pure*nc.ms/(critical_density * 4*np.pi*200)) / c / 1e3 / nc.pc # in kpc
+    r_s = get_virial_radius(M_vir_pure, redshift)/ 1e3 / nc.pc # in kpc
 
     
     # UVB part
