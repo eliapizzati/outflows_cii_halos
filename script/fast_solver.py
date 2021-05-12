@@ -332,7 +332,7 @@ if __name__=="__main__":
     
         print("total profile time old (s)=", time_profile)
         
-    if show_profile:
+        if show_profile:
             profiles_new.plot(ax=axs_sol, label=integrator)
             profiles_old.plot(ax=axs_sol)
     
