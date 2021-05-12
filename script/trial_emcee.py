@@ -57,7 +57,7 @@ T_UV = 3.61e4
     
 rmax = 30
 h_resol = 500
-r_resol = 100
+r_resol = 500
     
 
 other_params = dict([("rmax", rmax),
