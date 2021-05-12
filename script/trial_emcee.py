@@ -168,7 +168,6 @@ def get_emission_fast(theta, data, other_params):
         
     # getting back to the old dimensions
     
-    r = r_kpc * 1e3 * nc.pc # in cm
     v = v_kms * 1e5    # in cm/s
     n = n_cm3 # in cm-3
     T = T_K # in K
@@ -199,7 +198,7 @@ def get_emission_fast(theta, data, other_params):
     #kappa_H = 0.
     kappa_CI = 6.85e-8 * (0.193 + 11.26/T_eV)**(-1) * (11.26/T_eV)**0.25 * np.exp(-11.26/T_eV) 
     kappa_CII = 1.86e-8 * (1. + 24.4/T_eV**0.5)*(0.286 + 24.4/T_eV)**(-1) * (24.4/T_eV)**0.24 * np.exp(-24.4/T_eV) 
-    
+        
     ratio =  gamma_H / nc.A_H / n
     
     x_e = ( np.sqrt( (ratio-kappa_H)**2 + 4*ratio*(beta_H+kappa_H)) - (ratio-kappa_H) ) / (2*(beta_H+kappa_H))
@@ -239,7 +238,7 @@ def get_emission_fast(theta, data, other_params):
     
     for el_h, i_h in zip(h, range(len(h))):
         
-        integral = np.trapz(epsilon[r>el_h] * r[r>el_h] / np.sqrt((r[r>el_h])**2 - el_h**2), r[r>el_h])                
+        integral = np.trapz(epsilon[r_kpc>el_h] * r_kpc[r_kpc>el_h] / np.sqrt((r_kpc[r_kpc>el_h])**2 - el_h**2), r_kpc[r_kpc>el_h])                
         sigma_CII[i_h] = 2.*integral
                 
     

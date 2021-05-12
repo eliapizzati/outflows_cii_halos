@@ -14,6 +14,7 @@ import time
 import mydir
 from trial_emcee import data, other_params, get_emission_fast
 import plot_config as pltc
+import natconst as nc
 
 
 beta = 3.0
@@ -41,6 +42,12 @@ time_profile = (time.perf_counter() - time_profile)
 print("total emission time (s)=", time_profile)
     
 ax_int_conv.plot(h, intensity)
+
+alpine = ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
+        markerfacecolor='maroon',markeredgecolor='maroon', marker='o',\
+        linestyle='', ecolor = 'maroon')
+                        
+
    
 fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
 plt.savefig(os.path.join(mydir.plot_dir, folder, "emission.png"))
