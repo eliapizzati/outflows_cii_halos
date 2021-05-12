@@ -282,6 +282,8 @@ def log_likelihood(theta, data, other_params):
     
     intensity_convolved *= norm_intensity
     
+    print("h", h)
+    print("intensity", intensity_convolved)
     emission_profile = interp1d(h, intensity_convolved)
 
     res = emission_profile(data.x/1e3/nc.pc) - data.data
