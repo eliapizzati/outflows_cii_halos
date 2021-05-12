@@ -117,7 +117,7 @@ stopping_condition.direction = -1
 
 
 if __name__=="__main__":
-    @jit(nopython=True)
+
     def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45"):
         """
         computes the profiles for v, n, T as a function of r
