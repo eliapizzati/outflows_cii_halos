@@ -164,7 +164,7 @@ def get_emission_fast(theta, data, other_params):
     r_kpc = sol.t # in kpc
     v_kms = sol.y[0] # in km/s
     n_cm3 = sol.y[1] # in cm-3
-    T_K = sol.y[2] # in K
+    T_K = abs(sol.y[2]) # in K
         
     # getting back to the old dimensions
     
