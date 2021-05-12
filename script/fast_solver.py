@@ -327,7 +327,7 @@ if __name__=="__main__":
     
         print(integrator)
         time_profile = time.perf_counter()
-        profiles_new = get_profiles_fast(params, resol=100,print_time=True,integrator=integrator)
+        profiles_new = get_profiles_fast(params, resol=500,print_time=True,integrator=integrator)
         time_profile = (time.perf_counter() - time_profile)
     
         print("total profile time new (s)=", time_profile)
