@@ -22,20 +22,21 @@ betas = [3.0,3.5,4.0,4.5,5.0,5.5]
 SFRs = [50.,100.]
 v_cs = [200.,250.,300.]
 
+
+fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=15)
+
+ax_int_conv.set_ylim((1e-3,1e2))
+
+folder = "plot_fast_emission"
+    
+if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
+    os.mkdir(os.path.join(mydir.plot_dir, folder))
+
 for  beta, SFR, v_c in itertools.product(betas, SFRs, v_cs):
 
     theta = [beta, SFR,v_c]
     print(theta)
-    fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=15)
-    
-    ax_int_conv.set_ylim((1e-3,1e2))
      
-        
-    folder = "plot_fast_emission"
-        
-    if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
-        os.mkdir(os.path.join(mydir.plot_dir, folder))
-        
     time_profile = time.perf_counter()
         
     h, intensity = get_emission_fast(theta, data, other_params)    
