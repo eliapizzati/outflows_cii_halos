@@ -10,7 +10,7 @@ import natconst as nc
 import mydir 
 import time
 
-from numba import jit
+#from numba import jit
 
 import scipy.integrate as si
 
@@ -35,7 +35,6 @@ gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
 # SYSTEM OF EQUATIONS
 
-@jit(nopython=True)
 def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s):
     """
     differential system for the Euler equations
@@ -108,7 +107,6 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     return output
 
 
-@jit(nopython=True)
 def stopping_condition(t, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s): 
     return y[0] - 40. # in km/s
 
