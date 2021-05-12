@@ -113,240 +113,242 @@ stopping_condition.terminal = True
 stopping_condition.direction = -1
 
 
-def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45"):
-    """
-    computes the profiles for v, n, T as a function of r
+if __name__=="__main__":
     
-    Parameters
-    ==========
-    params: dict
-        parameters to be passed to all functions
-    resol: int, optional
-        number of r-steps
+    def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45"):
+        """
+        computes the profiles for v, n, T as a function of r
+        
+        Parameters
+        ==========
+        params: dict
+            parameters to be passed to all functions
+        resol: int, optional
+            number of r-steps
+        
+        Returns
+        =======
+        profiles: sol_profiles class element
     
-    Returns
-    =======
-    profiles: sol_profiles class element
-
-    """    
-    
-    # params definition
-    
-    if "beta" in params:
-        beta = params["beta"]
-    else: 
-        raise ValueError("No beta given")
-    
-    if "SFR" in params:
-        SFR_pure = params["SFR"]
-    else: 
-        raise ValueError("No SFR given")
+        """    
         
-    if "f_esc_ion" in params:
-        f_esc_ion = params["f_esc_ion"]
-    else:
-        f_esc_ion = 0.
+        # params definition
         
-    if "f_esc_FUV" in params:
-        f_esc_FUV = params["f_esc_FUV"]
-    else:
-        f_esc_FUV = 0.
-        
-    if "Zeta" in params:
-        Zeta = params["Zeta"]
-    else:
-        Zeta = 1.
-        
-    if "redshift" in params:
-        redshift = params["redshift"]
-    else: 
-        raise ValueError("No redshift given")
-    
-    if "alfa" in params:
-        alfa = params["alfa"]
-    else:
-        alfa = 1.
-        
-    if "R_in" in params:
-        R_in_pure = params["R_in"]
-    else:
-        R_in_pure = 0.3
-        
-    if params["DM_model"] == "NFW":    
-        
-        if "M_vir" in params:
-            M_vir_pure = params["M_vir"]
+        if "beta" in params:
+            beta = params["beta"]
         else: 
-            if "v_c" in params:
-                v_c_pure = params["v_c"]
-            else: 
-                raise ValueError("No v_c given")
-            
-            M_vir_pure = get_virial_mass_from_vc(v_c_pure*1e5, redshift)
-
-
-    # getting some preliminar values 
-    
-    # gravity part
+            raise ValueError("No beta given")
         
-    c = get_concentration(M_vir_pure, redshift)
-
-    A_NFW = np.log(1+c) - c/(1.+c)
+        if "SFR" in params:
+            SFR_pure = params["SFR"]
+        else: 
+            raise ValueError("No SFR given")
+            
+        if "f_esc_ion" in params:
+            f_esc_ion = params["f_esc_ion"]
+        else:
+            f_esc_ion = 0.
+            
+        if "f_esc_FUV" in params:
+            f_esc_FUV = params["f_esc_FUV"]
+        else:
+            f_esc_FUV = 0.
+            
+        if "Zeta" in params:
+            Zeta = params["Zeta"]
+        else:
+            Zeta = 1.
+            
+        if "redshift" in params:
+            redshift = params["redshift"]
+        else: 
+            raise ValueError("No redshift given")
+        
+        if "alfa" in params:
+            alfa = params["alfa"]
+        else:
+            alfa = 1.
+            
+        if "R_in" in params:
+            R_in_pure = params["R_in"]
+        else:
+            R_in_pure = 0.3
+            
+        if params["DM_model"] == "NFW":    
+            
+            if "M_vir" in params:
+                M_vir_pure = params["M_vir"]
+            else: 
+                if "v_c" in params:
+                    v_c_pure = params["v_c"]
+                else: 
+                    raise ValueError("No v_c given")
+                
+                M_vir_pure = get_virial_mass_from_vc(v_c_pure*1e5, redshift)
     
     
-    r_s = get_virial_radius(M_vir_pure, redshift) / c / 1e3 / nc.pc # in kpc
-
+        # getting some preliminar values 
+        
+        # gravity part
+            
+        c = get_concentration(M_vir_pure, redshift)
     
-    # UVB part
+        A_NFW = np.log(1+c) - c/(1.+c)
+        
+        
+        r_s = get_virial_radius(M_vir_pure, redshift) / c / 1e3 / nc.pc # in kpc
     
-    Plw = UVB_rates(redshift, quantity="LW rate")
-    Ph1 = UVB_rates(redshift, quantity="H rate")
-    Pg1 = UVB_rates(redshift, quantity="He rate")  
+        
+        # UVB part
+        
+        Plw = UVB_rates(redshift, quantity="LW rate")
+        Ph1 = UVB_rates(redshift, quantity="H rate")
+        Pg1 = UVB_rates(redshift, quantity="He rate")  
+        
+        # getting the BC
+        
+        SFR = SFR_pure/nc.year #1/s
+        
+        E_SN = 1e51*(SFR)/100 #erg (energy from supernovae-- energy of a single SN \
+                            #per 100 M_sun of Star Formation)
     
-    # getting the BC
+        M_dot = beta*SFR*nc.ms  #mass from SN
+        
+        E_dot = alfa*E_SN #erg/s
+      
+        #M0 = 1. 
+        v0 = np.sqrt(E_dot/M_dot)/np.sqrt(2)  #m/s
+        #c0 = v0/M0
     
-    SFR = SFR_pure/nc.year #1/s
+        R = R_in_pure*1000*nc.pc #cm
     
-    E_SN = 1e51*(SFR)/100 #erg (energy from supernovae-- energy of a single SN \
-                        #per 100 M_sun of Star Formation)
-
-    M_dot = beta*SFR*nc.ms  #mass from SN
+        rho0 = 0.1125395*np.sqrt(M_dot**3/E_dot) / R**2 #g/cm^3
+        P0 = 0.0337618*np.sqrt(M_dot*E_dot) / R**2  #g/cm^2    
+        T0 = P0/(rho0*nc.knorm)  #K
+        
+        # changing the dimensions for the integration part
+        
+        R_kpc = R_in_pure # in kpc
+        
+        v0_kms = v0 / 1e5 # in km/s
+        n0_cm3 = rho0 / (nc.mp*nc.mus) # in cm-3
+        T0_K = T0 # in K
+        
+        y0 = np.asarray([v0_kms,n0_cm3,T0_K]) 
+        
+        # integrating the equations
+        
+        r_bound = (R_kpc, 100*R_kpc)
+        
+        r_eval = np.linspace(r_bound[0],r_bound[1],resol)
     
-    E_dot = alfa*E_SN #erg/s
-  
-    #M0 = 1. 
-    v0 = np.sqrt(E_dot/M_dot)/np.sqrt(2)  #m/s
-    #c0 = v0/M0
-
-    R = R_in_pure*1000*nc.pc #cm
-
-    rho0 = 0.1125395*np.sqrt(M_dot**3/E_dot) / R**2 #g/cm^3
-    P0 = 0.0337618*np.sqrt(M_dot*E_dot) / R**2  #g/cm^2    
-    T0 = P0/(rho0*nc.knorm)  #K
+        if print_time:
+          t_ivp = time.perf_counter()
     
-    # changing the dimensions for the integration part
+        sol = si.solve_ivp(diff_system_fast, r_bound, y0, t_eval=r_eval,\
+                           args=( SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s),\
+                           method = integrator, events=stopping_condition) #,rtol=1.0e-3
+        
+        if print_time:
+          time_ivp = (time.perf_counter() - t_ivp)
+          print("total time ivp (s)=", time_ivp)
     
-    R_kpc = R_in_pure # in kpc
-    
-    v0_kms = v0 / 1e5 # in km/s
-    n0_cm3 = rho0 / (nc.mp*nc.mus) # in cm-3
-    T0_K = T0 # in K
-    
-    y0 = np.asarray([v0_kms,n0_cm3,T0_K]) 
-    
-    # integrating the equations
-    
-    r_bound = (R_kpc, 100*R_kpc)
-    
-    r_eval = np.linspace(r_bound[0],r_bound[1],resol)
-
-    if print_time:
-      t_ivp = time.perf_counter()
-
-    sol = si.solve_ivp(diff_system_fast, r_bound, y0, t_eval=r_eval,\
-                       args=( SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s),\
-                       method = integrator, events=stopping_condition) #,rtol=1.0e-3
-    
-    if print_time:
-      time_ivp = (time.perf_counter() - t_ivp)
-      print("total time ivp (s)=", time_ivp)
-
-    if sol.success == False:
-        print('Integration stopped before reaching the end of the array')
-    elif sol.success == True:
-        print('Integration completed successfully')
-    
-    r_kpc = sol.t # in kpc
-    v_kms = sol.y[0] # in km/s
-    n_cm3 = sol.y[1] # in cm-3
-    T_K = sol.y[2] # in K
-    
-    print(sol.t_events)
-    
-    print(sol.y_events)
-    
-    # getting back to the old dimensions
-    
-    r = r_kpc * 1e3 * nc.pc # in cm
-    v = v_kms * 1e5    # in cm/s
-    n = n_cm3 # in cm-3
-    T = T_K # in K
-    
-    mask = v > 0. 
-    
-    profiles = []
-    
-    profiles.append(v[mask])
-    profiles.append(n[mask])
-    profiles.append(T[mask])
-    
-    return sol_profiles(radius=r[mask], variables=profiles, params=params)
-
-
-
-params = dict([("DM_model", "NFW"),
-                   ("beta", 3.0), 
-                   ("SFR", 50.),
-                   ("f_esc_ion", 0.2), 
-                   ("f_esc_FUV", 0.2), 
-                   ("M_vir", 5e11),
-                   ("redshift", 5.0),
-                   ("Zeta", 1.0),
-                   ("alfa", 1.0),
-                   ("R_in", 0.3)])
-
-time_start = time.perf_counter()
-
-print("##################################")
-print("Run with the following parameters:")
-print("##################################")
-print(params)
-print("##################################")
-
-
-import matplotlib.pyplot as plt
-
-
-fig_sol, axs_sol = pltc.plot_configurator(plot_type="sol")    
-
-
-integrator_list = ["RK45", "BDF", "LSODA", "RK23"]
-#integrator_list = ["BDF"]
-#integrator_list = ["LSODA"]
-
-show_profile    = True
-
-folder = "plot_fast_solver"
-
-if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
-    os.mkdir(os.path.join(mydir.plot_dir, folder))
-
-for integrator in integrator_list:
-
-    print(integrator)
-    time_profile = time.perf_counter()
-    profiles_new = get_profiles_fast(params, resol=100,print_time=True,integrator=integrator)
-    time_profile = (time.perf_counter() - time_profile)
-
-    print("total profile time new (s)=", time_profile)
+        if sol.success == False:
+            print('Integration stopped before reaching the end of the array')
+        elif sol.success == True:
+            print('Integration completed successfully')
+        
+        r_kpc = sol.t # in kpc
+        v_kms = sol.y[0] # in km/s
+        n_cm3 = sol.y[1] # in cm-3
+        T_K = sol.y[2] # in K
+        
+        print(sol.t_events)
+        
+        print(sol.y_events)
+        
+        # getting back to the old dimensions
+        
+        r = r_kpc * 1e3 * nc.pc # in cm
+        v = v_kms * 1e5    # in cm/s
+        n = n_cm3 # in cm-3
+        T = T_K # in K
+        
+        mask = v > 0. 
+        
+        profiles = []
+        
+        profiles.append(v[mask])
+        profiles.append(n[mask])
+        profiles.append(T[mask])
+        
+        return sol_profiles(radius=r[mask], variables=profiles, params=params)
     
     
-#    time_profile = time.perf_counter()
-#    profiles_old = get_profiles(params, resol=1000,print_time=True,integrator=integrator)
-#    time_profile = (time.perf_counter() - time_profile)
-#
-#    print("total profile time old (s)=", time_profile)
+    
+    params = dict([("DM_model", "NFW"),
+                       ("beta", 3.0), 
+                       ("SFR", 50.),
+                       ("f_esc_ion", 0.2), 
+                       ("f_esc_FUV", 0.2), 
+                       ("M_vir", 5e11),
+                       ("redshift", 5.0),
+                       ("Zeta", 1.0),
+                       ("alfa", 1.0),
+                       ("R_in", 0.3)])
+    
+    time_start = time.perf_counter()
+    
+    print("##################################")
+    print("Run with the following parameters:")
+    print("##################################")
+    print(params)
+    print("##################################")
+    
+    
+    import matplotlib.pyplot as plt
+    
+    
+    fig_sol, axs_sol = pltc.plot_configurator(plot_type="sol")    
+    
+    
+    integrator_list = ["RK45", "BDF", "LSODA", "RK23"]
+    #integrator_list = ["BDF"]
+    #integrator_list = ["LSODA"]
+    
+    show_profile    = True
+    
+    folder = "plot_fast_solver"
+    
+    if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
+        os.mkdir(os.path.join(mydir.plot_dir, folder))
+    
+    for integrator in integrator_list:
+    
+        print(integrator)
+        time_profile = time.perf_counter()
+        profiles_new = get_profiles_fast(params, resol=100,print_time=True,integrator=integrator)
+        time_profile = (time.perf_counter() - time_profile)
+    
+        print("total profile time new (s)=", time_profile)
+        
+        
+    #    time_profile = time.perf_counter()
+    #    profiles_old = get_profiles(params, resol=1000,print_time=True,integrator=integrator)
+    #    time_profile = (time.perf_counter() - time_profile)
+    #
+    #    print("total profile time old (s)=", time_profile)
+        
+        if show_profile:
+            profiles_new.plot(ax=axs_sol, label=integrator)
+        #    profiles_old.plot(ax=axs_sol)
     
     if show_profile:
-        profiles_new.plot(ax=axs_sol, label=integrator)
-    #    profiles_old.plot(ax=axs_sol)
-
-if show_profile:
-    fig_sol.legend(loc="lower center", ncol=8, fontsize="small")
-    plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles_3.png"))
-
+        fig_sol.legend(loc="lower center", ncol=8, fontsize="small")
+        plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles_3.png"))
+    
+        
+        
     
     
-
-
-
+    

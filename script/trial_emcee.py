@@ -342,9 +342,12 @@ def log_probability(theta, data, other_params):
 theta_true = [3.0, 50., 250.]
 
 ndim = len(theta_true)
+nwalkers= 32
+
+pos = theta_true + 0.5 * np.random.randn(nwalkers, ndim)
 
 sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability, args=(data,other_params))
-sampler.run_mcmc(theta_true, 5000, progress=True);
+sampler.run_mcmc(pos, 5000, progress=True);
 
 
 fig, axes = plt.subplots(3, figsize=(10, 7), sharex=True)
