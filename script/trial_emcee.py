@@ -86,7 +86,7 @@ other_params = dict([("rmax", rmax),
 theta : beta, SFR, v_c
 """
 
-def get_emission(theta, data, other_params):
+def get_emission_fast(theta, data, other_params):
     
     # setting the parameters
     
@@ -286,7 +286,7 @@ def get_emission(theta, data, other_params):
 def log_likelihood(theta, data, other_params):
     
     
-    h, intensity_convolved = get_emission(theta, data, other_params)
+    h, intensity_convolved = get_emission_fast(theta, data, other_params)
     
     print("intensity", intensity_convolved)
     emission_profile = interp1d(h, intensity_convolved)
@@ -346,40 +346,41 @@ def log_probability(theta, data, other_params):
     return lp + log_likelihood(theta, data, other_params)
 
 
-
-theta_true = [3.0, 50., 250.]
-
-ndim = len(theta_true)
-nwalkers= 32
-
-pos = theta_true + 0.5 * np.random.randn(nwalkers, ndim)
-
-sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability, args=(data,other_params))
-sampler.run_mcmc(pos, 10, progress=True);
-
-
-fig, axes = plt.subplots(3, figsize=(10, 7), sharex=True)
-samples = sampler.get_chain()
-labels = ["m", "b", "log(f)"]
-for i in range(ndim):
-    ax = axes[i]
-    ax.plot(samples[:, :, i], "k", alpha=0.3)
-    ax.set_xlim(0, len(samples))
-    ax.set_ylabel(labels[i])
-    ax.yaxis.set_label_coords(-0.1, 0.5)
-
-axes[-1].set_xlabel("step number");
-
-print("Mean acceptance fraction: {0:.3f}".format(np.mean(sampler.acceptance_fraction)))
-
-print(
+if __name__ == "__main__":
+    
+    theta_true = [3.0, 50., 250.]
+    
+    ndim = len(theta_true)
+    nwalkers= 32
+    
+    pos = theta_true + 0.5 * np.random.randn(nwalkers, ndim)
+    
+    sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability, args=(data,other_params))
+    sampler.run_mcmc(pos, 10, progress=True);
+    
+    
+    fig, axes = plt.subplots(3, figsize=(10, 7), sharex=True)
+    samples = sampler.get_chain()
+    labels = ["m", "b", "log(f)"]
+    for i in range(ndim):
+        ax = axes[i]
+        ax.plot(samples[:, :, i], "k", alpha=0.3)
+        ax.set_xlim(0, len(samples))
+        ax.set_ylabel(labels[i])
+        ax.yaxis.set_label_coords(-0.1, 0.5)
+        
+    axes[-1].set_xlabel("step number");
+    
+    print("Mean acceptance fraction: {0:.3f}".format(np.mean(sampler.acceptance_fraction)))
+    
+    print(
     "Mean autocorrelation time: {0:.3f} steps".format(
-        np.mean(sampler.get_autocorr_time())
+    np.mean(sampler.get_autocorr_time())
     )
-)
-
-
-
-
-
-
+    )
+    
+    
+    
+    
+    
+    
