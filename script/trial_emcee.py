@@ -90,7 +90,7 @@ other_params = dict([("integrator", integrator),
 """
 theta : beta, SFR, v_c
 """
-@jit(nopython=True)
+
 def get_emission_fast(theta, data, other_params):
     
     # setting the parameters
@@ -287,7 +287,6 @@ def get_emission_fast(theta, data, other_params):
 
     return h, intensity_convolved
     
-@jit(nopython=True)
 def log_likelihood(theta, data, other_params):
     
     
@@ -327,7 +326,6 @@ def log_prior(theta):
     
     return -np.inf
 
-@jit(nopython=True)
 def log_probability(theta, data, other_params):
     """
     defines the probability as a combination of priors and likelihood
