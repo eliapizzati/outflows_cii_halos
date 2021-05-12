@@ -73,10 +73,8 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     T = y[2] # temperature in K
         
     knorm_kmsK = kk/(mus*mp) / 1e10 # in (km/s)**2 / K 
-#    print("##############################")
 
     c_S2 = gamma*knorm_kmsK * T # in (km/s)^2
-#    print("cs", np.sqrt(c_S2))
     c_T2 = knorm_kmsK * T    # in (km/s)^2
     
     # cooling part
@@ -90,20 +88,12 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     lamda = gc.frtgetcf_cool(T, n, Zeta, Plw, Ph1, Pg1, Pc6) - gc.frtgetcf_heat(T, n, Zeta, Plw, Ph1, Pg1, Pc6)
 
     q = n * lamda / (mus * mp) / 1e10 # in (km/s)^2/s
-#    print("q", q)
     
     M_r = M_vir_pure/A_NFW * (np.log(1.+r/r_s)+r_s/(r_s+r) - 1)
 
     v_c = np.sqrt(gg*M_r*ms/(r*1e3*pc)) / 1e5 #in km/s
-#    print("v_c", v_c)
     v_e = v_c * np.sqrt(2)  # in km/s
-#    print("slow", )
 
-#    # final system
-#    print("v", v)
-#    print("T", T)
-#    print("n", n)
-#    print("##############################")
 
     derivative_a = (2*v/r)*(c_S2 - v_e**2/4) / (v**2-c_S2) + (gamma-1.) * q / ((v**2-c_S2)*1e2/pc)
     
@@ -180,7 +170,7 @@ def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45"):
     if "R_in" in params:
         R_in_pure = params["R_in"]
     else:
-        alfa = 0.3
+        R_in_pure = 0.3
         
     if params["DM_model"] == "NFW":    
         
@@ -335,7 +325,7 @@ for integrator in integrator_list:
 
     print(integrator)
     time_profile = time.perf_counter()
-    profiles_new = get_profiles_fast(params, resol=1000,print_time=True,integrator=integrator)
+    profiles_new = get_profiles_fast(params, resol=100,print_time=True,integrator=integrator)
     time_profile = (time.perf_counter() - time_profile)
 
     print("total profile time new (s)=", time_profile)

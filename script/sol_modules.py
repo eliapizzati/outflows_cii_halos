@@ -227,7 +227,7 @@ def get_profiles(params, resol=1000, print_time=False, integrator="RK45"):
     if "R_in" in params:
         R_in_pure = params["R_in"]
     else:
-        alfa = 0.3
+        R_in_pure = 0.3
     
     # getting the BC
     
