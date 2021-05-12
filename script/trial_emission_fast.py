@@ -18,9 +18,9 @@ import plot_config as pltc
 import natconst as nc
 
 
-betas = [2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5]
-SFRs = [10.,50.,100.]
-v_cs = [150.,200.,250.,300.]
+betas = [3.0,3.5,4.0,4.5,5.0,5.5]
+SFRs = [50.,100.]
+v_cs = [200.,250.,300.]
 
 for  beta, SFR, v_c in itertools.product(betas, SFRs, v_cs):
 

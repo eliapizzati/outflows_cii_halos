@@ -65,7 +65,7 @@ def get_ionization_states(profiles, params):
     
     v = profiles.v
     n = profiles.n
-    T = profiles.T
+    T = abs(profiles.T)
     
     #UV BACKGROUND
         
@@ -181,7 +181,7 @@ def get_surface_density(profiles, ionization_states, params, add_CMB_suppression
     
     v = profiles.v
     n = profiles.n
-    T = profiles.T
+    T = abs(profiles.T)
     
     x_e = ionization_states.x_e
     x_CII = ionization_states.x_CII
