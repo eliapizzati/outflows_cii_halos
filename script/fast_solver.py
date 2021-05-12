@@ -107,7 +107,7 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
 
 
 def stopping_condition(t, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s): 
-    return y[0] - 50. # in km/s
+    return y[0] - 41. # in km/s
 
 stopping_condition.terminal = True
 stopping_condition.direction = -1
