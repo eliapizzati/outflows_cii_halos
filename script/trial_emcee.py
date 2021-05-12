@@ -159,7 +159,7 @@ def get_emission_fast(theta, data, other_params):
     
     sol = si.solve_ivp(diff_system_fast, r_bound, y0, t_eval=r_eval,\
                        args=( SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s),\
-                       method = "RK45", events=stopping_condition) #,rtol=1.0e-3
+                       method = "BDF", events=stopping_condition) #,rtol=1.0e-3
     
     r_kpc = sol.t # in kpc
     v_kms = sol.y[0] # in km/s
