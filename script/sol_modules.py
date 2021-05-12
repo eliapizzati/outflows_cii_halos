@@ -178,7 +178,11 @@ def diff_system(r, y, params, Plw, Ph1, Pg1):
     
     return output
 
+def stopping_condition(t, y,params, Plw, Ph1, Pg1): 
+    return y[0] - 41. * 1e5 # in cm/s
 
+stopping_condition.terminal = True
+stopping_condition.direction = -1
 
 def get_profiles(params, resol=1000, print_time=False, integrator="RK45"):
     """
@@ -266,7 +270,8 @@ def get_profiles(params, resol=1000, print_time=False, integrator="RK45"):
     if print_time:
       t_ivp = time.perf_counter()
 
-    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(params,Plw,Ph1,Pg1),method = integrator) #,rtol=1.0e-3
+    sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(params,Plw,Ph1,Pg1),method = integrator,\
+                       events = stopping_condition) #,rtol=1.0e-3
     
     if print_time:
       time_ivp = (time.perf_counter() - t_ivp)
@@ -283,7 +288,7 @@ def get_profiles(params, resol=1000, print_time=False, integrator="RK45"):
     n = rho / (nc.mus*nc.mp) #cm^-3 # NB CHECK CONSISTENCY WITH METALLICITY
     T = sol.y[2] #K
     
-    mask = v > 4.1e6
+    mask = v > 0.
 
     profiles = []
     
