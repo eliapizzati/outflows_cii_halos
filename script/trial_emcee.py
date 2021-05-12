@@ -282,7 +282,6 @@ def log_likelihood(theta, data, other_params):
     
     intensity_convolved *= norm_intensity
     
-    print("h", h)
     print("intensity", intensity_convolved)
     emission_profile = interp1d(h, intensity_convolved)
 
@@ -291,7 +290,7 @@ def log_likelihood(theta, data, other_params):
     residuals = 2*res / (data.err_down + data.err_up) 
     
     chi2 = np.sum(residuals**2)
-
+    print(chi2)
     return -0.5 * chi2
 
 def log_prior(theta):
@@ -349,7 +348,7 @@ nwalkers= 32
 pos = theta_true + 0.5 * np.random.randn(nwalkers, ndim)
 
 sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability, args=(data,other_params))
-sampler.run_mcmc(pos, 5000, progress=True);
+sampler.run_mcmc(pos, 10, progress=True);
 
 
 fig, axes = plt.subplots(3, figsize=(10, 7), sharex=True)
