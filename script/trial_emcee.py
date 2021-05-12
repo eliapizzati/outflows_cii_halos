@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 import scipy.integrate as si
 
+from numba import jit
+
 import emcee
 
 import natconst as nc
@@ -88,7 +90,7 @@ other_params = dict([("integrator", integrator),
 """
 theta : beta, SFR, v_c
 """
-
+@jit(nopython=True)
 def get_emission_fast(theta, data, other_params):
     
     # setting the parameters
@@ -282,15 +284,15 @@ def get_emission_fast(theta, data, other_params):
                                 / np.trapz(2*np.pi * h * intensity_convolved, h)
     
     intensity_convolved *= norm_intensity
-    print(intensity_convolved)
+
     return h, intensity_convolved
     
+@jit(nopython=True)
 def log_likelihood(theta, data, other_params):
     
     
     h, intensity_convolved = get_emission_fast(theta, data, other_params)
     
-    print("intensity", intensity_convolved)
     emission_profile = interp1d(h, intensity_convolved)
 
     res = emission_profile(data.x/1e3/nc.pc) - data.data
@@ -302,6 +304,7 @@ def log_likelihood(theta, data, other_params):
     print(theta)
     return -0.5 * chi2
 
+@jit(nopython=True)
 def log_prior(theta):
     """
     defines the priors for the set of parameters theta
@@ -324,7 +327,7 @@ def log_prior(theta):
     
     return -np.inf
 
-
+@jit(nopython=True)
 def log_probability(theta, data, other_params):
     """
     defines the probability as a combination of priors and likelihood
@@ -355,15 +358,15 @@ if __name__ == "__main__":
     ndim = len(theta_true)
     nwalkers= 32
     
-    pos = theta_true + 0.5 * np.random.randn(nwalkers, ndim)
+    pos = theta_true + np.asarray([1.0, 50., 100.]) * np.random.randn(nwalkers, ndim)
     
     sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability, args=(data,other_params))
-    sampler.run_mcmc(pos, 10, progress=True);
+    sampler.run_mcmc(pos, 100, progress=True);
     
     
     fig, axes = plt.subplots(3, figsize=(10, 7), sharex=True)
     samples = sampler.get_chain()
-    labels = ["m", "b", "log(f)"]
+    labels = ["beta", "SFR", "v_c"]
     for i in range(ndim):
         ax = axes[i]
         ax.plot(samples[:, :, i], "k", alpha=0.3)
