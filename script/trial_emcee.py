@@ -32,7 +32,7 @@ gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
 
 
-data = obs_data_list[0]
+data = obs_data_list[1]
 
 
 redshift = data.params_obs["redshift"]
@@ -368,7 +368,14 @@ if __name__ == "__main__":
         ax.set_ylabel(labels[i])
         ax.yaxis.set_label_coords(-0.1, 0.5)
         
-    axes[-1].set_xlabel("step number");
+    axes[-1].set_xlabel("step number")
+    
+    folder = "plot_emcee"
+    
+    if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
+        os.mkdir(os.path.join(mydir.plot_dir, folder))
+
+    plt.savefig(os.path.join(mydir.plot_dir, folder, "emission.png"))
     
     print("Mean acceptance fraction: {0:.3f}".format(np.mean(sampler.acceptance_fraction)))
     
