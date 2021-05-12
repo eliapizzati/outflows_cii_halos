@@ -5,18 +5,24 @@ Created on Tue May 11 16:49:20 2021
 @author: anna
 """
 
+import os
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
+import scipy.integrate as si
 
 import emcee
 
 import natconst as nc
 
+import mydir
 from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
                       names_other,  observational_data_fuji
 
 from fast_solver import diff_system_fast, stopping_condition
 
+from radiation_fields import UVB_rates
+from my_utils import twod_making
 
 import gnedincooling as gc
 
@@ -37,7 +43,7 @@ Pg1 = UVB_rates(redshift, quantity="He rate")
 gamma_H = Ph1
 gamma_CI = UVB_rates(redshift, quantity="CI rate")
 gamma_CII = UVB_rates(redshift, quantity="CII rate")
-UV_intenisty = UVB_rates(redshift, quantity="UV intensity")
+UV_intensity = UVB_rates(redshift, quantity="UV intensity")
 
 I_CMB = (2*nc.hh*nc.line_CII_rest_frame**3) /  \
         (nc.cc**2 * (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+redshift)*nc.CMB_temperature)) - 1.))
@@ -64,7 +70,7 @@ other_params = dict([("rmax", rmax),
                    ("gamma_H", gamma_H),
                    ("gamma_CI", gamma_CI),
                    ("gamma_CII", gamma_CII),
-                   ("UV_intensity", UV_intenisty),
+                   ("UV_intensity", UV_intensity),
                    ("FWHM_vel", data.params_obs["line_FWHM"]),
                    ("I_CMB", I_CMB),
                    ("B_coeff", B_coeff),
@@ -91,6 +97,7 @@ def log_likelihood(theta, data, other_params):
     f_esc_FUV = 0.
     Zeta = 1. 
     R_in_pure = 0.3
+    alfa = 1.
     
     Plw = other_params["Plw"]
     Ph1 = other_params["Ph1"]
@@ -102,13 +109,13 @@ def log_likelihood(theta, data, other_params):
     
     overdensity = 200.
     hubble2 =  2.1962761244736533e-18**2 * (0.30712*(1+redshift)**3 + 5.384308416949404e-05*(1+redshift)**4 +  0.6913912010962934)
-    critical_density = 3*hubble2 / (8*np.pi*gg) # in g/cm^3
+    critical_density = 3*hubble2 / (8*np.pi*nc.gg) # in g/cm^3
     M_vir_pure = (v_c_pure*1e5)**3 / nc.gg**1.5 * (4*np.pi*overdensity*critical_density/3)**(-0.5) / nc.ms
 
     # gravity part
         
     cosmo_h = 0.6774
-    logc =  0.537 + (1.025 - 0.537) * np.exp(-0.718*z**1.08) + (-0.097 + 0.024 * z) * np.log10(M_vir_pure*cosmo_h/1e12)
+    logc =  0.537 + (1.025 - 0.537) * np.exp(-0.718*redshift**1.08) + (-0.097 + 0.024 * redshift) * np.log10(M_vir_pure*cosmo_h/1e12)
     c = 10**logc
     A_NFW = np.log(1+c) - c/(1.+c)
     r_s = np.cbrt(3*M_vir_pure*nc.ms/(critical_density * 4*np.pi*overdensity)) / c / 1e3 / nc.pc # in kpc
@@ -171,11 +178,11 @@ def log_likelihood(theta, data, other_params):
     # ionization part
             
     
-    gamma_CI += nc.Gamma_CI_FUV_1000 * (1./r_kpc)**2 * SFR_pure*f_esc_FUV
-    gamma_H += nc.Gamma_H_1000 * (1./r_kpc)**2 * SFR_pure*f_esc_ion        
+    gamma_CI = other_params["gamma_CI"] + nc.Gamma_CI_FUV_1000 * (1./r_kpc)**2 * SFR_pure*f_esc_FUV
     gamma_CI += nc.Gamma_CI_EUV_1000 * (1./r_kpc)**2 * SFR_pure*f_esc_ion
-    gamma_CII += nc.Gamma_CII_1000 * (1./r_kpc)**2 * SFR_pure*f_esc_ion
-    intensity_tot = UV_intenisty + nc.intensity_UV_1000 * (1./r_kpc)**2 * SFR_pure*f_esc_FUV
+    gamma_H = other_params["gamma_H"] + nc.Gamma_H_1000 * (1./r_kpc)**2 * SFR_pure*f_esc_ion        
+    gamma_CII = other_params["gamma_CII"] + nc.Gamma_CII_1000 * (1./r_kpc)**2 * SFR_pure*f_esc_ion
+    intensity_tot = other_params["UV_intensity"] + nc.intensity_UV_1000 * (1./r_kpc)**2 * SFR_pure*f_esc_FUV
 
         
     beta_H = 4.18e-13 * (T/1e4)**(-0.75) #cm^3 s^-1
@@ -239,6 +246,7 @@ def log_likelihood(theta, data, other_params):
     
     # transforming sigma to the intensity
     
+    FWHM_vel = other_params["FWHM_vel"]
     intensity_raw = sigma_CII / (nc.line_CII_rest_frame*4*np.pi*(1.+redshift)**3*FWHM_vel/nc.cc)
         
     # changing the units
@@ -249,7 +257,7 @@ def log_likelihood(theta, data, other_params):
         
     x, y, profile_2d = twod_making(intensity_raw, h, nimage=1000)
     
-    beam_interp = np.interp(h, obs_data.x_beam/1e3/nc.pc, obs_data.beam, right=0.)
+    beam_interp = np.interp(h, data.x_beam/1e3/nc.pc, data.beam, right=0.)
     
     beam_interp[beam_interp<0.] = 0.
 
@@ -276,9 +284,9 @@ def log_likelihood(theta, data, other_params):
     
     emission_profile = interp1d(h, intensity_convolved)
 
-    res = emission_profile(obs_data.x/1e3/nc.pc) - obs_data.data
+    res = emission_profile(data.x/1e3/nc.pc) - data.data
     
-    residuals = 2*res / (obs_data.err_down + obs_data.err_up) 
+    residuals = 2*res / (data.err_down + data.err_up) 
     
     chi2 = np.sum(residuals**2)
 
@@ -307,7 +315,7 @@ def log_prior(theta):
     return -np.inf
 
 
-def log_probability(theta, obs_data):
+def log_probability(theta, data, other_params):
     """
     defines the probability as a combination of priors and likelihood
     
@@ -327,13 +335,15 @@ def log_probability(theta, obs_data):
     if not np.isfinite(lp):
         return -np.inf
     
-    return lp + log_likelihood(theta, obs_data)
+    return lp + log_likelihood(theta, data, other_params)
 
 
 
 theta_true = [3.0, 50., 250.]
 
-sampler = emcee.EnsembleSampler(nwalkers=32, ndim=3, log_probability, args=(obs_data,))
+ndim = len(theta_true)
+
+sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability, args=(data,other_params))
 sampler.run_mcmc(theta_true, 5000, progress=True);
 
 
