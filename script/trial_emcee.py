@@ -58,9 +58,12 @@ T_UV = 3.61e4
 rmax = 30
 h_resol = 500
 r_resol = 500
+
+integrator = "RK45"
     
 
-other_params = dict([("rmax", rmax),
+other_params = dict([("integrator", integrator),
+                   ("rmax", rmax),
                    ("h_resol", h_resol),
                    ("r_resol", r_resol),
                    ("redshift", redshift),
@@ -159,7 +162,7 @@ def get_emission_fast(theta, data, other_params):
     
     sol = si.solve_ivp(diff_system_fast, r_bound, y0, t_eval=r_eval,\
                        args=( SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s),\
-                       method = "BDF", events=stopping_condition) #,rtol=1.0e-3
+                       method = other_params["integrator"], events=stopping_condition) #,rtol=1.0e-3
     
     r_kpc = sol.t # in kpc
     v_kms = sol.y[0] # in km/s
