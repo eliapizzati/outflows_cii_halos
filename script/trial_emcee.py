@@ -85,9 +85,8 @@ other_params = dict([("rmax", rmax),
 """
 theta : beta, SFR, v_c
 """
-    
-def log_likelihood(theta, data, other_params):
-    
+
+def get_emission(theta, data, other_params):
     
     # setting the parameters
     
@@ -282,6 +281,13 @@ def log_likelihood(theta, data, other_params):
     
     intensity_convolved *= norm_intensity
     
+    return h, intensity_convolved
+    
+def log_likelihood(theta, data, other_params):
+    
+    
+    h, intensity_convolved = get_emission(theta, data, other_params)
+    
     print("intensity", intensity_convolved)
     emission_profile = interp1d(h, intensity_convolved)
 
@@ -291,6 +297,7 @@ def log_likelihood(theta, data, other_params):
     
     chi2 = np.sum(residuals**2)
     print(chi2)
+    print(theta)
     return -0.5 * chi2
 
 def log_prior(theta):
