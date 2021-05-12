@@ -305,7 +305,7 @@ if __name__=="__main__":
     fig_sol, axs_sol = pltc.plot_configurator(plot_type="sol")    
     
     
-    integrator_list = ["RK45", "BDF", "RK23"]
+    integrator_list = ["RK45", "BDF"]
     #integrator_list = ["BDF"]
     #integrator_list = ["LSODA"]
     
