@@ -238,7 +238,7 @@ def get_emission_fast(theta, data, other_params):
     
     for el_h, i_h in zip(h, range(len(h))):
         
-        integral = np.trapz(epsilon[r_kpc>el_h] * r_kpc[r_kpc>el_h] / np.sqrt((r_kpc[r_kpc>el_h])**2 - el_h**2), r_kpc[r_kpc>el_h])                
+        integral = np.trapz(epsilon[r_kpc>el_h] * nc.pc * 1e3 * r_kpc[r_kpc>el_h] / np.sqrt((r_kpc[r_kpc>el_h])**2 - el_h**2), r_kpc[r_kpc>el_h])                
         sigma_CII[i_h] = 2.*integral
                 
     
@@ -279,7 +279,7 @@ def get_emission_fast(theta, data, other_params):
                                 / np.trapz(2*np.pi * h * intensity_convolved, h)
     
     intensity_convolved *= norm_intensity
-    
+    print(intensity_convolved)
     return h, intensity_convolved
     
 def log_likelihood(theta, data, other_params):
