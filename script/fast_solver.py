@@ -74,8 +74,8 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
         
     knorm_kmsK = kk/(mus*mp) / 1e10 # in (km/s)**2 / K 
 
-    c_S2 = gamma*knorm_kmsK * T # in (km/s)^2
-    c_T2 = knorm_kmsK * T    # in (km/s)^2
+    c_S2 = gamma*knorm_kmsK * abs(T) # in (km/s)^2
+    c_T2 = knorm_kmsK * abs(T)    # in (km/s)^2
     
     # cooling part
         
@@ -261,7 +261,7 @@ if __name__=="__main__":
         r_kpc = sol.t # in kpc
         v_kms = sol.y[0] # in km/s
         n_cm3 = sol.y[1] # in cm-3
-        T_K = sol.y[2] # in K
+        T_K = abs(sol.y[2]) # in K
         
         print(sol.t_events)
         
