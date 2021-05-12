@@ -62,7 +62,7 @@ for  beta, SFR, v_c in itertools.product(betas, SFRs, v_cs):
            ("alfa", 1.0),
            ("R_in", 0.3)])   
     
-    profiles = get_profiles(params, resol=1000)
+    profiles = get_profiles(params, resol=500)
 
     ionization_state = get_ionization_states(profiles, params)
 
