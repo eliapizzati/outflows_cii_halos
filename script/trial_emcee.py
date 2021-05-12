@@ -238,7 +238,7 @@ def log_likelihood(theta, data, other_params):
    
     sigma_CII = np.zeros_like(h)
     
-    for el_h in h:
+    for el_h, i_h in zip(h, range(len(h))):
         
         integral = np.trapz(epsilon[r>el_h] * r[r>el_h] / np.sqrt((r[r>el_h])**2 - el_h**2), r[r>el_h])                
         sigma_CII[el_h] = 2.*integral
