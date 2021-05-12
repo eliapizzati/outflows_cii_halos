@@ -241,7 +241,7 @@ def log_likelihood(theta, data, other_params):
     for el_h, i_h in zip(h, range(len(h))):
         
         integral = np.trapz(epsilon[r>el_h] * r[r>el_h] / np.sqrt((r[r>el_h])**2 - el_h**2), r[r>el_h])                
-        sigma_CII[el_h] = 2.*integral
+        sigma_CII[i_h] = 2.*integral
                 
     
     # transforming sigma to the intensity
