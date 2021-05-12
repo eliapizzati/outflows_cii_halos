@@ -83,7 +83,7 @@ alpine = ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
 
    
 fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
-plt.savefig(os.path.join(mydir.plot_dir, folder, "emission.png"))
+plt.savefig(os.path.join(mydir.plot_dir, folder, "emission_2.png"))
     
         
         
