@@ -345,7 +345,6 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     
 def log_likelihood(theta, data, other_params, h, grid, f_beam):
     
-    t_global = time.perf_counter() 
     
     intensity_convolved = get_emission_fast(theta, data, other_params, h, grid, f_beam)
     
@@ -362,8 +361,6 @@ def log_likelihood(theta, data, other_params, h, grid, f_beam):
     logging.info("iteration {}: chi2 = {:.1f} for beta = {:.1f}, SFR = {:.1f}, v_c = {:.1f}".format(\
           log_likelihood.counter, chi2, theta[0], theta[1], theta[2]))
 
-    time_global = (time.perf_counter() - t_global)
-    logging.info("global likelihood time (s)={}".format( time_global))
     
     return -0.5 * chi2
 
@@ -467,7 +464,7 @@ if __name__ == "__main__":
     with Pool() as pool:
 
         sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability,\
-                                    args=(data,other_params, h, grid, f_beam), backend = backend)
+                                    args=(data,other_params, h, grid, f_beam), backend = backend, pool=pool)
         sampler.run_mcmc(pos, 1e3, progress=True);
     
     
