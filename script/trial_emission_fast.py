@@ -43,7 +43,7 @@ for  beta, SFR, v_c in itertools.product(betas, SFRs, v_cs):
      
     time_profile = time.perf_counter()
         
-    h, intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)    
+    intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)    
             
     time_profile = (time.perf_counter() - time_profile)
         

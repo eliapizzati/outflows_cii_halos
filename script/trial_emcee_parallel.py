@@ -130,7 +130,6 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
           
         t_total = time.perf_counter()
 
-    logging.info("#################################################################################")
 
     # setting the parameters
     
@@ -338,13 +337,13 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
         time_total = (time.perf_counter() - t_total)
         logging.info("total time (s)={}".format( time_total))
 
-    logging.info("#################################################################################")
 
     return intensity_convolved
     
 def log_likelihood(theta, data, other_params, h, grid, f_beam):
     
-    
+    logging.info("#################################################################################")
+
     t_total = time.perf_counter()
     
     intensity_convolved = get_emission_fast(theta, data, other_params, h, grid, f_beam)
