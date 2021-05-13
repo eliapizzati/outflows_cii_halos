@@ -44,15 +44,16 @@ def log_prior_gaussian(theta, data):
         return -np.inf
 
 betas = np.linspace(0.,9., 1000)
-SFRs = np.linspace(10.,300.)
-
+SFRs = np.linspace(10.,300.,1000)
+vcs = np.linspace(10.,300.,1000)
 
 prior_beta = np.asarray([log_prior_gaussian([beta, 50., 250.], data)  for beta in betas])
 prior_SFR = np.asarray([log_prior_gaussian([3.0, SFR, 200.], data)  for SFR in SFRs])
+prior_vc = np.asarray([log_prior_gaussian([3.0, 50., vc], data)  for vc in vcs])
 
 fig,ax = plt.subplots()
 
 #ax.plot(betas,10**prior_beta)
-ax.plot(SFRs,10**prior_SFR)
-#ax.plot(betas,10**prior_beta)
+#ax.plot(SFRs,10**prior_SFR)
+ax.plot(vcs,10**prior_vc)
 

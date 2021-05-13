@@ -312,19 +312,19 @@ def get_intensity_convolved(intensity_raw, params, params_obs, obs_data, add_cen
 
     # creates the 2d profiles
     
-    x, y, profile_2d = twod_making(intensity_raw.var, intensity_raw.h, nimage=1000)
+    x, profile_2d = twod_making(intensity_raw.var, intensity_raw.h, nimage=1000)
     
     beam_interp = np.interp(intensity_raw.h, obs_data.x_beam, obs_data.beam, right=0.)
     
     beam_interp[beam_interp<0.] = 0.
 
-    x_beam, y_beam, beam_2d = twod_making(beam_interp, intensity_raw.h, nimage=1000)
+    x_beam, beam_2d = twod_making(beam_interp, intensity_raw.h, nimage=1000)
 
 #    import matplotlib.pyplot as plt
 #    
 #    fig,ax = plt.subplots()
-#    ax.contourf(x/1e3/nc.pc,y/1e3/nc.pc,profile_2d, alpha=0.5)
-#    ax.contourf(x_beam/1e3/nc.pc,y_beam/1e3/nc.pc,beam_2d, alpha=0.2)
+#    ax.contourf(x/1e3/nc.pc,x/1e3/nc.pc,profile_2d, alpha=0.5)
+#    ax.contourf(x_beam/1e3/nc.pc,x_beam/1e3/nc.pc,beam_2d, alpha=0.2)
 #    
 #    print("x", x[-1]/1e3/nc.pc)
 #    print("x beam", x[-1]/1e3/nc.pc)

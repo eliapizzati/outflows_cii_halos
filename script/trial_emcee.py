@@ -28,7 +28,7 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
 from fast_solver import diff_system_fast, stopping_condition
 
 from radiation_fields import UVB_rates
-from my_utils import twod_making
+
 
 import gnedincooling as gc
 
@@ -77,6 +77,25 @@ r_resol = 500
 
 cut = 45.
 
+
+
+h = np.linspace(0.3,rmax, h_resol)
+
+beam_interp = np.interp(h, data.x_beam/1e3/nc.pc, data.beam, right=0.)
+
+beam_interp[beam_interp<0.] = 0.
+
+beam_func = interp1d(h, beam_interp, \
+                     fill_value = (beam_interp[0], 0.), bounds_error=False)
+
+h_ext = np.linspace(-rmax, rmax, 2*h_resol)
+    
+grid = np.meshgrid(h_ext,h_ext)
+
+beam_2d = beam_func(np.sqrt(grid[0]**2 + grid[1]**2))
+f_beam = np.fft.fft2(beam_2d)
+
+        
 integrator = "RK45"
     
 
@@ -108,7 +127,7 @@ other_params = dict([("integrator", integrator),
 theta : beta, SFR, v_c
 """
 
-def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_time_total = True):
+def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp = True, print_time_total = True):
     
     
     if print_time_total:
@@ -212,7 +231,6 @@ def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_ti
     
     
     # ionization part
-    t_ion = time.perf_counter()
 
     
     gamma_CI = other_params["gamma_CI"] + nc.Gamma_CI_FUV_1000 * (1./r_kpc)**2 * SFR_pure*f_esc_FUV
@@ -247,13 +265,9 @@ def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_ti
 
     x_CII = 1. / (1. + (gamma_CII)/(beta_CIII * n_e) + (beta_CII * n_e)/(gamma_CI + kappa_CI * n_e) + kappa_CII/beta_CIII)
 
-    time_ion = (time.perf_counter() - t_ion)
-    logging.info("time ion (s)={}".format(time_ion))
 
     # emission part
     
-    t_emission = time.perf_counter()
-
     epsilon = 7.9e-20 *  n**2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII * np.exp(-92./T) /  92.**0.5        
 
     C_ul_e = 8.63e-6 / 2. / np.sqrt(T) * 1.60
@@ -276,7 +290,6 @@ def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_ti
 
     # intergrating along the line of sight
     
-    h = np.linspace(min(r_kpc),max(max(r_kpc),rmax), h_resol)
    
     sigma_CII = np.zeros_like(h)
     
@@ -296,24 +309,18 @@ def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_ti
     intensity_raw *= 1e26 #transformation to mJy 
     intensity_raw /= 4.2e10 #transforming sr to arcsec^2
     
-    time_emission = (time.perf_counter() - t_emission)
-    logging.info("time emission (s)={}".format(time_emission))
 
     # convolution
     t_conv = time.perf_counter()
 
-    
-    x, y, profile_2d = twod_making(intensity_raw, h, nimage=1000)
-    
-    beam_interp = np.interp(h, data.x_beam/1e3/nc.pc, data.beam, right=0.)
-    
-    beam_interp[beam_interp<0.] = 0.
+    intraw_func = interp1d(h, intensity_raw, \
+                           fill_value = (intensity_raw[0], 0.), bounds_error=False)
 
-    x_beam, y_beam, beam_2d = twod_making(beam_interp, h, nimage=1000)
-    
+    profile_2d = intraw_func(np.sqrt(grid[0]**2 + grid[1]**2))
+    f_imag = np.fft.fft2(profile_2d)
+
     #makes the 2dfft
     
-    f_beam = np.fft.fft2(beam_2d)
     f_imag = np.fft.fft2(profile_2d)
                         
     #convolution
@@ -321,12 +328,11 @@ def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_ti
     cimage = np.real(np.fft.ifftshift(np.fft.ifft2(f_cimag)))
     cprofile_2d = cimage[:, cimage.shape[1]//2]
     
-    intensity_convolved = np.interp(h, x, cprofile_2d, right=0.)
+    intensity_convolved = np.interp(h, grid[0][0], cprofile_2d, right=0.)
     
     #normalizes the convolved intensity
     
-    norm_intensity = np.trapz(2*np.pi * h * intensity_raw, h)\
-                                / np.trapz(2*np.pi * h * intensity_convolved, h)
+    norm_intensity = np.trapz(h * intensity_raw, h) / np.trapz(h * intensity_convolved, h)
     
     intensity_convolved *= norm_intensity
 
@@ -339,12 +345,13 @@ def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_ti
 
     logging.info("#################################################################################")
 
-    return h, intensity_convolved
+    return intensity_convolved
     
-def log_likelihood(theta, data, other_params):
+def log_likelihood(theta, data, other_params, h, grid, f_beam):
     
+    t_global = time.perf_counter() 
     
-    h, intensity_convolved = get_emission_fast(theta, data, other_params)
+    intensity_convolved = get_emission_fast(theta, data, other_params)
     
     emission_profile = interp1d(h, intensity_convolved)
 
@@ -356,8 +363,11 @@ def log_likelihood(theta, data, other_params):
     
     log_likelihood.counter += 1
 
-    print("iteration {}: chi2 = {:.1f} for beta = {:.1f}, SFR = {:.1f}, v_c = {:.1f}".format(\
+    logging.info("iteration {}: chi2 = {:.1f} for beta = {:.1f}, SFR = {:.1f}, v_c = {:.1f}".format(\
           log_likelihood.counter, chi2, theta[0], theta[1], theta[2]))
+
+    time_global = (time.perf_counter() - t_global)
+    logging.info("global likelihood time (s)={}".format( time_global))
     
     return -0.5 * chi2
 
@@ -410,7 +420,7 @@ def log_prior_gaussian(theta, data):
     else:
         return -np.inf
 
-def log_probability(theta, data, other_params):
+def log_probability(theta, data, other_params, h, grid, f_beam,):
     """
     defines the probability as a combination of priors and likelihood
     
@@ -430,7 +440,7 @@ def log_probability(theta, data, other_params):
     if not np.isfinite(lp):
         return -np.inf
     
-    return lp + log_likelihood(theta, data, other_params)
+    return lp + log_likelihood(theta, data, other_params), lp
 
 
 if __name__ == "__main__":
@@ -451,14 +461,14 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.join(mydir.data_dir, folder)):
         os.mkdir(os.path.join(mydir.data_dir, folder))
 
-    filename = os.path.join(mydir.data_dir, folder, "trial_run.h5")
+    filename = os.path.join(mydir.data_dir, folder, "trial_run_2.h5")
     
     
     backend = emcee.backends.HDFBackend(filename)
     backend.reset(nwalkers, ndim)
         
     sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability,\
-                                    args=(data,other_params), backend = backend)
+                                    args=(data,other_params, h, grid, f_beam), backend = backend)
     sampler.run_mcmc(pos, 100, progress=True);
     
     
@@ -479,7 +489,7 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
         os.mkdir(os.path.join(mydir.plot_dir, folder))
 
-    plt.savefig(os.path.join(mydir.plot_dir, folder, "emission.png"))
+    plt.savefig(os.path.join(mydir.plot_dir, folder, "emission2.png"))
     
     print("Mean acceptance fraction: {0:.3f}".format(np.mean(sampler.acceptance_fraction)))
     

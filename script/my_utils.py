@@ -34,23 +34,14 @@ def twod_making(profile, x_axis, nimage=1000):
 
     x_ext = np.linspace(-x_axis.max(), x_axis.max(), nimage)
     
-    y_ext = x_ext
-    
-    xy, yx = np.meshgrid(x_ext,y_ext)
-    
-    x_1d = np.linspace(-x_axis.max()*np.sqrt(2), x_axis.max()*np.sqrt(2), nimage)
-        
-    profile_ext_pos = np.interp(x_1d[x_1d>0.], x_axis, profile, right=0.)
-    
-    profile_ext_neg = profile_ext_pos[::-1]
-    
-    profile_ext = np.concatenate((profile_ext_neg, profile_ext_pos))
-        
-    function_ext = scipy.interpolate.interp1d(x_1d, profile_ext)
+    xy, yx = np.meshgrid(x_ext,x_ext)
+                        
+    function_ext = scipy.interpolate.interp1d(x_axis, profile, \
+                                              fill_value = (profile[0], 0.), bounds_error=False)
         
     z = function_ext(np.sqrt(xy**2 + yx**2))
     
-    return x_ext, y_ext, z
+    return x_ext, z
 
 
 def to_habing_flux(I_UV):
