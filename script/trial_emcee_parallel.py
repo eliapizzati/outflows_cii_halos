@@ -1,15 +1,13 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue May 11 16:49:20 2021
-
-@author: anna
-"""
-
-import os, sys
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 import scipy.integrate as si
+
+import logging
+
+from multiprocessing import Pool
+
 
 #from numba import jit
 
@@ -26,11 +24,21 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
 from fast_solver import diff_system_fast, stopping_condition
 
 from radiation_fields import UVB_rates
-from my_utils import twod_making
+
 
 import gnedincooling as gc
 
 gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))        
+
+
+filename_log = str(input("filename for the logger:"))
+
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', \
+                    datefmt='%m/%d/%Y %I:%M:%S %p',\
+                    level=logging.DEBUG,\
+                    handlers=[logging.FileHandler(os.path.join(mydir.log_dir, "{}.log".format(filename_log))),\
+                              logging.StreamHandler()])
+
 
 # preliminar parameters
 
@@ -63,10 +71,32 @@ rmax = 30
 h_resol = 500
 r_resol = 500
 
+cut = 45.
+
+
+
+h = np.linspace(0.3,rmax, h_resol)
+
+beam_interp = np.interp(h, data.x_beam/1e3/nc.pc, data.beam, right=0.)
+
+beam_interp[beam_interp<0.] = 0.
+
+beam_func = interp1d(h, beam_interp, \
+                     fill_value = (beam_interp[0], 0.), bounds_error=False)
+
+h_ext = np.linspace(-rmax, rmax, 2*h_resol)
+    
+grid = np.meshgrid(h_ext,h_ext)
+
+beam_2d = beam_func(np.sqrt(grid[0]**2 + grid[1]**2))
+f_beam = np.fft.fft2(beam_2d)
+
+        
 integrator = "RK45"
     
 
 other_params = dict([("integrator", integrator),
+                   ("cut", cut),
                    ("rmax", rmax),
                    ("h_resol", h_resol),
                    ("r_resol", r_resol),
@@ -93,8 +123,15 @@ other_params = dict([("integrator", integrator),
 theta : beta, SFR, v_c
 """
 
-def get_emission_fast(theta, data, other_params, print_time = True):
+def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp = True, print_time_total = True):
     
+    
+    if print_time_total:
+          
+        t_total = time.perf_counter()
+
+    logging.info("#################################################################################")
+
     # setting the parameters
     
     beta, SFR_pure, v_c_pure = theta
@@ -164,18 +201,18 @@ def get_emission_fast(theta, data, other_params, print_time = True):
     
     r_eval = np.linspace(r_bound[0],r_bound[1],other_params["r_resol"])
     
-    if print_time:
+    if print_time_ivp:
           
         t_ivp = time.perf_counter()
 
-
+    cut = other_params["cut"]
     sol = si.solve_ivp(diff_system_fast, r_bound, y0, t_eval=r_eval,\
-                       args=( SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s),\
+                       args=( SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s, cut),\
                        method = other_params["integrator"], events=stopping_condition) #,rtol=1.0e-3
         
-    if print_time:
+    if print_time_ivp:
         time_ivp = (time.perf_counter() - t_ivp)
-        print("total time ivp (s)=", time_ivp)
+        logging.info("time ivp (s)={}".format(time_ivp))
 
     r_kpc = sol.t # in kpc
     v_kms = sol.y[0] # in km/s
@@ -190,7 +227,7 @@ def get_emission_fast(theta, data, other_params, print_time = True):
     
     
     # ionization part
-            
+
     
     gamma_CI = other_params["gamma_CI"] + nc.Gamma_CI_FUV_1000 * (1./r_kpc)**2 * SFR_pure*f_esc_FUV
     gamma_CI += nc.Gamma_CI_EUV_1000 * (1./r_kpc)**2 * SFR_pure*f_esc_ion
@@ -224,6 +261,7 @@ def get_emission_fast(theta, data, other_params, print_time = True):
 
     x_CII = 1. / (1. + (gamma_CII)/(beta_CIII * n_e) + (beta_CII * n_e)/(gamma_CI + kappa_CI * n_e) + kappa_CII/beta_CIII)
 
+
     # emission part
     
     epsilon = 7.9e-20 *  n**2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII * np.exp(-92./T) /  92.**0.5        
@@ -248,7 +286,6 @@ def get_emission_fast(theta, data, other_params, print_time = True):
 
     # intergrating along the line of sight
     
-    h = np.linspace(min(r_kpc),max(max(r_kpc),rmax), h_resol)
    
     sigma_CII = np.zeros_like(h)
     
@@ -257,7 +294,7 @@ def get_emission_fast(theta, data, other_params, print_time = True):
         integral = np.trapz(epsilon[r_kpc>el_h] * nc.pc * 1e3 * r_kpc[r_kpc>el_h] / np.sqrt((r_kpc[r_kpc>el_h])**2 - el_h**2), r_kpc[r_kpc>el_h])                
         sigma_CII[i_h] = 2.*integral
                 
-    
+
     # transforming sigma to the intensity
     
     FWHM_vel = other_params["FWHM_vel"]
@@ -268,18 +305,18 @@ def get_emission_fast(theta, data, other_params, print_time = True):
     intensity_raw *= 1e26 #transformation to mJy 
     intensity_raw /= 4.2e10 #transforming sr to arcsec^2
     
-        
-    x, y, profile_2d = twod_making(intensity_raw, h, nimage=1000)
-    
-    beam_interp = np.interp(h, data.x_beam/1e3/nc.pc, data.beam, right=0.)
-    
-    beam_interp[beam_interp<0.] = 0.
 
-    x_beam, y_beam, beam_2d = twod_making(beam_interp, h, nimage=1000)
-    
+    # convolution
+    t_conv = time.perf_counter()
+
+    intraw_func = interp1d(h, intensity_raw, \
+                           fill_value = (intensity_raw[0], 0.), bounds_error=False)
+
+    profile_2d = intraw_func(np.sqrt(grid[0]**2 + grid[1]**2))
+    f_imag = np.fft.fft2(profile_2d)
+
     #makes the 2dfft
     
-    f_beam = np.fft.fft2(beam_2d)
     f_imag = np.fft.fft2(profile_2d)
                         
     #convolution
@@ -287,21 +324,30 @@ def get_emission_fast(theta, data, other_params, print_time = True):
     cimage = np.real(np.fft.ifftshift(np.fft.ifft2(f_cimag)))
     cprofile_2d = cimage[:, cimage.shape[1]//2]
     
-    intensity_convolved = np.interp(h, x, cprofile_2d, right=0.)
+    intensity_convolved = np.interp(h, grid[0][0], cprofile_2d, right=0.)
     
     #normalizes the convolved intensity
     
-    norm_intensity = np.trapz(2*np.pi * h * intensity_raw, h)\
-                                / np.trapz(2*np.pi * h * intensity_convolved, h)
+    norm_intensity = np.trapz(h * intensity_raw, h) / np.trapz(h * intensity_convolved, h)
     
     intensity_convolved *= norm_intensity
 
-    return h, intensity_convolved
+    time_conv = (time.perf_counter() - t_conv)
+    logging.info("time conv (s)={}".format(time_conv))
+
+    if print_time_total:
+        time_total = (time.perf_counter() - t_total)
+        logging.info("total time (s)={}".format( time_total))
+
+    logging.info("#################################################################################")
+
+    return intensity_convolved
     
-def log_likelihood(theta, data, other_params):
+def log_likelihood(theta, data, other_params, h, grid, f_beam):
     
+    t_global = time.perf_counter() 
     
-    h, intensity_convolved = get_emission_fast(theta, data, other_params)
+    intensity_convolved = get_emission_fast(theta, data, other_params, h, grid, f_beam)
     
     emission_profile = interp1d(h, intensity_convolved)
 
@@ -310,11 +356,18 @@ def log_likelihood(theta, data, other_params):
     residuals = 2*res / (data.err_down + data.err_up) 
     
     chi2 = np.sum(residuals**2)
-    print(chi2)
-    print(theta)
+    
+    log_likelihood.counter += 1
+
+    logging.info("iteration {}: chi2 = {:.1f} for beta = {:.1f}, SFR = {:.1f}, v_c = {:.1f}".format(\
+          log_likelihood.counter, chi2, theta[0], theta[1], theta[2]))
+
+    time_global = (time.perf_counter() - t_global)
+    logging.info("global likelihood time (s)={}".format( time_global))
+    
     return -0.5 * chi2
 
-def log_prior(theta):
+def log_prior_uniform(theta, data):
     """
     defines the priors for the set of parameters theta
     
@@ -336,7 +389,34 @@ def log_prior(theta):
     
     return -np.inf
 
-def log_probability(theta, data, other_params):
+
+def log_prior_gaussian(theta, data):
+    """
+    defines the priors for the set of parameters theta
+    
+    Parameters
+    ==========
+    theta: array
+            
+    Returns
+    =======
+    priors value: float
+
+    """    
+    
+    beta, SFR, v_c = theta
+    
+    if 1.0 < beta < 8.0 and SFR >= 1. and v_c >= 50.:
+        prior =  0.0
+        
+        prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
+        prior += - 2*(v_c-data.params_obs["v_c"])**2/(data.params_obs["v_c_err_up"]+data.params_obs["v_c_err_down"])**2
+
+        return prior
+    else:
+        return -np.inf
+
+def log_probability(theta, data, other_params, h, grid, f_beam):
     """
     defines the probability as a combination of priors and likelihood
     
@@ -351,35 +431,45 @@ def log_probability(theta, data, other_params):
     priors value: float
 
     """    
-    lp = log_prior(theta)
+    lp = log_prior_gaussian(theta, data)
     
     if not np.isfinite(lp):
         return -np.inf
     
-    return lp + log_likelihood(theta, data, other_params)
+    return lp + log_likelihood(theta, data, other_params, h, grid, f_beam)
 
 
 if __name__ == "__main__":
     
-    from schwimmbad import MPIPool
 
+    log_likelihood.counter = 0
+    theta_true = [4.0, 50., 200.]
     
-    with MPIPool() as pool:
-        if not pool.is_master():
-            pool.wait()
-            sys.exit(0)
+    ndim = len(theta_true)
+    nwalkers= 32
+    
+    pos = theta_true + np.asarray([1.0, 50., 50.]) * np.random.randn(nwalkers, ndim)
+    
+    pos[pos < 0] = 5.
 
-        theta_true = [3.0, 50., 250.]
-        
-        ndim = len(theta_true)
-        nwalkers= 32
-        
-        pos = theta_true + np.asarray([1.0, 50., 100.]) * np.random.randn(nwalkers, ndim)
-        
+
+    folder = "data_emcee"
+    
+    if not os.path.exists(os.path.join(mydir.data_dir, folder)):
+        os.mkdir(os.path.join(mydir.data_dir, folder))
+
+    filename = os.path.join(mydir.data_dir, folder, "trial_run_2.h5")
+    
+    
+    backend = emcee.backends.HDFBackend(filename)
+    backend.reset(nwalkers, ndim)
+
+    with Pool() as pool:
+
         sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability,\
-                                        args=(data,other_params), pool = pool)
-        sampler.run_mcmc(pos, 100, progress=True);
-        
+                                    args=(data,other_params, h, grid, f_beam), backend = backend)
+        sampler.run_mcmc(pos, 1e3, progress=True);
+    
     
     fig, axes = plt.subplots(3, figsize=(10, 7), sharex=True)
     samples = sampler.get_chain()
@@ -393,12 +483,12 @@ if __name__ == "__main__":
         
     axes[-1].set_xlabel("step number")
     
-    folder = "plot_emcee_parallel"
+    folder = "plot_emcee"
     
     if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
         os.mkdir(os.path.join(mydir.plot_dir, folder))
 
-    plt.savefig(os.path.join(mydir.plot_dir, folder, "emission.png"))
+    plt.savefig(os.path.join(mydir.plot_dir, folder, "emission2.png"))
     
     print("Mean acceptance fraction: {0:.3f}".format(np.mean(sampler.acceptance_fraction)))
     
@@ -407,6 +497,9 @@ if __name__ == "__main__":
     np.mean(sampler.get_autocorr_time())
     )
     )
+    
+    
+    
     
     
     
