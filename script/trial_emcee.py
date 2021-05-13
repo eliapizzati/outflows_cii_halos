@@ -361,7 +361,7 @@ def log_prior_gaussian(theta, data):
     
     beta, SFR, v_c = theta
     
-    if 1.0 < beta < 8.0:
+    if 1.0 < beta < 8.0 and SFR >= 1. and v_c >= 50.:
         prior =  0.0
         
         prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
