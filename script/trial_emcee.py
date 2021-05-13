@@ -420,7 +420,7 @@ def log_prior_gaussian(theta, data):
     else:
         return -np.inf
 
-def log_probability(theta, data, other_params, h, grid, f_beam,):
+def log_probability(theta, data, other_params, h, grid, f_beam):
     """
     defines the probability as a combination of priors and likelihood
     
@@ -440,7 +440,7 @@ def log_probability(theta, data, other_params, h, grid, f_beam,):
     if not np.isfinite(lp):
         return -np.inf
     
-    return lp + log_likelihood(theta, data, other_params), lp
+    return lp + log_likelihood(theta, data, other_params, h, grid, f_beam), lp
 
 
 if __name__ == "__main__":
