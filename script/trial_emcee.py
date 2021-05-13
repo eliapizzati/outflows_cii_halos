@@ -363,12 +363,13 @@ def log_prior_gaussian(theta, data):
     
     if 1.0 < beta < 8.0:
         prior =  0.0
-    else:
-        prior = -np.inf
         
-    prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
-    prior += - 2*(SFR-data.params_obs["v_c"])**2/(data.params_obs["v_c_err_up"]+data.params_obs["v_c_err_down"])**2
+        prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
+        prior += - 2*(SFR-data.params_obs["v_c"])**2/(data.params_obs["v_c_err_up"]+data.params_obs["v_c_err_down"])**2
 
+        return prior
+    else:
+        return -np.inf
 
 def log_probability(theta, data, other_params):
     """
