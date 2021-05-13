@@ -13,7 +13,7 @@ import time
 import itertools
 
 import mydir
-from trial_emcee import data, other_params, get_emission_fast
+from trial_emcee import data, other_params, get_emission_fast, h, f_beam, grid
 import plot_config as pltc
 import natconst as nc
 
@@ -24,6 +24,7 @@ from post_sol_modules import get_ionization_states, get_surface_density, get_int
 betas = [5.5]
 SFRs = [50.]
 v_cs = [250.]
+
 
 
 fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=15)
@@ -42,7 +43,7 @@ for  beta, SFR, v_c in itertools.product(betas, SFRs, v_cs):
      
     time_profile = time.perf_counter()
         
-    h, intensity = get_emission_fast(theta, data, other_params)    
+    h, intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)    
             
     time_profile = (time.perf_counter() - time_profile)
         
@@ -83,7 +84,7 @@ alpine = ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
 
    
 fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
-plt.savefig(os.path.join(mydir.plot_dir, folder, "emission_2.png"))
+plt.savefig(os.path.join(mydir.plot_dir, folder, "emission_3.png"))
     
         
         

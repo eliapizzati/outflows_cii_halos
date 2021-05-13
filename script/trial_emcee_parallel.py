@@ -123,7 +123,7 @@ other_params = dict([("integrator", integrator),
 theta : beta, SFR, v_c
 """
 
-def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp = True, print_time_total = True):
+def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp = False, print_time_total = False):
     
     
     if print_time_total:
@@ -307,14 +307,13 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     
 
     # convolution
-    t_conv = time.perf_counter()
+    #t_conv = time.perf_counter()
 
     intraw_func = interp1d(h, intensity_raw, \
                            fill_value = (intensity_raw[0], 0.), bounds_error=False)
 
     profile_2d = intraw_func(np.sqrt(grid[0]**2 + grid[1]**2))
-    f_imag = np.fft.fft2(profile_2d)
-
+    
     #makes the 2dfft
     
     f_imag = np.fft.fft2(profile_2d)
@@ -332,8 +331,8 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     
     intensity_convolved *= norm_intensity
 
-    time_conv = (time.perf_counter() - t_conv)
-    logging.info("time conv (s)={}".format(time_conv))
+    #time_conv = (time.perf_counter() - t_conv)
+    #logging.info("time conv (s)={}".format(time_conv))
 
     if print_time_total:
         time_total = (time.perf_counter() - t_total)
@@ -346,6 +345,8 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
 def log_likelihood(theta, data, other_params, h, grid, f_beam):
     
     
+    t_total = time.perf_counter()
+    
     intensity_convolved = get_emission_fast(theta, data, other_params, h, grid, f_beam)
     
     emission_profile = interp1d(h, intensity_convolved)
@@ -357,6 +358,9 @@ def log_likelihood(theta, data, other_params, h, grid, f_beam):
     chi2 = np.sum(residuals**2)
     
     log_likelihood.counter += 1
+
+    time_total = (time.perf_counter() - t_total)
+    logging.info("total time (s)={}".format( time_total))
 
     logging.info("iteration {}: chi2 = {:.1f} for beta = {:.1f}, SFR = {:.1f}, v_c = {:.1f}".format(\
           log_likelihood.counter, chi2, theta[0], theta[1], theta[2]))
