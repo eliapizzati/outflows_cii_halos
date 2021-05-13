@@ -440,7 +440,7 @@ def log_probability(theta, data, other_params, h, grid, f_beam):
     if not np.isfinite(lp):
         return -np.inf
     
-    return lp + log_likelihood(theta, data, other_params, h, grid, f_beam), lp
+    return lp + log_likelihood(theta, data, other_params, h, grid, f_beam)
 
 
 if __name__ == "__main__":
