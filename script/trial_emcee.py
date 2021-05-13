@@ -351,7 +351,7 @@ def log_likelihood(theta, data, other_params, h, grid, f_beam):
     
     t_global = time.perf_counter() 
     
-    intensity_convolved = get_emission_fast(theta, data, other_params)
+    intensity_convolved = get_emission_fast(theta, data, other_params, h, grid, f_beam)
     
     emission_profile = interp1d(h, intensity_convolved)
 
