@@ -310,8 +310,13 @@ def log_likelihood(theta, data, other_params):
     residuals = 2*res / (data.err_down + data.err_up) 
     
     chi2 = np.sum(residuals**2)
-    print(chi2)
-    print(theta)
+    
+    log_likelihood.counter += 1
+
+    print("iteration {}: chi2 = {:.1f} fot beta = {:.1f}, SFR = {:.1f}, v_c = {:.1f}".format(\
+          log_likelihood.counter, chi2, theta[0], theta[1], theta[2]))
+    
+    
     return -0.5 * chi2
 
 def log_prior(theta):
@@ -333,6 +338,7 @@ def log_prior(theta):
     
     if 1.0 < beta < 6.0 and 10. < SFR < 100.0 and 150. < v_c < 250.:
         return 0.0
+    
     
     return -np.inf
 
@@ -368,6 +374,8 @@ if __name__ == "__main__":
     
     pos = theta_true + np.asarray([1.0, 50., 100.]) * np.random.randn(nwalkers, ndim)
     
+    pos[pos < 0] += np.asarray([1.0, 50., 100.]) * np.random.rand()
+        
     sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability, args=(data,other_params))
     sampler.run_mcmc(pos, 100, progress=True);
     
