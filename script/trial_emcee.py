@@ -410,7 +410,7 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.join(mydir.data_dir, folder)):
         os.mkdir(os.path.join(mydir.data_dir, folder))
 
-    filename = os.path.join(mydir.plot_dir, folder, "trial_run.h5")
+    filename = os.path.join(mydir.data_dir, folder, "trial_run.h5")
     
     
     backend = emcee.backends.HDFBackend(filename)
