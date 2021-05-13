@@ -396,6 +396,7 @@ def log_probability(theta, data, other_params):
 
 if __name__ == "__main__":
     
+    log_likelihood.counter = 0
     theta_true = [4.0, 50., 200.]
     
     ndim = len(theta_true)
