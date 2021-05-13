@@ -322,7 +322,7 @@ def log_likelihood(theta, data, other_params):
     
     return -0.5 * chi2
 
-def log_prior_uniform(theta):
+def log_prior_uniform(theta, data):
     """
     defines the priors for the set of parameters theta
     
@@ -385,7 +385,7 @@ def log_probability(theta, data, other_params):
     priors value: float
 
     """    
-    lp = log_prior(theta)
+    lp = log_prior_gaussian(theta, data)
     
     if not np.isfinite(lp):
         return -np.inf
