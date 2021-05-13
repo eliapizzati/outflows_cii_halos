@@ -458,7 +458,7 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.join(mydir.data_dir, folder)):
         os.mkdir(os.path.join(mydir.data_dir, folder))
 
-    filename = os.path.join(mydir.data_dir, folder, "trial_run_2.h5")
+    filename = os.path.join(mydir.data_dir, folder, "trial_run_parallel.h5")
     
     
     backend = emcee.backends.HDFBackend(filename)
@@ -488,7 +488,7 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
         os.mkdir(os.path.join(mydir.plot_dir, folder))
 
-    plt.savefig(os.path.join(mydir.plot_dir, folder, "emission2.png"))
+    plt.savefig(os.path.join(mydir.plot_dir, folder, "emission_parallel.png"))
     
     print("Mean acceptance fraction: {0:.3f}".format(np.mean(sampler.acceptance_fraction)))
     
