@@ -403,8 +403,21 @@ if __name__ == "__main__":
     pos = theta_true + np.asarray([1.0, 50., 50.]) * np.random.randn(nwalkers, ndim)
     
     pos[pos < 0] += np.asarray([1.0, 50., 50.]) * np.random.rand()
+
+
+    folder = "data_emcee"
+    
+    if not os.path.exists(os.path.join(mydir.data_dir, folder)):
+        os.mkdir(os.path.join(mydir.data_dir, folder))
+
+    filename = os.path.join(mydir.plot_dir, folder, "trial_run.h5")
+    
+    
+    backend = emcee.backends.HDFBackend(filename)
+    backend.reset(nwalkers, ndim)
         
-    sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability, args=(data,other_params))
+    sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability,\
+                                    args=(data,other_params), backend = backend)
     sampler.run_mcmc(pos, 100, progress=True);
     
     
