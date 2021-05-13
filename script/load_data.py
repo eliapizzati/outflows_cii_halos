@@ -200,6 +200,8 @@ for name, name_short in zip(names, names_short):
                        ("SFR_err_up", 10**log_SFR_lim_up-10**log_SFR),
                        ("SFR_err_down", 10**log_SFR-10**log_SFR_lim_down),
                        ("v_c", v_c/1e5),
+                       ("v_c_err_up", (v_c_lim_up-v_c)/1e5),
+                       ("v_c_err_down", (v_c-v_c_lim_down)/1e5),
                        ("sersic_effective_radius", 1.1),
                        ("sersic_index", 1.),
                        ("beta_best_fit", None),

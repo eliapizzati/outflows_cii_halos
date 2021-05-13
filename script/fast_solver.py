@@ -35,7 +35,7 @@ gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
 # SYSTEM OF EQUATIONS
 
-def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s):
+def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s, cut):
     """
     differential system for the Euler equations
     
@@ -107,8 +107,8 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     return output
 
 
-def stopping_condition(t, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s): 
-    return y[0] - 40. # in km/s
+def stopping_condition(t, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s, cut): 
+    return y[0] - cut # in km/s
 
 stopping_condition.terminal = True
 stopping_condition.direction = -1
@@ -116,7 +116,7 @@ stopping_condition.direction = -1
 
 if __name__=="__main__":
 
-    def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45"):
+    def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45", cut = 50.):
         """
         computes the profiles for v, n, T as a function of r
         
@@ -247,7 +247,7 @@ if __name__=="__main__":
           t_ivp = time.perf_counter()
     
         sol = si.solve_ivp(diff_system_fast, r_bound, y0, t_eval=r_eval,\
-                           args=( SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s),\
+                           args=( SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s, cut),\
                            method = integrator, events=stopping_condition) #,rtol=1.0e-3
         
         if print_time:
@@ -321,7 +321,7 @@ if __name__=="__main__":
     
         print(integrator)
         time_profile = time.perf_counter()
-        profiles_new = get_profiles_fast(params, resol=500,print_time=True,integrator=integrator)
+        profiles_new = get_profiles_fast(params, resol=500,print_time=True,integrator=integrator, cut=50.)
         time_profile = (time.perf_counter() - time_profile)
     
         print("total profile time new (s)=", time_profile)

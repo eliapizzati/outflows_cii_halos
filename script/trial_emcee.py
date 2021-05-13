@@ -63,10 +63,13 @@ rmax = 30
 h_resol = 500
 r_resol = 500
 
+cut = 45.
+
 integrator = "RK45"
     
 
 other_params = dict([("integrator", integrator),
+                   ("cut", cut),
                    ("rmax", rmax),
                    ("h_resol", h_resol),
                    ("r_resol", r_resol),
@@ -168,9 +171,9 @@ def get_emission_fast(theta, data, other_params, print_time = True):
           
         t_ivp = time.perf_counter()
 
-
+    cut = other_params["cut"]
     sol = si.solve_ivp(diff_system_fast, r_bound, y0, t_eval=r_eval,\
-                       args=( SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s),\
+                       args=( SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s, cut),\
                        method = other_params["integrator"], events=stopping_condition) #,rtol=1.0e-3
         
     if print_time:
@@ -319,7 +322,7 @@ def log_likelihood(theta, data, other_params):
     
     return -0.5 * chi2
 
-def log_prior(theta):
+def log_prior_uniform(theta):
     """
     defines the priors for the set of parameters theta
     
@@ -339,8 +342,33 @@ def log_prior(theta):
     if 1.0 < beta < 6.0 and 10. < SFR < 100.0 and 150. < v_c < 250.:
         return 0.0
     
-    
     return -np.inf
+
+
+def log_prior_gaussian(theta, data):
+    """
+    defines the priors for the set of parameters theta
+    
+    Parameters
+    ==========
+    theta: array
+            
+    Returns
+    =======
+    priors value: float
+
+    """    
+    
+    beta, SFR, v_c = theta
+    
+    if 1.0 < beta < 8.0:
+        prior =  0.0
+    else:
+        prior = -np.inf
+        
+    prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
+    prior += - 2*(SFR-data.params_obs["v_c"])**2/(data.params_obs["v_c_err_up"]+data.params_obs["v_c_err_down"])**2
+
 
 def log_probability(theta, data, other_params):
     """
@@ -367,14 +395,14 @@ def log_probability(theta, data, other_params):
 
 if __name__ == "__main__":
     
-    theta_true = [3.0, 50., 250.]
+    theta_true = [4.0, 50., 200.]
     
     ndim = len(theta_true)
     nwalkers= 32
     
-    pos = theta_true + np.asarray([1.0, 50., 100.]) * np.random.randn(nwalkers, ndim)
+    pos = theta_true + np.asarray([1.0, 50., 50.]) * np.random.randn(nwalkers, ndim)
     
-    pos[pos < 0] += np.asarray([1.0, 50., 100.]) * np.random.rand()
+    pos[pos < 0] += np.asarray([1.0, 50., 50.]) * np.random.rand()
         
     sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability, args=(data,other_params))
     sampler.run_mcmc(pos, 100, progress=True);
