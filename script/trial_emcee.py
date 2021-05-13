@@ -96,8 +96,14 @@ other_params = dict([("integrator", integrator),
 theta : beta, SFR, v_c
 """
 
-def get_emission_fast(theta, data, other_params, print_time = True):
+def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_time_total = True):
     
+    
+    if print_time_total:
+          
+        t_total = time.perf_counter()
+
+
     # setting the parameters
     
     beta, SFR_pure, v_c_pure = theta
@@ -167,7 +173,7 @@ def get_emission_fast(theta, data, other_params, print_time = True):
     
     r_eval = np.linspace(r_bound[0],r_bound[1],other_params["r_resol"])
     
-    if print_time:
+    if print_time_ivp:
           
         t_ivp = time.perf_counter()
 
@@ -176,7 +182,7 @@ def get_emission_fast(theta, data, other_params, print_time = True):
                        args=( SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s, cut),\
                        method = other_params["integrator"], events=stopping_condition) #,rtol=1.0e-3
         
-    if print_time:
+    if print_time_ivp:
         time_ivp = (time.perf_counter() - t_ivp)
         print("total time ivp (s)=", time_ivp)
 
@@ -298,6 +304,10 @@ def get_emission_fast(theta, data, other_params, print_time = True):
                                 / np.trapz(2*np.pi * h * intensity_convolved, h)
     
     intensity_convolved *= norm_intensity
+
+    if print_time_total:
+        time_total = (time.perf_counter() - t_total)
+        print("total time (s)=", time_total)
 
     return h, intensity_convolved
     
