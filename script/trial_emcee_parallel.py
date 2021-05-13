@@ -5,7 +5,7 @@ Created on Tue May 11 16:49:20 2021
 @author: anna
 """
 
-import os
+import os, sys
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
@@ -361,16 +361,25 @@ def log_probability(theta, data, other_params):
 
 if __name__ == "__main__":
     
-    theta_true = [3.0, 50., 250.]
+    from schwimmbad import MPIPool
+
     
-    ndim = len(theta_true)
-    nwalkers= 32
-    
-    pos = theta_true + np.asarray([1.0, 50., 100.]) * np.random.randn(nwalkers, ndim)
-    
-    sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability, args=(data,other_params))
-    sampler.run_mcmc(pos, 100, progress=True);
-    
+    with MPIPool() as pool:
+        if not pool.is_master():
+            pool.wait()
+            sys.exit(0)
+
+        theta_true = [3.0, 50., 250.]
+        
+        ndim = len(theta_true)
+        nwalkers= 32
+        
+        pos = theta_true + np.asarray([1.0, 50., 100.]) * np.random.randn(nwalkers, ndim)
+        
+        sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability,\
+                                        args=(data,other_params), pool = pool)
+        sampler.run_mcmc(pos, 100, progress=True);
+        
     
     fig, axes = plt.subplots(3, figsize=(10, 7), sharex=True)
     samples = sampler.get_chain()
@@ -384,7 +393,7 @@ if __name__ == "__main__":
         
     axes[-1].set_xlabel("step number")
     
-    folder = "plot_emcee"
+    folder = "plot_emcee_parallel"
     
     if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
         os.mkdir(os.path.join(mydir.plot_dir, folder))
@@ -398,9 +407,6 @@ if __name__ == "__main__":
     np.mean(sampler.get_autocorr_time())
     )
     )
-    
-    
-    
     
     
     
