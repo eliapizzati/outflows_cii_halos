@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 import scipy.integrate as si
 
+import logging
+
 #from numba import jit
 
 import time
@@ -31,6 +33,16 @@ from my_utils import twod_making
 import gnedincooling as gc
 
 gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))        
+
+
+filename_log = str(input("filename for the logger:"))
+
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', \
+                    datefmt='%m/%d/%Y %I:%M:%S %p',\
+                    level=logging.DEBUG,\
+                    handlers=[logging.FileHandler(os.path.join(mydir.log_dir, "{}.log".format(filename_log))),\
+                              logging.StreamHandler()])
+
 
 # preliminar parameters
 
@@ -103,6 +115,7 @@ def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_ti
           
         t_total = time.perf_counter()
 
+    logging.info("#################################################################################")
 
     # setting the parameters
     
@@ -184,7 +197,7 @@ def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_ti
         
     if print_time_ivp:
         time_ivp = (time.perf_counter() - t_ivp)
-        print("total time ivp (s)=", time_ivp)
+        logging.info("time ivp (s)={}".format(time_ivp))
 
     r_kpc = sol.t # in kpc
     v_kms = sol.y[0] # in km/s
@@ -199,7 +212,8 @@ def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_ti
     
     
     # ionization part
-            
+    t_ion = time.perf_counter()
+
     
     gamma_CI = other_params["gamma_CI"] + nc.Gamma_CI_FUV_1000 * (1./r_kpc)**2 * SFR_pure*f_esc_FUV
     gamma_CI += nc.Gamma_CI_EUV_1000 * (1./r_kpc)**2 * SFR_pure*f_esc_ion
@@ -233,8 +247,13 @@ def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_ti
 
     x_CII = 1. / (1. + (gamma_CII)/(beta_CIII * n_e) + (beta_CII * n_e)/(gamma_CI + kappa_CI * n_e) + kappa_CII/beta_CIII)
 
+    time_ion = (time.perf_counter() - t_ion)
+    logging.info("time ion (s)={}".format(time_ion))
+
     # emission part
     
+    t_emission = time.perf_counter()
+
     epsilon = 7.9e-20 *  n**2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII * np.exp(-92./T) /  92.**0.5        
 
     C_ul_e = 8.63e-6 / 2. / np.sqrt(T) * 1.60
@@ -266,7 +285,7 @@ def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_ti
         integral = np.trapz(epsilon[r_kpc>el_h] * nc.pc * 1e3 * r_kpc[r_kpc>el_h] / np.sqrt((r_kpc[r_kpc>el_h])**2 - el_h**2), r_kpc[r_kpc>el_h])                
         sigma_CII[i_h] = 2.*integral
                 
-    
+
     # transforming sigma to the intensity
     
     FWHM_vel = other_params["FWHM_vel"]
@@ -277,7 +296,13 @@ def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_ti
     intensity_raw *= 1e26 #transformation to mJy 
     intensity_raw /= 4.2e10 #transforming sr to arcsec^2
     
-        
+    time_emission = (time.perf_counter() - t_emission)
+    logging.info("time emission (s)={}".format(time_emission))
+
+    # convolution
+    t_conv = time.perf_counter()
+
+    
     x, y, profile_2d = twod_making(intensity_raw, h, nimage=1000)
     
     beam_interp = np.interp(h, data.x_beam/1e3/nc.pc, data.beam, right=0.)
@@ -305,9 +330,14 @@ def get_emission_fast(theta, data, other_params, print_time_ivp = True, print_ti
     
     intensity_convolved *= norm_intensity
 
+    time_conv = (time.perf_counter() - t_conv)
+    logging.info("time conv (s)={}".format(time_conv))
+
     if print_time_total:
         time_total = (time.perf_counter() - t_total)
-        print("total time (s)=", time_total)
+        logging.info("total time (s)={}".format( time_total))
+
+    logging.info("#################################################################################")
 
     return h, intensity_convolved
     
@@ -326,9 +356,8 @@ def log_likelihood(theta, data, other_params):
     
     log_likelihood.counter += 1
 
-    print("iteration {}: chi2 = {:.1f} fot beta = {:.1f}, SFR = {:.1f}, v_c = {:.1f}".format(\
+    print("iteration {}: chi2 = {:.1f} for beta = {:.1f}, SFR = {:.1f}, v_c = {:.1f}".format(\
           log_likelihood.counter, chi2, theta[0], theta[1], theta[2]))
-    
     
     return -0.5 * chi2
 
@@ -375,7 +404,7 @@ def log_prior_gaussian(theta, data):
         prior =  0.0
         
         prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
-        prior += - 2*(SFR-data.params_obs["v_c"])**2/(data.params_obs["v_c_err_up"]+data.params_obs["v_c_err_down"])**2
+        prior += - 2*(v_c-data.params_obs["v_c"])**2/(data.params_obs["v_c_err_up"]+data.params_obs["v_c_err_down"])**2
 
         return prior
     else:

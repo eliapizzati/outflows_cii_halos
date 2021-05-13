@@ -221,7 +221,8 @@ for name, name_short in zip(names, names_short):
         #observational_data.print_values()
 
         ax_star.scatter(log_M_star, log_SFR)
-        print(name_short, "\t", round(10**log_SFR, 1),"\t", round(10**log_M_star/1e10, 3),"\t", round(M_halo/1e11,3), "\p", round(M_halo_lim_up/1e11,3), "\m", round(M_halo_lim_down/1e11,3),\
+        print(name_short, "\t", round(10**log_SFR, 1),"\p", round(10**log_SFR_lim_up, 1),"\m", round(10**log_SFR_lim_down, 1),\
+              "\t", round(10**log_M_star/1e10, 3),"\t", round(M_halo/1e11,3), "\p", round(M_halo_lim_up/1e11,3), "\m", round(M_halo_lim_down/1e11,3),\
               "\t", round(redshift,2), "\t", round(v_c/1e5,1), "\p", round(v_c_lim_up/1e5), "\m",  round(v_c_lim_down/1e5), halo_class)
     
 
