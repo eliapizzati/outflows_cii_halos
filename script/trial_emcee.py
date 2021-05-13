@@ -402,7 +402,7 @@ if __name__ == "__main__":
     
     pos = theta_true + np.asarray([1.0, 50., 50.]) * np.random.randn(nwalkers, ndim)
     
-    pos[pos < 0] += np.asarray([1.0, 50., 50.]) * np.random.rand()
+    pos[pos < 0] = 5.
 
 
     folder = "data_emcee"
