@@ -15,28 +15,40 @@ import plot_config as pltc
 import mydir
 import natconst as nc
 
+from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
+                      names_other,  observational_data_fuji
 
              
-from trial_emcee import get_emission_fast
-from trial_emcee import data, other_params, h, f_beam, grid
 
-name_description = "parallel"
+
+emission = False 
+
+nwalkers= 96
+nsteps = 1e3
+
+data = obs_data_list[8]
+
+
+
 folder_data = "data_emcee"
     
 if not os.path.exists(os.path.join(mydir.data_dir, folder_data)):
     os.mkdir(os.path.join(mydir.data_dir, folder_data))
 
-filename = os.path.join(mydir.data_dir, folder_data, "trial_run_parallel.h5")
 
-reader = emcee.backends.HDFBackend(filename)
+folder_plot = "plot_emcee"
+
+if not os.path.exists(os.path.join(mydir.plot_dir, folder_plot)):
+    os.mkdir(os.path.join(mydir.plot_dir, folder_plot))
+
+filename = "{}_{:.0f}".format(data.params_obs["name_short"], nsteps)
+
+path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
+
+reader = emcee.backends.HDFBackend(path)
 
 samples = reader.get_chain()
 samples_flat = reader.get_chain(flat=True)
-
-folder = "plot_emcee"
-
-if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
-    os.mkdir(os.path.join(mydir.plot_dir, folder))
 
 ndim = 3
 
@@ -52,7 +64,7 @@ for i in range(ndim):
     
 axes[-1].set_xlabel("step number")
 
-plt.savefig(os.path.join(mydir.plot_dir, folder, "chain_{}.png".format(name_description)))
+plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "chain_{}.png".format(filename)))
 
 
 #tau = reader.get_autocorr_time()
@@ -79,35 +91,40 @@ labels = ["beta", "SFR", "v_c"]
 labels += ["log prob"]# "log prior"]
 
 corner.corner(all_samples, labels=labels)
-plt.savefig(os.path.join(mydir.plot_dir, folder, "corner_{}.png".format(name_description)))
+plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "corner_{}.png".format(filename)))
 
 
 # emission
 
-fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=15)
+if emission:
+    from mcmc import get_emission_fast
+    from mcmc import other_params, h, f_beam, grid
 
-ax_int_conv.set_ylim((1e-3,1e2))
-
-    
-for  walker in samples[::20]:
-    for theta in walker[::8]:
-
-        print(theta)
         
-        intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)    
-        
-        ax_int_conv.plot(h, intensity, alpha=0.1, color="gray")
+    fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=15)
     
-    
-alpine = ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
-        markerfacecolor='maroon',markeredgecolor='maroon', marker='o',\
-        linestyle='', ecolor = 'maroon')
-
-   
-fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
-plt.savefig(os.path.join(mydir.plot_dir, folder, "emission_{}.png".format(name_description)))
+    ax_int_conv.set_ylim((1e-3,1e2))
     
         
+    for  walker in samples[::20]:
+        for theta in walker[::8]:
+    
+            print(theta)
+            
+            intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)    
+            
+            ax_int_conv.plot(h, intensity, alpha=0.1, color="gray")
+        
+        
+    alpine = ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
+            markerfacecolor='maroon',markeredgecolor='maroon', marker='o',\
+            linestyle='', ecolor = 'maroon')
+    
+       
+    fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
+    plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "emission_{}.png".format(filename)))
+        
+            
+            
         
     
-
