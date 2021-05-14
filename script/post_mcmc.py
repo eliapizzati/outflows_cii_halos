@@ -79,8 +79,6 @@ labels = ["beta", "SFR", "v_c"]
 labels += ["log prob"]# "log prior"]
 
 corner.corner(all_samples, labels=labels)
-
-
 plt.savefig(os.path.join(mydir.plot_dir, folder, "corner_{}.png".format(name_description)))
 
 
@@ -107,9 +105,6 @@ alpine = ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
 
    
 fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
-
-folder = "plot_emcee"
-
 plt.savefig(os.path.join(mydir.plot_dir, folder, "emission_{}.png".format(name_description)))
     
         

@@ -29,7 +29,7 @@ load_sol_from_file = True
 
 to_file = False
 
-plot_hydro = True
+plot_hydro = False
 
 plot_emission = True
 

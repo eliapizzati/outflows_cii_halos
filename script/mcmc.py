@@ -13,6 +13,9 @@ import scipy.integrate as si
 
 import logging
 
+from multiprocessing import Pool
+
+
 #from numba import jit
 
 import time
@@ -37,12 +40,24 @@ gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
 
 
-# preliminar parameters
+# preliminar parameters (TO CHECK EVERY TIME)
 
 
+nwalkers= 96
+nsteps = 1e4
+
+parallel = True
 
 data = obs_data_list[1]
 
+data.params_obs.update(beta_best_fit = 5.0)
+
+filename = "{}_{}".format(data.params_obs["name_short"], nsteps)
+
+filename_log = filename
+
+
+# other params loading
 
 redshift = data.params_obs["redshift"]
 
@@ -120,14 +135,12 @@ other_params = dict([("integrator", integrator),
 theta : beta, SFR, v_c
 """
 
-def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp = True, print_time_total = True):
+def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp = False, print_time_total = False):
     
     
     if print_time_total:
           
         t_total = time.perf_counter()
-
-    logging.info("#################################################################################")
 
     # setting the parameters
     
@@ -304,7 +317,6 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     
 
     # convolution
-    t_conv = time.perf_counter()
 
     intraw_func = interp1d(h, intensity_raw, \
                            fill_value = (intensity_raw[0], 0.), bounds_error=False)
@@ -329,20 +341,16 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     
     intensity_convolved *= norm_intensity
 
-    time_conv = (time.perf_counter() - t_conv)
-    logging.info("time conv (s)={}".format(time_conv))
-
     if print_time_total:
         time_total = (time.perf_counter() - t_total)
         logging.info("total time (s)={}".format( time_total))
 
-    logging.info("#################################################################################")
 
     return intensity_convolved
+
     
 def log_likelihood(theta, data, other_params, h, grid, f_beam):
     
-    t_global = time.perf_counter() 
     
     intensity_convolved = get_emission_fast(theta, data, other_params, h, grid, f_beam)
     
@@ -359,10 +367,8 @@ def log_likelihood(theta, data, other_params, h, grid, f_beam):
     logging.info("iteration {}: chi2 = {:.1f} for beta = {:.1f}, SFR = {:.1f}, v_c = {:.1f}".format(\
           log_likelihood.counter, chi2, theta[0], theta[1], theta[2]))
 
-    time_global = (time.perf_counter() - t_global)
-    logging.info("global likelihood time (s)={}".format( time_global))
-    
     return -0.5 * chi2
+
 
 def log_prior_uniform(theta, data):
     """
@@ -403,7 +409,7 @@ def log_prior_gaussian(theta, data):
     
     beta, SFR, v_c = theta
     
-    if 1.0 < beta < 8.0 and SFR >= 1. and v_c >= 50.:
+    if 1.0 < beta < 10.0 and SFR >= 1. and v_c >= 50.:
         prior =  0.0
         
         prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
@@ -412,6 +418,7 @@ def log_prior_gaussian(theta, data):
         return prior
     else:
         return -np.inf
+
 
 def log_probability(theta, data, other_params, h, grid, f_beam):
     """
@@ -438,7 +445,6 @@ def log_probability(theta, data, other_params, h, grid, f_beam):
 
 if __name__ == "__main__":
     
-    filename_log = str(input("filename for the logger:"))
 
     logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', \
                     datefmt='%m/%d/%Y %I:%M:%S %p',\
@@ -446,60 +452,51 @@ if __name__ == "__main__":
                     handlers=[logging.FileHandler(os.path.join(mydir.log_dir, "{}.log".format(filename_log))),\
                               logging.StreamHandler()])
 
+    folder = "data_emcee"
+    
+    if not os.path.exists(os.path.join(mydir.data_dir, folder)):
+        os.mkdir(os.path.join(mydir.data_dir, folder))
+
+    path = os.path.join(mydir.data_dir, folder, "{}.h5".format(filename))
+
+    
     log_likelihood.counter = 0
-    theta_true = [4.0, 50., 200.]
+    
+    theta_true = [data.params_obs["beta_best_fit"], data.params_obs["SFR"], data.params_obs["v_c"]]
     
     ndim = len(theta_true)
-    nwalkers= 32
     
     pos = theta_true + np.asarray([1.0, 50., 50.]) * np.random.randn(nwalkers, ndim)
     
     pos[pos < 0] = 5.
 
 
-    folder = "data_emcee"
-    
-    if not os.path.exists(os.path.join(mydir.data_dir, folder)):
-        os.mkdir(os.path.join(mydir.data_dir, folder))
-
-    filename = os.path.join(mydir.data_dir, folder, "trial_run_2.h5")
-    
-    
-    backend = emcee.backends.HDFBackend(filename)
+    backend = emcee.backends.HDFBackend(path)
     backend.reset(nwalkers, ndim)
         
-    sampler = emcee.EnsembleSampler(nwalkers=32, ndim=ndim, log_prob_fn=log_probability,\
-                                    args=(data,other_params, h, grid, f_beam), backend = backend)
-    sampler.run_mcmc(pos, 100, progress=True);
-    
-    
-    fig, axes = plt.subplots(3, figsize=(10, 7), sharex=True)
-    samples = sampler.get_chain()
-    labels = ["beta", "SFR", "v_c"]
-    for i in range(ndim):
-        ax = axes[i]
-        ax.plot(samples[:, :, i], "k", alpha=0.3)
-        ax.set_xlim(0, len(samples))
-        ax.set_ylabel(labels[i])
-        ax.yaxis.set_label_coords(-0.1, 0.5)
+    if parallel:
         
-    axes[-1].set_xlabel("step number")
+        with Pool() as pool:
     
-    folder = "plot_emcee"
-    
-    if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
-        os.mkdir(os.path.join(mydir.plot_dir, folder))
+            sampler = emcee.EnsembleSampler(nwalkers=nwalkers, ndim=ndim, log_prob_fn=log_probability,\
+                                        args=(data,other_params, h, grid, f_beam), backend = backend, pool=pool)
+            sampler.run_mcmc(pos, nsteps, progress=True);
+        
+    else:
 
-    plt.savefig(os.path.join(mydir.plot_dir, folder, "chain.png"))
-    
+        sampler = emcee.EnsembleSampler(nwalkers=nwalkers, ndim=ndim, log_prob_fn=log_probability,\
+                                    args=(data,other_params, h, grid, f_beam), backend = backend)
+        sampler.run_mcmc(pos, nsteps, progress=True);
+
+            
+    samples = sampler.get_chain()
+
     print("Mean acceptance fraction: {0:.3f}".format(np.mean(sampler.acceptance_fraction)))
     
     print(
     "Mean autocorrelation time: {0:.3f} steps".format(
-    np.mean(sampler.get_autocorr_time())
-    )
-    )
-    
+    np.mean(sampler.get_autocorr_time())))
+
     
     
     
