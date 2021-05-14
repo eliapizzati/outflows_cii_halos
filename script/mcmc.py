@@ -44,18 +44,17 @@ gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
 
 nwalkers= 96
-nsteps = 1e4
+nsteps = 1e3
 
 parallel = True
 
-data = obs_data_list[1]
+data = obs_data_list[8]
 
 data.params_obs.update(beta_best_fit = 5.0)
 
 filename = "{}_{}".format(data.params_obs["name_short"], nsteps)
 
 filename_log = filename
-
 
 # other params loading
 
@@ -448,10 +447,22 @@ if __name__ == "__main__":
 
     logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', \
                     datefmt='%m/%d/%Y %I:%M:%S %p',\
-                    level=logging.DEBUG,\
+                    level=logging.INFO,\
                     handlers=[logging.FileHandler(os.path.join(mydir.log_dir, "{}.log".format(filename_log))),\
                               logging.StreamHandler()])
 
+    
+    logging.info("###################################################################")
+    
+    logging.info("running an MCMC with the following params:")
+    logging.info("n steps = ", nsteps)
+    logging.info("n walkers =", nwalkers)
+    logging.info("parallelization =" parallel)
+    logging.info("data object =", data.params_obs["name_short"])
+    logging.info("filename = ", filename)
+                 
+    logging.info("###################################################################")
+    
     folder = "data_emcee"
     
     if not os.path.exists(os.path.join(mydir.data_dir, folder)):
