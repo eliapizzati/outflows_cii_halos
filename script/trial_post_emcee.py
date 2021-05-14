@@ -13,10 +13,12 @@ import emcee
 
 import plot_config as pltc
 import mydir
-from trial_emcee import get_emission_fast
-from trial_emcee import data, other_params, get_emission_fast, h, f_beam, grid
 import natconst as nc
 
+
+             
+from trial_emcee import get_emission_fast
+from trial_emcee import data, other_params, h, f_beam, grid
 
 name_description = "parallel"
 folder_data = "data_emcee"
@@ -89,10 +91,9 @@ fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=15)
 ax_int_conv.set_ylim((1e-3,1e2))
 
     
-for  theta in samples:
+for  walker in samples[::20]:
+    for theta in walker[::8]:
 
-    print(theta)
-             
     intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)    
         
     ax_int_conv.plot(h, intensity, alpha=0.1, color="gray")

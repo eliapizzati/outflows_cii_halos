@@ -19,7 +19,6 @@ import numpy as np
 from model_classes import sol_profiles
 from radiation_fields import UVB_rates
 from my_utils import get_virial_mass_from_vc, get_concentration, get_virial_radius
-from sol_modules import get_profiles
 
 import plot_config as pltc
 
@@ -325,7 +324,8 @@ if __name__=="__main__":
         time_profile = (time.perf_counter() - time_profile)
     
         print("total profile time new (s)=", time_profile)
-        
+        from sol_modules import get_profiles
+
         
         time_profile = time.perf_counter()
         profiles_old = get_profiles(params, resol=500,print_time=True,integrator=integrator)

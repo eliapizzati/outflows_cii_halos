@@ -470,26 +470,9 @@ if __name__ == "__main__":
                                     args=(data,other_params, h, grid, f_beam), backend = backend, pool=pool)
         sampler.run_mcmc(pos, 1e3, progress=True);
     
-    
-    fig, axes = plt.subplots(3, figsize=(10, 7), sharex=True)
-    samples = sampler.get_chain()
-    labels = ["beta", "SFR", "v_c"]
-    for i in range(ndim):
-        ax = axes[i]
-        ax.plot(samples[:, :, i], "k", alpha=0.3)
-        ax.set_xlim(0, len(samples))
-        ax.set_ylabel(labels[i])
-        ax.yaxis.set_label_coords(-0.1, 0.5)
         
-    axes[-1].set_xlabel("step number")
-    
-    folder = "plot_emcee"
-    
-    if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
-        os.mkdir(os.path.join(mydir.plot_dir, folder))
+    samples = sampler.get_chain()
 
-    plt.savefig(os.path.join(mydir.plot_dir, folder, "chain_parallel.png"))
-    
     print("Mean acceptance fraction: {0:.3f}".format(np.mean(sampler.acceptance_fraction)))
     
     print(
