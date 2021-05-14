@@ -35,13 +35,6 @@ import gnedincooling as gc
 gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))        
 
 
-filename_log = str(input("filename for the logger:"))
-
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', \
-                    datefmt='%m/%d/%Y %I:%M:%S %p',\
-                    level=logging.DEBUG,\
-                    handlers=[logging.FileHandler(os.path.join(mydir.log_dir, "{}.log".format(filename_log))),\
-                              logging.StreamHandler()])
 
 
 # preliminar parameters
@@ -445,6 +438,14 @@ def log_probability(theta, data, other_params, h, grid, f_beam):
 
 if __name__ == "__main__":
     
+    filename_log = str(input("filename for the logger:"))
+
+    logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', \
+                    datefmt='%m/%d/%Y %I:%M:%S %p',\
+                    level=logging.DEBUG,\
+                    handlers=[logging.FileHandler(os.path.join(mydir.log_dir, "{}.log".format(filename_log))),\
+                              logging.StreamHandler()])
+
     log_likelihood.counter = 0
     theta_true = [4.0, 50., 200.]
     
@@ -489,7 +490,7 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
         os.mkdir(os.path.join(mydir.plot_dir, folder))
 
-    plt.savefig(os.path.join(mydir.plot_dir, folder, "emission2.png"))
+    plt.savefig(os.path.join(mydir.plot_dir, folder, "chain.png"))
     
     print("Mean acceptance fraction: {0:.3f}".format(np.mean(sampler.acceptance_fraction)))
     

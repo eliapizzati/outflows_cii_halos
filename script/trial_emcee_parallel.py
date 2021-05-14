@@ -488,7 +488,7 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
         os.mkdir(os.path.join(mydir.plot_dir, folder))
 
-    plt.savefig(os.path.join(mydir.plot_dir, folder, "emission_parallel.png"))
+    plt.savefig(os.path.join(mydir.plot_dir, folder, "chain_parallel.png"))
     
     print("Mean acceptance fraction: {0:.3f}".format(np.mean(sampler.acceptance_fraction)))
     
