@@ -48,9 +48,9 @@ nsteps = 1e3
 
 parallel = True
 
-data = obs_data_list[8]
+data = obs_data_list[13]
 
-data.params_obs.update(beta_best_fit = 5.0)
+data.params_obs.update(beta_best_fit = 4.0)
 
 filename = "{}_{}".format(data.params_obs["name_short"], nsteps)
 
@@ -455,11 +455,11 @@ if __name__ == "__main__":
     logging.info("###################################################################")
     
     logging.info("running an MCMC with the following params:")
-    logging.info("n steps = ", nsteps)
-    logging.info("n walkers =", nwalkers)
-    logging.info("parallelization =", parallel)
-    logging.info("data object =", data.params_obs["name_short"])
-    logging.info("filename = ", filename)
+    logging.info("n steps = {}".format( nsteps))
+    logging.info("n walkers = {}".format( nwalkers))
+    logging.info("parallelization = {}".format( parallel))
+    logging.info("data object = {}".format( data.params_obs["name_short"]))
+    logging.info("filename = {}".format( filename))
                  
     logging.info("###################################################################")
     
