@@ -367,7 +367,7 @@ def log_likelihood(theta, data, other_params, h, grid, f_beam):
     logging.info("iteration {}: chi2 = {:.1f} for beta = {:.1f}, SFR = {:.1f}, v_c = {:.1f}".format(\
           log_likelihood.counter, chi2, theta[0], theta[1], theta[2]))
 
-    return -0.5 * chi2
+    return - chi2
 
 
 def log_prior_uniform(theta, data):

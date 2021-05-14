@@ -8,6 +8,7 @@ Created on Thu May 13 14:21:16 2021
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.interpolate import interp1d
 import corner
 import emcee
 
@@ -26,7 +27,7 @@ emission = True
 nwalkers= 96
 nsteps = 1e3
 
-data = obs_data_list[8]
+data = obs_data_list[13]
 
 
 
@@ -98,7 +99,24 @@ plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "corner_{}.png".format(fil
 
 if emission:
     from mcmc import get_emission_fast
-    from mcmc import other_params, h, f_beam, grid
+    from mcmc import other_params, rmax, h_resol
+    
+    h = np.linspace(0.3,rmax, h_resol)
+
+    h_ext = np.linspace(-rmax, rmax, 2*h_resol)
+        
+    grid = np.meshgrid(h_ext,h_ext)
+    
+    
+    beam_interp = np.interp(h, data.x_beam/1e3/nc.pc, data.beam, right=0.)
+    
+    beam_interp[beam_interp<0.] = 0.
+    
+    beam_func = interp1d(h, beam_interp, \
+                         fill_value = (beam_interp[0], 0.), bounds_error=False)
+    
+    beam_2d = beam_func(np.sqrt(grid[0]**2 + grid[1]**2))
+    f_beam = np.fft.fft2(beam_2d)
 
         
     fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=15)
