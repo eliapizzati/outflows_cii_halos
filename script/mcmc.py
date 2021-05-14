@@ -457,7 +457,7 @@ if __name__ == "__main__":
     logging.info("running an MCMC with the following params:")
     logging.info("n steps = ", nsteps)
     logging.info("n walkers =", nwalkers)
-    logging.info("parallelization =" parallel)
+    logging.info("parallelization =", parallel)
     logging.info("data object =", data.params_obs["name_short"])
     logging.info("filename = ", filename)
                  
