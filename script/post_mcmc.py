@@ -107,7 +107,7 @@ if emission:
     
         
     for  walker in samples[::20]:
-        for theta in walker[::16]:
+        for theta in walker[::32]:
     
             print(theta)
             

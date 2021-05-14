@@ -48,7 +48,7 @@ nsteps = 1e3
 
 parallel = True
 
-data = obs_data_list[17]
+data = obs_data_list[8]
 
 data.params_obs.update(beta_best_fit = 4.0)
 
@@ -88,16 +88,17 @@ cut = 45.
 
 h = np.linspace(0.3,rmax, h_resol)
 
+h_ext = np.linspace(-rmax, rmax, 2*h_resol)
+    
+grid = np.meshgrid(h_ext,h_ext)
+
+
 beam_interp = np.interp(h, data.x_beam/1e3/nc.pc, data.beam, right=0.)
 
 beam_interp[beam_interp<0.] = 0.
 
 beam_func = interp1d(h, beam_interp, \
                      fill_value = (beam_interp[0], 0.), bounds_error=False)
-
-h_ext = np.linspace(-rmax, rmax, 2*h_resol)
-    
-grid = np.meshgrid(h_ext,h_ext)
 
 beam_2d = beam_func(np.sqrt(grid[0]**2 + grid[1]**2))
 f_beam = np.fft.fft2(beam_2d)
