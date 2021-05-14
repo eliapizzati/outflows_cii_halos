@@ -21,7 +21,7 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
              
 
 
-emission = False 
+emission = True 
 
 nwalkers= 96
 nsteps = 1e3
@@ -107,7 +107,7 @@ if emission:
     
         
     for  walker in samples[::20]:
-        for theta in walker[::8]:
+        for theta in walker[::16]:
     
             print(theta)
             
