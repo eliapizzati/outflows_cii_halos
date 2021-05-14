@@ -94,9 +94,9 @@ ax_int_conv.set_ylim((1e-3,1e2))
 for  walker in samples[::20]:
     for theta in walker[::8]:
 
-    intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)    
+        intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)    
         
-    ax_int_conv.plot(h, intensity, alpha=0.1, color="gray")
+        ax_int_conv.plot(h, intensity, alpha=0.1, color="gray")
     
     
 alpine = ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
