@@ -22,12 +22,24 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
              
 
 
-emission = True 
+emission = False 
 
 nwalkers= 96
-nsteps = 1e3
+nsteps = 1e4
 
-data = obs_data_list[13]
+data = obs_data_list[1]
+
+filename = "{}_{:.0f}".format(data.params_obs["name_short"], nsteps)
+
+print("###################################################################")
+
+print("postprocessing an MCMC with the following params:")
+print("n steps = {}".format( nsteps))
+print("n walkers = {}".format( nwalkers))
+print("data object = {}".format( data.params_obs["name_short"]))
+print("filename = {}".format( filename))
+             
+print("###################################################################")
 
 
 
@@ -42,7 +54,6 @@ folder_plot = "plot_emcee"
 if not os.path.exists(os.path.join(mydir.plot_dir, folder_plot)):
     os.mkdir(os.path.join(mydir.plot_dir, folder_plot))
 
-filename = "{}_{:.0f}".format(data.params_obs["name_short"], nsteps)
 
 path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
 
@@ -99,14 +110,8 @@ plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "corner_{}.png".format(fil
 
 if emission:
     from mcmc import get_emission_fast
-    from mcmc import other_params, rmax, h_resol
-    
-    h = np.linspace(0.3,rmax, h_resol)
-
-    h_ext = np.linspace(-rmax, rmax, 2*h_resol)
+    from mcmc import other_params, h, grid
         
-    grid = np.meshgrid(h_ext,h_ext)
-    
     
     beam_interp = np.interp(h, data.x_beam/1e3/nc.pc, data.beam, right=0.)
     
@@ -124,7 +129,7 @@ if emission:
     ax_int_conv.set_ylim((1e-3,1e2))
     
         
-    for  walker in samples[::20]:
+    for  walker in samples[::200]:
         for theta in walker[::32]:
     
             print(theta)
