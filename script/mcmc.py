@@ -61,7 +61,7 @@ filename_log = filename
 
 redshift = data.params_obs["redshift"]
 
-FWH_vel = data.params_obs["line_FWHM"]
+FWHM_vel = data.params_obs["line_FWHM"]
 
 rmax = 30
 h_resol = 500
@@ -123,7 +123,7 @@ def get_other_params(redshift, FWHM_vel, r_resol = 500, cut = 45., integrator = 
                    ("gamma_CI", gamma_CI),
                    ("gamma_CII", gamma_CII),
                    ("UV_intensity", UV_intensity),
-                   ("FWHM_vel", ),
+                   ("FWHM_vel", FWHM_vel),
                    ("I_CMB", I_CMB),
                    ("B_coeff", B_coeff),
                    ("P_UV_ul", P_UV_ul),            
@@ -133,7 +133,7 @@ def get_other_params(redshift, FWHM_vel, r_resol = 500, cut = 45., integrator = 
 
 if __name__ == "__main__":
     
-    other_params = get_other_params(redshift, FWH_vel, r_resol, cut, integrator)
+    other_params = get_other_params(redshift, FWHM_vel, r_resol, cut, integrator)
 
 # MCMC definitions
 
