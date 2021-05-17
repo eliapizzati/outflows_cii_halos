@@ -112,7 +112,7 @@ kwargs = dict(
             bins=50, smooth=0.9, labels=labels, #label_kwargs=dict(fontsize=14),
             #title_kwargs=dict(fontsize=14), 
             color='#0072C1',
-            truth_color='C3', quantiles=[0.16, 0.84],
+            truth_color='C3', quantiles=[0.16, 0.5, 0.84],
             levels=(1 - np.exp(-0.5), 1 - np.exp(-2), 1 - np.exp(-9 / 2.)),
             plot_density=False, plot_datapoints=True, fill_contours=True,
             max_n_ticks=3)
