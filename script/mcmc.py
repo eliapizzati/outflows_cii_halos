@@ -288,6 +288,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     B_coeff = other_params["B_coeff"]
     P_UV_ul = other_params["P_UV_ul"]
     T_UV = other_params["T_UV"]
+    I_CMB = other_params["I_CMB"]
     
     num = B_coeff * I_CMB + nc.A_coeff_ul + P_UV_ul * intensity_tot + n_e * C_ul_e + n_H * C_ul_H 
     den =  B_coeff * I_CMB + P_UV_ul * intensity_tot * np.exp(-nc.T_star/T_UV) +\
