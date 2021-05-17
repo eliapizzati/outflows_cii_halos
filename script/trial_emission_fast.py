@@ -61,7 +61,7 @@ for  beta, SFR, v_c in itertools.product(betas, SFRs, v_cs):
            ("v_c", v_c),
            ("redshift", data.params_obs["redshift"]),
            ("Zeta", 1.0),
-           ("alfa", 0.5),
+           ("alfa", 1.0),
            ("R_in", 0.3)])   
     
     profiles = get_profiles(params, resol=500)
