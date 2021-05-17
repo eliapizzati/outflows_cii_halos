@@ -30,7 +30,7 @@ nsteps = 1e3
 sample_step = int(20 * (nsteps/1e3))
 walker_step = int(12 * (nwalkers/96))
 
-data = obs_data_list[8]
+data = obs_data_list[13]
 
 filename = "{}_{:.0f}".format(data.params_obs["name_short"], nsteps)
 
