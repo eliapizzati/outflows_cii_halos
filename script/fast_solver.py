@@ -57,7 +57,7 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     kk = 1.3807e-16  # Bolzmann's constant [erg/K]
     mp = 1.6726e-24  # Mass of proton [g]
     gamma = 5./3
-    mus = 0.61 # mean molecular weight of the sun
+    mus = 1.0 # mean molecular weight 
     pc = 3.08572e18   # Parsec [cm]
     ms = 1.99e33      # Solar mass [g]
     gg = 6.672e-8   # Gravitational constant

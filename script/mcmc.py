@@ -157,6 +157,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     Zeta = 1. 
     R_in_pure = 0.3
     alfa = 1.
+    mus = 1.
     
     Plw = other_params["Plw"]
     Ph1 = other_params["Ph1"]
@@ -206,7 +207,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     R_kpc = R_in_pure # in kpc
     
     v0_kms = v0 / 1e5 # in km/s
-    n0_cm3 = rho0 / (nc.mp*nc.mus) # in cm-3
+    n0_cm3 = rho0 / (nc.mp*mus) # in cm-3
     T0_K = T0 # in K
     
     y0 = np.asarray([v0_kms,n0_cm3,T0_K]) 
