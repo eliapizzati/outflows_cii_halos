@@ -69,6 +69,8 @@ r_resol = 500
 
 cut = 45.
 
+integrator = "RK45"
+
 
 h = np.linspace(0.3,rmax, h_resol)
 
@@ -129,8 +131,9 @@ def get_other_params(redshift, FWHM_vel, r_resol = 500, cut = 45., integrator = 
                 
     return other_params
 
-
-other_params = get_other_params(redshift, FWH_vel, r_resol, cut, integrator)
+if __name__ == "__main__":
+    
+    other_params = get_other_params(redshift, FWH_vel, r_resol, cut, integrator)
 
 # MCMC definitions
 
