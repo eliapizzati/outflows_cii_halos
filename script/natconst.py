@@ -98,7 +98,7 @@ day = 8.6400e4    # Day  [s]
 #
 # gas constants
 gamma = 5./3
-mus = 1. # mean molecular weight of the sun
+mus = 0.61 # mean molecular weight of the sun
 knorm = kk/(mus*mp) 
 A_C = 2.69e-4 # carbon percentage for Z=1
 A_H = 0.76 # hydrogen percentage for Z=1
