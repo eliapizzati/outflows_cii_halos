@@ -23,7 +23,7 @@ from post_sol_modules import get_ionization_states, get_surface_density, get_int
 
 betas = [5.5]
 SFRs = [50.]
-v_cs = [250.]
+v_cs = [200.]
 
 
 
