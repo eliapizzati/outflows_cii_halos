@@ -65,13 +65,14 @@ for  beta, SFR, v_c in itertools.product(betas, SFRs, v_cs):
            ("R_in", 0.3)])   
     
     profiles = get_profiles(params, resol=500)
-
+    
+    profiles.plot(savefig=True)
     ionization_state = get_ionization_states(profiles, params)
-
+    ionization_state.plot(savefig=True)
     sigma_CII = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=True)
 
     intensity_raw = get_intensity_raw(sigma_CII, params, data.params_obs)
-
+    intensity_raw.plot(savefig=True)
     intensity_conv = get_intensity_convolved(intensity_raw, params, data.params_obs, data, add_central_contribution=False)
 
     
