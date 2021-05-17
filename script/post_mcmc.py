@@ -22,7 +22,7 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
              
 
 
-emission = True 
+emission = False 
 
 nwalkers= 96
 nsteps = 1e4
@@ -79,6 +79,8 @@ for i in range(ndim):
     
 axes[-1].set_xlabel("step number")
 
+fig.suptitle("{0:}, v_c = {1:.1f} km/s, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
+
 plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "chain_{}.png".format(filename)))
 
 
@@ -105,7 +107,62 @@ ndim = 3
 labels = ["beta", "SFR", "v_c"]
 labels += ["log prob"]# "log prior"]
 
-corner.corner(all_samples, labels=labels)
+
+kwargs = dict(
+            bins=50, smooth=0.9, labels=labels, #label_kwargs=dict(fontsize=14),
+            #title_kwargs=dict(fontsize=14), 
+            color='#0072C1',
+            truth_color='C3', quantiles=[0.16, 0.84],
+            levels=(1 - np.exp(-0.5), 1 - np.exp(-2), 1 - np.exp(-9 / 2.)),
+            plot_density=False, plot_datapoints=True, fill_contours=True,
+            max_n_ticks=3)
+
+fig,ax = plt.subplots(4,4,figsize=(10,10))
+
+corner.corner(all_samples, **kwargs, fig=fig)
+
+axes = np.array(fig.axes).reshape((ndim+1, ndim+1))
+
+
+true_values = [None, data.params_obs["SFR"], data.params_obs["v_c"], None]
+
+err_ups = [None, data.params_obs["SFR"]+data.params_obs["SFR_err_up"], data.params_obs["v_c"]+data.params_obs["v_c_err_up"], None ]
+err_downs = [None, data.params_obs["SFR"]-data.params_obs["SFR_err_down"], data.params_obs["v_c"]-data.params_obs["v_c_err_down"], None ]
+
+# Loop over the diagonal
+for i in range(ndim+1):
+    
+    ax = axes[i, i]
+    if i == 1 or i == 2:
+        ax.axvline(true_values[i], color=kwargs["truth_color"], linestyle='--', linewidth=1.3)
+        ax.axvspan(err_downs[i], err_ups[i], alpha=0.2, color='red')
+
+    if i == 3:
+        ax.set_xlim(-500,100)
+
+    
+# Loop over the histograms
+for yi in range(ndim+1):
+    for xi in range(yi):
+        
+        
+        ax = axes[yi, xi]
+        
+        if yi == 3:
+            ax.set_ylim(-500,200)
+        
+        
+        if xi == 1 or xi == 2:
+            ax.axvline(true_values[xi], color=kwargs["truth_color"], linestyle='--', linewidth=1.3)
+            ax.axvspan(err_downs[xi], err_ups[xi], alpha=0.2, color='red')
+
+        if yi == 1 or yi == 2:
+            ax.axhline(true_values[yi], color=kwargs["truth_color"], linestyle='--', linewidth=1.3)
+            ax.axhspan(err_downs[yi], err_ups[yi], alpha=0.2, color='red')
+
+        
+fig.suptitle("{0:}, v_c = {1:.1f} km/s, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
+
 plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "corner_{}.png".format(filename)))
 
 
@@ -149,7 +206,8 @@ if emission:
             markerfacecolor='maroon',markeredgecolor='maroon', marker='o',\
             linestyle='', ecolor = 'maroon')
     
-       
+    fig_int_conv.suptitle("{0:}, v_c = {1:.1f} km/s, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
+
     fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
     plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "emission_{}.png".format(filename)))
         
