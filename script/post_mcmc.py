@@ -109,9 +109,11 @@ plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "corner_{}.png".format(fil
 # emission
 
 if emission:
-    from mcmc import get_emission_fast
-    from mcmc import other_params, h, grid
+    from mcmc import get_emission_fast, get_other_params
+    from mcmc import h, grid
         
+    
+    other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"])
     
     beam_interp = np.interp(h, data.x_beam/1e3/nc.pc, data.beam, right=0.)
     

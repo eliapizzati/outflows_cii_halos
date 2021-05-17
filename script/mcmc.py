@@ -58,32 +58,16 @@ filename_log = filename
 
 # other params loading
 
+
 redshift = data.params_obs["redshift"]
 
-Plw = UVB_rates(redshift, quantity="LW rate")
-Ph1 = UVB_rates(redshift, quantity="H rate")
-Pg1 = UVB_rates(redshift, quantity="He rate")  
-gamma_H = Ph1
-gamma_CI = UVB_rates(redshift, quantity="CI rate")
-gamma_CII = UVB_rates(redshift, quantity="CII rate")
-UV_intensity = UVB_rates(redshift, quantity="UV intensity")
+FWH_vel = data.params_obs["line_FWHM"]
 
-I_CMB = (2*nc.hh*nc.line_CII_rest_frame**3) /  \
-        (nc.cc**2 * (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+redshift)*nc.CMB_temperature)) - 1.))
-        
-B_coeff = nc.A_coeff_ul * nc.cc**2 / (2*nc.hh*nc.line_CII_rest_frame**3)
-
-A_tilde = nc.A_coeff_kl*nc.A_coeff_ku / (nc.A_coeff_kl + nc.A_coeff_ku)
-P_UV_ul = A_tilde * nc.cc**2 / (2*nc.hh*nc.line_UV_mixing_rest_frame**3) 
-    
-T_UV = 3.61e4
-    
 rmax = 30
 h_resol = 500
 r_resol = 500
 
 cut = 45.
-
 
 
 h = np.linspace(0.3,rmax, h_resol)
@@ -103,14 +87,31 @@ beam_func = interp1d(h, beam_interp, \
 beam_2d = beam_func(np.sqrt(grid[0]**2 + grid[1]**2))
 f_beam = np.fft.fft2(beam_2d)
 
-        
-integrator = "RK45"
+
+def get_other_params(redshift, FWHM_vel, r_resol = 500, cut = 45., integrator = "RK45"):
     
 
-other_params = dict([("integrator", integrator),
+    Plw = UVB_rates(redshift, quantity="LW rate")
+    Ph1 = UVB_rates(redshift, quantity="H rate")
+    Pg1 = UVB_rates(redshift, quantity="He rate")  
+    gamma_H = Ph1
+    gamma_CI = UVB_rates(redshift, quantity="CI rate")
+    gamma_CII = UVB_rates(redshift, quantity="CII rate")
+    UV_intensity = UVB_rates(redshift, quantity="UV intensity")
+    
+    I_CMB = (2*nc.hh*nc.line_CII_rest_frame**3) /  \
+            (nc.cc**2 * (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+redshift)*nc.CMB_temperature)) - 1.))
+            
+    B_coeff = nc.A_coeff_ul * nc.cc**2 / (2*nc.hh*nc.line_CII_rest_frame**3)
+    
+    A_tilde = nc.A_coeff_kl*nc.A_coeff_ku / (nc.A_coeff_kl + nc.A_coeff_ku)
+    P_UV_ul = A_tilde * nc.cc**2 / (2*nc.hh*nc.line_UV_mixing_rest_frame**3) 
+        
+    T_UV = 3.61e4
+    
+
+    other_params = dict([("integrator", integrator),
                    ("cut", cut),
-                   ("rmax", rmax),
-                   ("h_resol", h_resol),
                    ("r_resol", r_resol),
                    ("redshift", redshift),
                    ("Plw", Plw),
@@ -120,14 +121,16 @@ other_params = dict([("integrator", integrator),
                    ("gamma_CI", gamma_CI),
                    ("gamma_CII", gamma_CII),
                    ("UV_intensity", UV_intensity),
-                   ("FWHM_vel", data.params_obs["line_FWHM"]),
+                   ("FWHM_vel", ),
                    ("I_CMB", I_CMB),
                    ("B_coeff", B_coeff),
                    ("P_UV_ul", P_UV_ul),            
                    ("T_UV", T_UV)])
                 
-    
+    return other_params
 
+
+other_params = get_other_params(redshift, FWH_vel, r_resol, cut, integrator)
 
 # MCMC definitions
 
