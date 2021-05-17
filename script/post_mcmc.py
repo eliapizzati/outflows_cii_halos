@@ -27,7 +27,7 @@ emission = True
 nwalkers= 96
 nsteps = 1e4
 
-sample_step = int(500 * (nsteps/1e3))
+sample_step = int(20 * (nsteps/1e3))
 walker_step = int(12 * (nwalkers/96))
 
 data = obs_data_list[1]
@@ -137,7 +137,8 @@ if emission:
     for  walker in samples[::sample_step]:
         for theta in walker[::walker_step]:
             counter += 1
-            print("computing emission for theta =", theta, "\t", "iteration number {}/{}".format(counter, nsteps*nwalkers/sample_step/walker_step))
+            print("computing emission for theta =", theta, "\t", "iteration number {}/{}"\
+                  .format(counter, int( nsteps*nwalkers/sample_step/walker_step)))
             
             intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)    
             
