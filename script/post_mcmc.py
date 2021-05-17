@@ -25,12 +25,12 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
 emission = True 
 
 nwalkers= 96
-nsteps = 1e4
+nsteps = 1e3
 
 sample_step = int(20 * (nsteps/1e3))
 walker_step = int(12 * (nwalkers/96))
 
-data = obs_data_list[1]
+data = obs_data_list[8]
 
 filename = "{}_{:.0f}".format(data.params_obs["name_short"], nsteps)
 
