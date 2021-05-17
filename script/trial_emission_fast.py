@@ -21,7 +21,7 @@ from sol_modules import get_profiles
 from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved
 
 
-betas = [5.5]
+betas = [7.5]
 SFRs = [50.]
 v_cs = [200.]
 
@@ -54,7 +54,7 @@ for  beta, SFR, v_c in itertools.product(betas, SFRs, v_cs):
     
     
     params = dict([("DM_model", "NFW"),
-           ("beta", beta), 
+           ("beta", 5.5), 
            ("SFR", SFR),
            ("f_esc_ion", 0.), 
            ("f_esc_FUV", 0.), 
