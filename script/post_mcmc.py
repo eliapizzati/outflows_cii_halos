@@ -133,11 +133,11 @@ if emission:
     
     ax_int_conv.set_ylim((1e-3,1e2))
     
-        
+    counter = 0
     for  walker in samples[::sample_step]:
         for theta in walker[::walker_step]:
-    
-            print(theta)
+            counter += 1
+            print("computing emission for theta =", theta, "\t", "iteration number {}/{}".format(counter, nsteps*nwalkers/sample_step/walker_step))
             
             intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)    
             
