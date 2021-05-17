@@ -13,7 +13,7 @@ import time
 import itertools
 
 import mydir
-from trial_emcee import data, other_params, get_emission_fast, h, f_beam, grid
+from mcmc import data, other_params, get_emission_fast, h, f_beam, grid
 import plot_config as pltc
 import natconst as nc
 
