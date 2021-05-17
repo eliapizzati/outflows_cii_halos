@@ -48,9 +48,9 @@ nsteps = 1e3
 
 parallel = True
 
-data = obs_data_list[17]
+data = obs_data_list[3]
 
-data.params_obs.update(beta_best_fit = 4.0)
+data.params_obs.update(beta_best_fit = 6.0)
 
 filename = "{}_{:.0f}".format(data.params_obs["name_short"], nsteps)
 

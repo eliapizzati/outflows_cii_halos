@@ -22,7 +22,7 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
              
 
 
-emission = True 
+emission = False 
 
 nwalkers= 96
 nsteps = 1e3
@@ -30,7 +30,7 @@ nsteps = 1e3
 sample_step = int(20 * (nsteps/1e3))
 walker_step = int(12 * (nwalkers/96))
 
-data = obs_data_list[13]
+data = obs_data_list[8]
 
 filename = "{}_{:.0f}".format(data.params_obs["name_short"], nsteps)
 
@@ -105,7 +105,7 @@ all_samples = np.concatenate(
 ndim = 3
 
 labels = ["beta", "SFR", "v_c"]
-labels += ["log prob"]# "log prior"]
+#labels += ["log prob"]# "log prior"]
 
 
 kwargs = dict(
@@ -117,11 +117,13 @@ kwargs = dict(
             plot_density=False, plot_datapoints=True, fill_contours=True,
             max_n_ticks=3)
 
-fig,ax = plt.subplots(4,4,figsize=(10,10))
+naxes = ndim 
 
-corner.corner(all_samples, **kwargs, fig=fig)
+fig,ax = plt.subplots(naxes,naxes,figsize=(10,10))
 
-axes = np.array(fig.axes).reshape((ndim+1, ndim+1))
+corner.corner(samples_flat, **kwargs, fig=fig)
+
+axes = np.array(fig.axes).reshape((naxes, naxes))
 
 
 true_values = [None, data.params_obs["SFR"], data.params_obs["v_c"], None]
@@ -130,7 +132,7 @@ err_ups = [None, data.params_obs["SFR"]+data.params_obs["SFR_err_up"], data.para
 err_downs = [None, data.params_obs["SFR"]-data.params_obs["SFR_err_down"], data.params_obs["v_c"]-data.params_obs["v_c_err_down"], None ]
 
 # Loop over the diagonal
-for i in range(ndim+1):
+for i in range(naxes):
     
     ax = axes[i, i]
     if i == 1 or i == 2:
@@ -142,7 +144,7 @@ for i in range(ndim+1):
 
     
 # Loop over the histograms
-for yi in range(ndim+1):
+for yi in range(naxes):
     for xi in range(yi):
         
         

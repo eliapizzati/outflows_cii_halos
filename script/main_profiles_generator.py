@@ -24,7 +24,6 @@ verbose = True
 err_switcher = True
 
 
-filename_log = str(input("filename for the logger:"))
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', \
                     datefmt='%m/%d/%Y %I:%M:%S %p',\
@@ -34,6 +33,8 @@ logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', \
 
 
 halo_class = input("which halo class (CII_halo, wo_CII_halo, other)?")
+
+filename_log = str(input("filename for the logger:"))
 
 if err_switcher: 
     err_side = input("which error (none, up, down)?")
