@@ -37,7 +37,7 @@ def get_name_core(params):
         
     return str(name_base + name_specs)
 
-def get_folder(params, class_type):
+def get_data_folder(params, class_type):
     """
     class_type can be profiles, ionization, emission
     """
@@ -46,6 +46,19 @@ def get_folder(params, class_type):
 
     if not os.path.exists(os.path.join(mydir.data_dir, folder)):
         os.mkdir(os.path.join(mydir.data_dir, folder))
+
+    return folder
+
+
+def get_plot_folder(params, class_type):
+    """
+    class_type can be profiles, ionization, emission
+    """
+        
+    folder = 'plot_{}'.format(class_type)
+
+    if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
+        os.mkdir(os.path.join(mydir.plot_dir, folder))
 
     return folder
 
@@ -62,7 +75,7 @@ def load_from_file(params, filename = None, class_type = "profiles", extension =
             
             name_core = get_name_core(params)
 
-            folder = get_folder(params, class_type)
+            folder = get_data_folder(params, class_type)
             
             path = os.path.join(mydir.data_dir, folder, name_prefix + name_core + extension)
             
@@ -90,7 +103,7 @@ def load_from_file(params, filename = None, class_type = "profiles", extension =
             
             name_core = get_name_core(params)
 
-            folder = get_folder(params, class_type)
+            folder = get_data_folder(params, class_type)
             
             path = os.path.join(mydir.data_dir, folder, name_prefix + name_core + extension)
             
@@ -130,7 +143,7 @@ def load_from_file(params, filename = None, class_type = "profiles", extension =
             
             name_core = get_name_core(params)
 
-            folder = get_folder(params, class_type)
+            folder = get_data_folder(params, class_type)
             
             path = os.path.join(mydir.data_dir, folder, name_prefix + name_core + extension)
             
@@ -183,7 +196,7 @@ class sol_profiles():
                             
             name_core = get_name_core(self.params)
             
-            folder = get_folder(self.params, self.name_prefix)
+            folder = get_data_folder(self.params, self.name_prefix)
             
             path = os.path.join(mydir.data_dir, folder, self.name_prefix + name_core + extension)
             
@@ -240,7 +253,7 @@ class sol_profiles():
             if savefig:
                 name_core = get_name_core(self.params)
             
-                folder = get_folder(self.params, self.name_prefix)
+                folder = get_plot_folder(self.params, self.name_prefix)
 
                 plt.savefig(os.path.join(mydir.plot_dir, folder,self.name_prefix + name_core + extension))
                 
@@ -284,7 +297,7 @@ class ion_profiles():
                             
             name_core = get_name_core(self.params)
             
-            folder = get_folder(self.params, self.name_prefix)
+            folder = get_data_folder(self.params, self.name_prefix)
             
             path = os.path.join(mydir.data_dir, folder, self.name_prefix + name_core + extension)
             
@@ -336,7 +349,7 @@ class ion_profiles():
             if savefig:
                 name_core = get_name_core(self.params)
         
-                folder = get_folder(self.params, self.name_prefix)
+                folder = get_plot_folder(self.params, self.name_prefix)
                 
                 plt.savefig(os.path.join(mydir.plot_dir, folder,self.name_prefix + name_core + extension))
                 
@@ -391,7 +404,7 @@ class lum_profile():
                             
             name_core = get_name_core(self.params)
             
-            folder = get_folder(self.params, self.name_prefix)
+            folder = get_data_folder(self.params, self.name_prefix)
             
             path = os.path.join(mydir.data_dir, folder, self.name_prefix + name_core + extension)
             
@@ -450,7 +463,7 @@ class lum_profile():
                 
                 name_core = get_name_core(self.params)
         
-                folder = get_folder(self.params, self.name_prefix)
+                folder = get_plot_folder(self.params, self.name_prefix)
                 
                 plt.savefig(os.path.join(mydir.plot_dir, folder,self.name_prefix + name_core + extension))
                 
