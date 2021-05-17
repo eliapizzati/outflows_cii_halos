@@ -48,7 +48,7 @@ nsteps = 1e3
 
 parallel = True
 
-data = obs_data_list[3]
+data = obs_data_list[7]
 
 data.params_obs.update(beta_best_fit = 6.0)
 
