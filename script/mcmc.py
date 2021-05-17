@@ -131,9 +131,9 @@ def get_other_params(redshift, FWHM_vel, r_resol = 500, cut = 45., integrator = 
                 
     return other_params
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     
-    other_params = get_other_params(redshift, FWHM_vel, r_resol, cut, integrator)
+other_params = get_other_params(redshift, FWHM_vel, r_resol, cut, integrator)
 
 # MCMC definitions
 
