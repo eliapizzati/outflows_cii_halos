@@ -20,7 +20,7 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
                       names_other,  observational_data_fuji, names_CII_halo_short
 
 
-names_list = ["DC_396844", "DC_683613", "DC_881725", "DC_488399"]#, "DC_630594", "DC_880016"]
+names_list = ["DC_396844", "DC_683613", "DC_881725"]#, "DC_488399"]#, "DC_630594", "DC_880016"]
 
 datas = []
 names_plot = []
@@ -102,7 +102,7 @@ for pc in parts['bodies']:
 
 parts = ax_probs.violinplot(logprobs, positions=None, vert=False, widths=0.8, showmeans=False, showextrema=False, showmedians=False,\
               #quantiles=[[0.25,0.75]]*len(betas), \
-               points=500, bw_method=None)
+               points=100, bw_method=None)
 
 i=0
 for pc in parts['bodies']:
