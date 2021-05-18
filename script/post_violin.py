@@ -20,7 +20,7 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
                       names_other,  observational_data_fuji, names_CII_halo_short
 
 
-names_list = ["DC_396844", "DC_683613", "DC_881725"]#, "DC_488399"]#, "DC_630594", "DC_880016"]
+names_list = names_CII_halo_short
 
 datas = []
 names_plot = []
@@ -77,14 +77,13 @@ for data in datas:
             #log_prior_samples[:, None]), \
             axis=1)
 
-    betas.append(all_samples[:,0])
+    betas.append(all_samples[:,0][all_samples[:,3]>-20])
     logprobs.append(all_samples[:,3][all_samples[:,3]>-20])
 
 betas = np.asarray(betas)
 logprobs = np.asarray(logprobs)
 
 ndim = 3
-
 
 fig, [ax_betas, ax_probs] = plt.subplots(1,2, figsize=(13,7), sharey=True)
 
@@ -99,7 +98,6 @@ for pc in parts['bodies']:
     pc.set_alpha(1)
     i=i+1
 
-
 parts = ax_probs.violinplot(logprobs, positions=None, vert=False, widths=0.8, showmeans=False, showextrema=False, showmedians=False,\
               #quantiles=[[0.25,0.75]]*len(betas), \
                points=100, bw_method=None)
@@ -110,11 +108,13 @@ for pc in parts['bodies']:
     pc.set_edgecolor('gray')
     pc.set_alpha(1)
     i=i+1
-    
+
 ax_betas.set_xlabel("beta")
 
-ax_probs.set_xlim(-10,1)
+ax_probs.set_xlim(-20,1)
 ax_probs.set_xlabel("log probability")
 
 ax_betas.set_yticks(np.arange(1,len(names_plot)+1))
 ax_betas.set_yticklabels(names_plot)
+
+plt.show()

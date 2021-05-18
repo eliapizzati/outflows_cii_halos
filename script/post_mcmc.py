@@ -22,7 +22,7 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
              
 
 
-emission = False 
+emission = True 
 
 nwalkers= 96
 nsteps = 1e3
