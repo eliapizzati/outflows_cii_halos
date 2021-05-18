@@ -198,7 +198,10 @@ for data in datas:
                     params.update(v_c = v_c_up)
                     print("{:.1f}".format(v_c_up))
                     
-                    profiles_up = load_from_file(params, class_type = "profiles")
+                    if load_sol_from_file == False:
+                        profiles_up = get_profiles(params, resol=1000)
+                    else:
+                        profiles_up = load_from_file(params, class_type = "profiles")
                     ionization_state_up = get_ionization_states(profiles_up, params)
                     sigma_CII_up = get_surface_density(profiles_up, ionization_state_up, params, rmax=30, h_resol=500, add_CMB_suppression=True)
                     intensity_raw_up = get_intensity_raw(sigma_CII_up, params, data.params_obs)
@@ -207,8 +210,11 @@ for data in datas:
                     params.update(M_vir = M_vir_down)
                     params.update(v_c = v_c_down)
 
+                    if load_sol_from_file == False:
+                        profiles_down = get_profiles(params, resol=1000)
+                    else:
+                        profiles_down = load_from_file(params, class_type = "profiles")
                     
-                    profiles_down = load_from_file(params, class_type = "profiles")
                     ionization_state_down = get_ionization_states(profiles_down, params)
                     sigma_CII_down = get_surface_density(profiles_down, ionization_state_down, params, rmax=30, h_resol=500, add_CMB_suppression=True)
                     intensity_raw_down = get_intensity_raw(sigma_CII_down, params, data.params_obs)
@@ -260,7 +266,11 @@ for data in datas:
 
                     params.update(SFR = SFR_up)
                     
-                    profiles_up = load_from_file(params, class_type = "profiles")
+                    if load_sol_from_file == False:
+                        profiles_up = get_profiles(params, resol=1000)
+                    else:
+                        profiles_up = load_from_file(params, class_type = "profiles")
+
                     ionization_state_up = get_ionization_states(profiles_up, params)
                     sigma_CII_up = get_surface_density(profiles_up, ionization_state_up, params, rmax=30, h_resol=500, add_CMB_suppression=True)
                     intensity_raw_up = get_intensity_raw(sigma_CII_up, params, data.params_obs)
@@ -268,8 +278,11 @@ for data in datas:
 
                     params.update(SFR = SFR_down)
 
-                    
-                    profiles_down = load_from_file(params, class_type = "profiles")
+                    if load_sol_from_file == False:
+                        profiles_down = get_profiles(params, resol=1000)
+                    else:
+                        profiles_down = load_from_file(params, class_type = "profiles")
+
                     ionization_state_down = get_ionization_states(profiles_down, params)
                     sigma_CII_down = get_surface_density(profiles_down, ionization_state_down, params, rmax=30, h_resol=500, add_CMB_suppression=True)
                     intensity_raw_down = get_intensity_raw(sigma_CII_down, params, data.params_obs)

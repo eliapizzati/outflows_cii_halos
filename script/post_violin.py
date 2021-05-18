@@ -17,10 +17,10 @@ import mydir
 import natconst as nc
 
 from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
-                      names_other,  observational_data_fuji
+                      names_other,  observational_data_fuji, names_CII_halo_short
 
 
-names_list = ["DC_396844", "DC_683613", "DC_881725"]
+names_list = ["DC_396844", "DC_683613", "DC_881725", "DC_488399"]#, "DC_630594", "DC_880016"]
 
 datas = []
 names_plot = []
