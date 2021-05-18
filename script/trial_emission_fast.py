@@ -5,21 +5,18 @@ Created on Wed May 12 14:35:50 2021
 @author: anna
 """
 
-import matplotlib.pyplot as plt
-
-import numpy as np
+import itertools
 import os
 import time
-import itertools
+
+import matplotlib.pyplot as plt
 
 import mydir
-from mcmc import data, other_params, get_emission_fast, h, f_beam, grid
-import plot_config as pltc
 import natconst as nc
-
-from sol_modules import get_profiles
+import plot_config as pltc
+from mcmc import data, other_params, get_emission_fast, h, f_beam, grid
 from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved
-
+from sol_modules import get_profiles
 
 betas = [7.5]
 SFRs = [50.]
@@ -86,7 +83,7 @@ alpine = ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
 fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
 plt.savefig(os.path.join(mydir.plot_dir, folder, "emission_mus.png"))
     
-        
+plt.show()
         
     
     
