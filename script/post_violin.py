@@ -111,10 +111,19 @@ for pc in parts['bodies']:
 
 ax_betas.set_xlabel("beta")
 
-ax_probs.set_xlim(-20,1)
+ax_probs.set_xlim(-15,1)
 ax_probs.set_xlabel("log probability")
 
 ax_betas.set_yticks(np.arange(1,len(names_plot)+1))
 ax_betas.set_yticklabels(names_plot)
+
+plt.subplots_adjust(left = 0.15,  # the left side of the subplots of the figure
+    right = 0.95,   # the right side of the subplots of the figure
+    bottom = 0.1,  # the bottom of the subplots of the figure
+    top = 0.95,     # the top of the subplots of the figure
+    wspace = 0.1,  # the amount of width reserved for space between subplots,
+    # expressed as a fraction of the average axis width
+    hspace = 0.1)  # the amount of height reserved for space between subplots,
+                  # expressed as a fraction of the average axis height
 
 plt.show()

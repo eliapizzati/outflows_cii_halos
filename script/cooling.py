@@ -21,9 +21,9 @@ gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
 
 save_to_file = False
-save_plot = False
+save_plot = True
 load_from_file = False
-plotting = False
+plotting = True
 
 
 if __name__ == "__main__":
