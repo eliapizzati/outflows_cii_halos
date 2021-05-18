@@ -157,7 +157,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     Zeta = 1. 
     R_in_pure = 0.3
     alfa = 1.
-    mus = 1.
+    mus = 0.61
     
     Plw = other_params["Plw"]
     Ph1 = other_params["Ph1"]

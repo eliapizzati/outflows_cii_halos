@@ -20,7 +20,7 @@ import plot_config
 
 
 save_to_file = False
-save_plot = True
+save_plot = False
 load_from_file = False
 plotting = True
 
@@ -348,7 +348,7 @@ if plotting:
     
     plot_quantity(quantity, quantity_array, values = values)
     
-
+plt.show()
     
     
     
