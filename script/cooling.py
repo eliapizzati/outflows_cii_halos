@@ -14,6 +14,7 @@ from matplotlib import cm, colors
 
 import mydir
 
+import plot_config
 
 import gnedincooling as gc
 
