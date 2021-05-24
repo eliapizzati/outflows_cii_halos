@@ -87,7 +87,7 @@ ndim = 3
 
 fig, [ax_betas, ax_probs] = plt.subplots(1,2, figsize=(13,7), sharey=True)
 
-parts = ax_betas.violinplot(betas, positions=None, vert=False, widths=0.8, showmeans=False, showextrema=False, showmedians=False,\
+parts = ax_betas.violinplot(betas, positions=None, vert=False, widths=0.8, showmeans=True, showextrema=False, showmedians=False,\
               #quantiles=[[0.25,0.75]]*len(betas), \
                points=100, bw_method=None)
 
@@ -98,7 +98,7 @@ for pc in parts['bodies']:
     pc.set_alpha(1)
     i=i+1
 
-parts = ax_probs.violinplot(logprobs, positions=None, vert=False, widths=0.8, showmeans=False, showextrema=False, showmedians=False,\
+parts = ax_probs.violinplot(logprobs, positions=None, vert=False, widths=0.8, showmeans=True, showextrema=False, showmedians=False,\
               #quantiles=[[0.25,0.75]]*len(betas), \
                points=100, bw_method=None)
 
