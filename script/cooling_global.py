@@ -55,11 +55,11 @@ plt.subplots_adjust(left=0.1,  # the left side of the subplots of the figure
 
 
 axcolor = 'lightgoldenrodyellow'
-axn   = plt.axes([0.2, 0.01, 0.65, 0.03], facecolor=axcolor)
-axplw = plt.axes([0.2, 0.06, 0.65, 0.03], facecolor=axcolor)
+axn   = plt.axes([0.2, 0.21, 0.65, 0.03], facecolor=axcolor)
+axplw = plt.axes([0.2, 0.16, 0.65, 0.03], facecolor=axcolor)
 axph1 = plt.axes([0.2, 0.11, 0.65, 0.03], facecolor=axcolor)
-axpg1 = plt.axes([0.2, 0.16, 0.65, 0.03], facecolor=axcolor)
-axpc6 = plt.axes([0.2, 0.21, 0.65, 0.03], facecolor=axcolor)
+axpg1 = plt.axes([0.2, 0.06, 0.65, 0.03], facecolor=axcolor)
+axpc6 = plt.axes([0.2, 0.01, 0.65, 0.03], facecolor=axcolor)
 
 sn   = Slider(axn, 'log density', -5, 3, valinit=logn_init, valstep=0.5)
 splw = Slider(axplw, 'log plw', -30, -6, valinit=logplw_init, valstep=1.)
