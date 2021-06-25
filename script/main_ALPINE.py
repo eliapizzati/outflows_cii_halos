@@ -11,6 +11,7 @@ import numpy as np
 import mydir
 import natconst as nc
 
+import matplotlib.pyplot as plt
 from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, \
                       get_intensity_convolved, get_chi2
 
@@ -25,7 +26,7 @@ import time
 
 
 
-load_sol_from_file = True
+load_sol_from_file = False
 
 to_file = False
 
@@ -37,7 +38,7 @@ save_chi2 = False
 
 plot_eta = False
 
-plot_vc_uncertainty = False
+plot_vc_uncertainty = True
 
 plot_SFR_uncertainty = False
 
@@ -69,7 +70,7 @@ data_container_name = "CII_halo_NFW"
 
 for data in datas:
     
-    if data.params_obs["name"] not in names_CII_halo:# or data.params_obs["name_short"] != "DC_881725":
+    if data.params_obs["name"] not in names_CII_halo or data.params_obs["name_short"] != "DC_881725":
     #if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
     #if data.params_obs["name"] != "vuds_cosmos_5110377875":
         pass
@@ -149,187 +150,187 @@ for data in datas:
                 else:
                     string_nans = "Integration successful"
                               
-                ionization_state = get_ionization_states(profiles, params)
-            
-                sigma_CII = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=True)
-            
-                intensity_raw = get_intensity_raw(sigma_CII, params, data.params_obs)
-            
-                intensity_conv = get_intensity_convolved(intensity_raw, params, data.params_obs, data, add_central_contribution=False)
+            ionization_state = get_ionization_states(profiles, params)
 
-                if to_file:                         
-                    profiles.to_file()
-                    ionization_state.to_file()
-                    sigma_CII.to_file()
-                    intensity_raw.to_file()
-                    intensity_conv.to_file()
+            sigma_CII = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=True)
 
-                
+            intensity_raw = get_intensity_raw(sigma_CII, params, data.params_obs)
+
+            intensity_conv = get_intensity_convolved(intensity_raw, params, data.params_obs, data, add_central_contribution=False)
+
+            if to_file:
+                profiles.to_file()
+                ionization_state.to_file()
+                sigma_CII.to_file()
+                intensity_raw.to_file()
+                intensity_conv.to_file()
+
+
+            if plot_hydro:
+                profiles.plot(ax=axs_sol, label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
+                ionization_state.plot(ax=axs_ion,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
+
+
+            if plot_emission:
+                #sigma_CII.plot(ax=ax_sigma)
+
+                intensity_raw.plot(ax=ax_int_raw,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
+
+                intensity_conv.plot(ax=ax_int_conv,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
+
+                sigma_CII_no_CMB = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=False)
+                intensity_raw_no_CMB = get_intensity_raw(sigma_CII_no_CMB, params, data.params_obs)
+                intensity_conv_no_CMB = get_intensity_convolved(intensity_raw_no_CMB, params, data.params_obs, data, add_central_contribution=False)
+
+                #intensity_conv_no_CMB.plot(ax=ax_int_conv, color="C{}".format(beta_counter), linestyle='--')
+
+            if plot_eta:
+                ax_eta.plot(intensity_conv.h/1e3/nc.pc, intensity_conv.eta, label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
+
+            if plot_vc_uncertainty:
+
+                M_vir_up = data.params_obs["M_vir"]+data.params_obs["M_vir_err_up"]
+                v_c_up = get_vc_from_virial_mass(M_vir_up, params["redshift"])/1e5
+
+                M_vir_down = data.params_obs["M_vir"]-data.params_obs["M_vir_err_down"]
+                v_c_down = get_vc_from_virial_mass(M_vir_down, params["redshift"])/1e5
+
+                params.update(M_vir = M_vir_up)
+                params.update(v_c = v_c_up)
+                print("{:.1f}".format(v_c_up))
+
+                if load_sol_from_file == False:
+                    profiles_up = get_profiles(params, resol=1000)
+                else:
+                    profiles_up = load_from_file(params, class_type = "profiles")
+                ionization_state_up = get_ionization_states(profiles_up, params)
+                sigma_CII_up = get_surface_density(profiles_up, ionization_state_up, params, rmax=30, h_resol=500, add_CMB_suppression=True)
+                intensity_raw_up = get_intensity_raw(sigma_CII_up, params, data.params_obs)
+                intensity_conv_up = get_intensity_convolved(intensity_raw_up, params, data.params_obs, data, add_central_contribution=False)
+
+                params.update(M_vir = M_vir_down)
+                params.update(v_c = v_c_down)
+
+                if load_sol_from_file == False:
+                    profiles_down = get_profiles(params, resol=1000)
+                else:
+                    profiles_down = load_from_file(params, class_type = "profiles")
+
+                ionization_state_down = get_ionization_states(profiles_down, params)
+                sigma_CII_down = get_surface_density(profiles_down, ionization_state_down, params, rmax=30, h_resol=500, add_CMB_suppression=True)
+                intensity_raw_down = get_intensity_raw(sigma_CII_down, params, data.params_obs)
+                intensity_conv_down = get_intensity_convolved(intensity_raw_down, params, data.params_obs, data, add_central_contribution=False)
+
+                params.update(M_vir = data.params_obs["M_vir"])
+                params.update(v_c = data.params_obs["v_c"])
+
+                ax_int_conv.plot(intensity_conv_up.h/(1000*nc.pc), intensity_conv_up.var, color="C{}".format(beta_counter))
+                ax_int_conv.plot(intensity_conv_down.h/(1000*nc.pc), intensity_conv_down.var, color="C{}".format(beta_counter))
+                ax_int_conv.fill_between(intensity_conv.h/(1000*nc.pc), intensity_conv_down.var, intensity_conv_up.var, color="C{}".format(beta_counter), alpha=0.2)
+
+                ax_int_raw.plot(intensity_raw_up.h/(1000*nc.pc), intensity_raw_up.var, color="C{}".format(beta_counter))
+                ax_int_raw.plot(intensity_raw_down.h/(1000*nc.pc), intensity_raw_down.var, color="C{}".format(beta_counter))
+                ax_int_raw.fill_between(intensity_raw.h/(1000*nc.pc), intensity_raw_down.var, intensity_raw_up.var, color="C{}".format(beta_counter), alpha=0.2)
+
                 if plot_hydro:
-                    profiles.plot(ax=axs_sol, label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
-                    ionization_state.plot(ax=axs_ion,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
+                    profiles_up.plot(ax=axs_sol,color="C{}".format(beta_counter))
+                    profiles_down.plot(ax=axs_sol, color="C{}".format(beta_counter))
+
+                    profiles_up_extended_v = np.interp(profiles_down.r, profiles_up.r, profiles_up.v) #right=0.)
+                    profiles_up_extended_n = np.interp(profiles_down.r, profiles_up.r, profiles_up.n)# right=0.)
+                    profiles_up_extended_T = np.interp(profiles_down.r, profiles_up.r, profiles_up.T)#right=0.)
+
+                    axs_sol[0].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),profiles_down.v/10**8,profiles_up_extended_v/10**8,\
+                           color="C{}".format(beta_counter), alpha=0.2)
+                    axs_sol[1].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),np.log10(profiles_down.n), np.log10(profiles_up_extended_n),\
+                           color="C{}".format(beta_counter), alpha=0.2)
+                    axs_sol[2].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),np.log10(profiles_down.T),np.log10(profiles_up_extended_T),\
+                           color="C{}".format(beta_counter), alpha=0.2)
+
+                    ionization_state_up.plot(ax=axs_ion,color="C{}".format(beta_counter))
+                    ionization_state_down.plot(ax=axs_ion, color="C{}".format(beta_counter))
+
+                    ion_up_extended_xe = np.interp(ionization_state_down.r, ionization_state_up.r, ionization_state_up.x_e) #right=0.)
+                    ion_up_extended_xCII = np.interp(ionization_state_down.r, ionization_state_up.r, ionization_state_up.x_CII)# right=0.)
+
+                    axs_ion[0].fill_between(np.log10(ionization_state_down.r/(1000*nc.pc)),1.-ionization_state_down.x_e,1.-ion_up_extended_xe,\
+                           color="C{}".format(beta_counter), alpha=0.2)
+                    axs_ion[1].fill_between(np.log10(ionization_state_down.r/(1000*nc.pc)),ionization_state_down.x_CII,ion_up_extended_xCII,\
+                           color="C{}".format(beta_counter), alpha=0.2)
 
 
-                if plot_emission:                
-                    #sigma_CII.plot(ax=ax_sigma)            
-    
-                    intensity_raw.plot(ax=ax_int_raw,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
-                
-                    intensity_conv.plot(ax=ax_int_conv,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
-                
-                    sigma_CII_no_CMB = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=False)
-                    intensity_raw_no_CMB = get_intensity_raw(sigma_CII_no_CMB, params, data.params_obs)
-                    intensity_conv_no_CMB = get_intensity_convolved(intensity_raw_no_CMB, params, data.params_obs, data, add_central_contribution=False)
-                        
-                    #intensity_conv_no_CMB.plot(ax=ax_int_conv, color="C{}".format(beta_counter), linestyle='--')
+            if plot_SFR_uncertainty:
 
-                if plot_eta: 
-                    ax_eta.plot(intensity_conv.h/1e3/nc.pc, intensity_conv.eta, label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
+                SFR_up = data.params_obs["SFR"]+data.params_obs["SFR_err_up"]
 
-                if plot_vc_uncertainty:
-                    
-                    M_vir_up = data.params_obs["M_vir"]+data.params_obs["M_vir_err_up"]
-                    v_c_up = get_vc_from_virial_mass(M_vir_up, params["redshift"])/1e5
-                    
-                    M_vir_down = data.params_obs["M_vir"]-data.params_obs["M_vir_err_down"]
-                    v_c_down = get_vc_from_virial_mass(M_vir_down, params["redshift"])/1e5
-                    
-                    params.update(M_vir = M_vir_up)
-                    params.update(v_c = v_c_up)
-                    print("{:.1f}".format(v_c_up))
-                    
-                    if load_sol_from_file == False:
-                        profiles_up = get_profiles(params, resol=1000)
-                    else:
-                        profiles_up = load_from_file(params, class_type = "profiles")
-                    ionization_state_up = get_ionization_states(profiles_up, params)
-                    sigma_CII_up = get_surface_density(profiles_up, ionization_state_up, params, rmax=30, h_resol=500, add_CMB_suppression=True)
-                    intensity_raw_up = get_intensity_raw(sigma_CII_up, params, data.params_obs)
-                    intensity_conv_up = get_intensity_convolved(intensity_raw_up, params, data.params_obs, data, add_central_contribution=False)
+                SFR_down = data.params_obs["SFR"]-data.params_obs["SFR_err_down"]
 
-                    params.update(M_vir = M_vir_down)
-                    params.update(v_c = v_c_down)
+                params.update(SFR = SFR_up)
 
-                    if load_sol_from_file == False:
-                        profiles_down = get_profiles(params, resol=1000)
-                    else:
-                        profiles_down = load_from_file(params, class_type = "profiles")
-                    
-                    ionization_state_down = get_ionization_states(profiles_down, params)
-                    sigma_CII_down = get_surface_density(profiles_down, ionization_state_down, params, rmax=30, h_resol=500, add_CMB_suppression=True)
-                    intensity_raw_down = get_intensity_raw(sigma_CII_down, params, data.params_obs)
-                    intensity_conv_down = get_intensity_convolved(intensity_raw_down, params, data.params_obs, data, add_central_contribution=False)
+                if load_sol_from_file == False:
+                    profiles_up = get_profiles(params, resol=1000)
+                else:
+                    profiles_up = load_from_file(params, class_type = "profiles")
 
-                    params.update(M_vir = data.params_obs["M_vir"])
-                    params.update(v_c = data.params_obs["v_c"])
-                    
-                    ax_int_conv.plot(intensity_conv_up.h/(1000*nc.pc), intensity_conv_up.var, color="C{}".format(beta_counter))
-                    ax_int_conv.plot(intensity_conv_down.h/(1000*nc.pc), intensity_conv_down.var, color="C{}".format(beta_counter))
-                    ax_int_conv.fill_between(intensity_conv.h/(1000*nc.pc), intensity_conv_down.var, intensity_conv_up.var, color="C{}".format(beta_counter), alpha=0.2)
-                    
-                    ax_int_raw.plot(intensity_raw_up.h/(1000*nc.pc), intensity_raw_up.var, color="C{}".format(beta_counter))
-                    ax_int_raw.plot(intensity_raw_down.h/(1000*nc.pc), intensity_raw_down.var, color="C{}".format(beta_counter))
-                    ax_int_raw.fill_between(intensity_raw.h/(1000*nc.pc), intensity_raw_down.var, intensity_raw_up.var, color="C{}".format(beta_counter), alpha=0.2)
-                    
-                    if plot_hydro:
-                        profiles_up.plot(ax=axs_sol,color="C{}".format(beta_counter))
-                        profiles_down.plot(ax=axs_sol, color="C{}".format(beta_counter))
-                        
-                        profiles_up_extended_v = np.interp(profiles_down.r, profiles_up.r, profiles_up.v) #right=0.)
-                        profiles_up_extended_n = np.interp(profiles_down.r, profiles_up.r, profiles_up.n)# right=0.)
-                        profiles_up_extended_T = np.interp(profiles_down.r, profiles_up.r, profiles_up.T)#right=0.)
-                        
-                        axs_sol[0].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),profiles_down.v/10**8,profiles_up_extended_v/10**8,\
-                               color="C{}".format(beta_counter), alpha=0.2)       
-                        axs_sol[1].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),np.log10(profiles_down.n), np.log10(profiles_up_extended_n),\
-                               color="C{}".format(beta_counter), alpha=0.2)
-                        axs_sol[2].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),np.log10(profiles_down.T),np.log10(profiles_up_extended_T),\
-                               color="C{}".format(beta_counter), alpha=0.2)
-    
-                        ionization_state_up.plot(ax=axs_ion,color="C{}".format(beta_counter))
-                        ionization_state_down.plot(ax=axs_ion, color="C{}".format(beta_counter))
-    
-                        ion_up_extended_xe = np.interp(ionization_state_down.r, ionization_state_up.r, ionization_state_up.x_e) #right=0.)
-                        ion_up_extended_xCII = np.interp(ionization_state_down.r, ionization_state_up.r, ionization_state_up.x_CII)# right=0.)
-    
-                        axs_ion[0].fill_between(np.log10(ionization_state_down.r/(1000*nc.pc)),1.-ionization_state_down.x_e,1.-ion_up_extended_xe,\
-                               color="C{}".format(beta_counter), alpha=0.2) 
-                        axs_ion[1].fill_between(np.log10(ionization_state_down.r/(1000*nc.pc)),ionization_state_down.x_CII,ion_up_extended_xCII,\
-                               color="C{}".format(beta_counter), alpha=0.2)
-    
-    
-                if plot_SFR_uncertainty:
+                ionization_state_up = get_ionization_states(profiles_up, params)
+                sigma_CII_up = get_surface_density(profiles_up, ionization_state_up, params, rmax=30, h_resol=500, add_CMB_suppression=True)
+                intensity_raw_up = get_intensity_raw(sigma_CII_up, params, data.params_obs)
+                intensity_conv_up = get_intensity_convolved(intensity_raw_up, params, data.params_obs, data, add_central_contribution=False)
 
-                    SFR_up = data.params_obs["SFR"]+data.params_obs["SFR_err_up"]
-                    
-                    SFR_down = data.params_obs["SFR"]-data.params_obs["SFR_err_down"]
+                params.update(SFR = SFR_down)
 
-                    params.update(SFR = SFR_up)
-                    
-                    if load_sol_from_file == False:
-                        profiles_up = get_profiles(params, resol=1000)
-                    else:
-                        profiles_up = load_from_file(params, class_type = "profiles")
+                if load_sol_from_file == False:
+                    profiles_down = get_profiles(params, resol=1000)
+                else:
+                    profiles_down = load_from_file(params, class_type = "profiles")
 
-                    ionization_state_up = get_ionization_states(profiles_up, params)
-                    sigma_CII_up = get_surface_density(profiles_up, ionization_state_up, params, rmax=30, h_resol=500, add_CMB_suppression=True)
-                    intensity_raw_up = get_intensity_raw(sigma_CII_up, params, data.params_obs)
-                    intensity_conv_up = get_intensity_convolved(intensity_raw_up, params, data.params_obs, data, add_central_contribution=False)
+                ionization_state_down = get_ionization_states(profiles_down, params)
+                sigma_CII_down = get_surface_density(profiles_down, ionization_state_down, params, rmax=30, h_resol=500, add_CMB_suppression=True)
+                intensity_raw_down = get_intensity_raw(sigma_CII_down, params, data.params_obs)
+                intensity_conv_down = get_intensity_convolved(intensity_raw_down, params, data.params_obs, data, add_central_contribution=False)
 
-                    params.update(SFR = SFR_down)
+                params.update(SFR = data.params_obs["SFR"])
 
-                    if load_sol_from_file == False:
-                        profiles_down = get_profiles(params, resol=1000)
-                    else:
-                        profiles_down = load_from_file(params, class_type = "profiles")
+                ax_int_conv.plot(intensity_conv_up.h/(1000*nc.pc), intensity_conv_up.var, color="C{}".format(beta_counter))
+                ax_int_conv.plot(intensity_conv_down.h/(1000*nc.pc), intensity_conv_down.var, color="C{}".format(beta_counter))
+                ax_int_conv.fill_between(intensity_conv.h/(1000*nc.pc), intensity_conv_down.var, intensity_conv_up.var, color="C{}".format(beta_counter), alpha=0.2)
 
-                    ionization_state_down = get_ionization_states(profiles_down, params)
-                    sigma_CII_down = get_surface_density(profiles_down, ionization_state_down, params, rmax=30, h_resol=500, add_CMB_suppression=True)
-                    intensity_raw_down = get_intensity_raw(sigma_CII_down, params, data.params_obs)
-                    intensity_conv_down = get_intensity_convolved(intensity_raw_down, params, data.params_obs, data, add_central_contribution=False)
-
-                    params.update(SFR = data.params_obs["SFR"])
-                    
-                    ax_int_conv.plot(intensity_conv_up.h/(1000*nc.pc), intensity_conv_up.var, color="C{}".format(beta_counter))
-                    ax_int_conv.plot(intensity_conv_down.h/(1000*nc.pc), intensity_conv_down.var, color="C{}".format(beta_counter))
-                    ax_int_conv.fill_between(intensity_conv.h/(1000*nc.pc), intensity_conv_down.var, intensity_conv_up.var, color="C{}".format(beta_counter), alpha=0.2)
-                    
-                    ax_int_raw.plot(intensity_raw_up.h/(1000*nc.pc), intensity_raw_up.var, color="C{}".format(beta_counter))
-                    ax_int_raw.plot(intensity_raw_down.h/(1000*nc.pc), intensity_raw_down.var, color="C{}".format(beta_counter))
-                    ax_int_raw.fill_between(intensity_raw.h/(1000*nc.pc), intensity_raw_down.var, intensity_raw_up.var, color="C{}".format(beta_counter), alpha=0.2)
+                ax_int_raw.plot(intensity_raw_up.h/(1000*nc.pc), intensity_raw_up.var, color="C{}".format(beta_counter))
+                ax_int_raw.plot(intensity_raw_down.h/(1000*nc.pc), intensity_raw_down.var, color="C{}".format(beta_counter))
+                ax_int_raw.fill_between(intensity_raw.h/(1000*nc.pc), intensity_raw_down.var, intensity_raw_up.var, color="C{}".format(beta_counter), alpha=0.2)
 
 
-                    if plot_hydro:
-                        profiles_up.plot(ax=axs_sol,color="C{}".format(beta_counter))
-                        profiles_down.plot(ax=axs_sol, color="C{}".format(beta_counter))
-                        
-                        profiles_up_extended_v = np.interp(profiles_down.r, profiles_up.r, profiles_up.v) #right=0.)
-                        profiles_up_extended_n = np.interp(profiles_down.r, profiles_up.r, profiles_up.n)# right=0.)
-                        profiles_up_extended_T = np.interp(profiles_down.r, profiles_up.r, profiles_up.T)#right=0.)
-                        
-                        axs_sol[0].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),profiles_down.v/10**8,profiles_up_extended_v/10**8,\
-                               color="C{}".format(beta_counter), alpha=0.2)       
-                        axs_sol[1].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),np.log10(profiles_down.n), np.log10(profiles_up_extended_n),\
-                               color="C{}".format(beta_counter), alpha=0.2)
-                        axs_sol[2].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),np.log10(profiles_down.T),np.log10(profiles_up_extended_T),\
-                               color="C{}".format(beta_counter), alpha=0.2)
-    
-                        ionization_state_up.plot(ax=axs_ion,color="C{}".format(beta_counter))
-                        ionization_state_down.plot(ax=axs_ion, color="C{}".format(beta_counter))
-    
-                        ion_up_extended_xe = np.interp(ionization_state_down.r, ionization_state_up.r, ionization_state_up.x_e) #right=0.)
-                        ion_up_extended_xCII = np.interp(ionization_state_down.r, ionization_state_up.r, ionization_state_up.x_CII)# right=0.)
-    
-                        axs_ion[0].fill_between(np.log10(ionization_state_down.r/(1000*nc.pc)),1.-ionization_state_down.x_e,1.-ion_up_extended_xe,\
-                               color="C{}".format(beta_counter), alpha=0.2) 
-                        axs_ion[1].fill_between(np.log10(ionization_state_down.r/(1000*nc.pc)),ionization_state_down.x_CII,ion_up_extended_xCII,\
-                               color="C{}".format(beta_counter), alpha=0.2)
-    
+                if plot_hydro:
+                    profiles_up.plot(ax=axs_sol,color="C{}".format(beta_counter))
+                    profiles_down.plot(ax=axs_sol, color="C{}".format(beta_counter))
+
+                    profiles_up_extended_v = np.interp(profiles_down.r, profiles_up.r, profiles_up.v) #right=0.)
+                    profiles_up_extended_n = np.interp(profiles_down.r, profiles_up.r, profiles_up.n)# right=0.)
+                    profiles_up_extended_T = np.interp(profiles_down.r, profiles_up.r, profiles_up.T)#right=0.)
+
+                    axs_sol[0].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),profiles_down.v/10**8,profiles_up_extended_v/10**8,\
+                           color="C{}".format(beta_counter), alpha=0.2)
+                    axs_sol[1].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),np.log10(profiles_down.n), np.log10(profiles_up_extended_n),\
+                           color="C{}".format(beta_counter), alpha=0.2)
+                    axs_sol[2].fill_between(np.log10(profiles_down.r/(1000*nc.pc)),np.log10(profiles_down.T),np.log10(profiles_up_extended_T),\
+                           color="C{}".format(beta_counter), alpha=0.2)
+
+                    ionization_state_up.plot(ax=axs_ion,color="C{}".format(beta_counter))
+                    ionization_state_down.plot(ax=axs_ion, color="C{}".format(beta_counter))
+
+                    ion_up_extended_xe = np.interp(ionization_state_down.r, ionization_state_up.r, ionization_state_up.x_e) #right=0.)
+                    ion_up_extended_xCII = np.interp(ionization_state_down.r, ionization_state_up.r, ionization_state_up.x_CII)# right=0.)
+
+                    axs_ion[0].fill_between(np.log10(ionization_state_down.r/(1000*nc.pc)),1.-ionization_state_down.x_e,1.-ion_up_extended_xe,\
+                           color="C{}".format(beta_counter), alpha=0.2)
+                    axs_ion[1].fill_between(np.log10(ionization_state_down.r/(1000*nc.pc)),ionization_state_down.x_CII,ion_up_extended_xCII,\
+                           color="C{}".format(beta_counter), alpha=0.2)
+
 
             beta_counter+=1
                 
             
-            if load_sol_from_file == True:
+            if True == True:
                 
                 if plot_emission:
                         # data   
@@ -408,5 +409,5 @@ if save_chi2 == True:
     
     np.save(out_filename, chi2_names)
 
-
+plt.show()
     

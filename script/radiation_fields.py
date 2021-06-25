@@ -238,7 +238,7 @@ if __name__ == "__main__":
         
     index = np.searchsorted(energy_eV_z, 12.87)
         
-    Gamma_LW_UVB= 1.38e9 * flux_UVB_z[index] #s^-1 --> value ca 2.05e-13
+    Gamma_LW_UVB = 1.38e9 * flux_UVB_z[index] #s^-1 --> value ca 2.05e-13
     
 
     print("######### UVB ###########")

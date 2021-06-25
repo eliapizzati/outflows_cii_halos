@@ -13,6 +13,7 @@ import natconst as nc
 from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, \
                              get_intensity_convolved, get_chi2
 
+
 from model_classes import load_from_file
 
 from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo, observational_data_fuji

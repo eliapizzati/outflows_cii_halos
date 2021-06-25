@@ -419,3 +419,7 @@ ax2 = ax.twinx()  # instantiate a second axes that shares the same x-axis
 ax2.hist([data.params_obs["SFR"] for data in obs_data_list], alpha=0.2, color='g', bins=500, density=False)
 ax2.set_yticks([])
 ax2.set_ylim(0.,1.)
+
+betas_line = np.linspace(1,10,100)
+
+ax.plot(betas_line, betas_line)
