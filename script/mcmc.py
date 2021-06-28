@@ -52,7 +52,7 @@ data = obs_data_list[1]
 
 data.params_obs.update(beta_best_fit = 6.0)
 
-filename = "{}_{:.0f}".format(data.params_obs["name_short"], nsteps)
+filename = "{}_{:.0f}_new_priors".format(data.params_obs["name_short"], nsteps)
 
 filename_log = filename
 
@@ -138,7 +138,7 @@ other_params = get_other_params(redshift, FWHM_vel, r_resol, cut, integrator)
 # MCMC definitions
 
 """
-theta : beta, SFR, v_c
+theta : log_beta, SFR, v_c
 """
 
 def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp = False, print_time_total = False):
@@ -150,7 +150,9 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
 
     # setting the parameters
     
-    beta, SFR_pure, v_c_pure = theta
+    log_beta, SFR_pure, v_c_pure = theta
+    
+    beta = 10**log_beta 
     
     f_esc_ion = 0.
     f_esc_FUV = 0.
@@ -392,10 +394,10 @@ def log_prior_uniform(theta, data):
 
     """    
     
-    beta, SFR, v_c = theta
+    log_beta, SFR, v_c = theta
     
     
-    if 1.0 < beta < 6.0 and 10. < SFR < 100.0 and 150. < v_c < 250.:
+    if 0.0 < log_beta < 2.0 and 10. < SFR < 100.0 and 150. < v_c < 250.:
         return 0.0
     
     return -np.inf
@@ -415,13 +417,39 @@ def log_prior_gaussian(theta, data):
 
     """    
     
-    beta, SFR, v_c = theta
+    log_beta, SFR, v_c = theta
     
-    if 1.0 < beta < 10.0 and SFR >= 1. and v_c >= 50.:
+    if 0.0 < log_beta < 2.0 and SFR >= 1. and v_c >= 50.:
         prior =  0.0
         
         prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
         prior += - 2*(v_c-data.params_obs["v_c"])**2/(data.params_obs["v_c_err_up"]+data.params_obs["v_c_err_down"])**2
+
+        return prior
+    else:
+        return -np.inf
+    
+    
+def log_prior_SFR_gaussian(theta, data):
+    """
+    defines the priors for the set of parameters theta
+    
+    Parameters
+    ==========
+    theta: array
+            
+    Returns
+    =======
+    priors value: float
+
+    """    
+    
+    log_beta, SFR, v_c = theta
+    
+    if 0.0 < log_beta < 2.0 and SFR >= 1. and 100. < v_c < 500.:
+        prior =  0.0
+        
+        prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
 
         return prior
     else:
@@ -443,7 +471,7 @@ def log_probability(theta, data, other_params, h, grid, f_beam):
     priors value: float
 
     """    
-    lp = log_prior_gaussian(theta, data)
+    lp = log_prior_SFR_gaussian(theta, data)
     
     if not np.isfinite(lp):
         return -np.inf
@@ -482,13 +510,13 @@ if __name__ == "__main__":
     
     log_likelihood.counter = 0
     
-    theta_true = [data.params_obs["beta_best_fit"], data.params_obs["SFR"], data.params_obs["v_c"]]
+    theta_true = [np.log10(data.params_obs["beta_best_fit"]), data.params_obs["SFR"], data.params_obs["v_c"]]
     
     ndim = len(theta_true)
     
-    pos = theta_true + np.asarray([1.0, 50., 50.]) * np.random.randn(nwalkers, ndim)
+    pos = theta_true + np.asarray([0.2, 50., 50.]) * np.random.randn(nwalkers, ndim)
     
-    pos[pos < 0] = 5.
+    pos[pos < 0] = 1.
 
 
     backend = emcee.backends.HDFBackend(path)
