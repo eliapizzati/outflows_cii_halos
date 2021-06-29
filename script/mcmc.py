@@ -153,7 +153,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     log_beta, SFR_pure, v_c_pure = theta
     
     beta = 10**log_beta 
-    
+    print("beta=",beta)
     f_esc_ion = 0.
     f_esc_FUV = 0.
     Zeta = 1. 
@@ -374,7 +374,7 @@ def log_likelihood(theta, data, other_params, h, grid, f_beam):
     
     log_likelihood.counter += 1
 
-    logging.info("iteration {}: chi2 = {:.1f} for beta = {:.1f}, SFR = {:.1f}, v_c = {:.1f}".format(\
+    logging.info("iteration {}: chi2 = {:.1f} for log_beta = {:.2f}, SFR = {:.1f}, v_c = {:.1f}".format(\
           log_likelihood.counter, chi2, theta[0], theta[1], theta[2]))
 
     return - chi2
@@ -419,7 +419,7 @@ def log_prior_gaussian(theta, data):
     
     log_beta, SFR, v_c = theta
     
-    if 0.0 < log_beta < 2.0 and SFR >= 1. and v_c >= 50.:
+    if 0.0 < log_beta < 2.0 and SFR >= 1. and 100. < v_c < 450.:
         prior =  0.0
         
         prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
@@ -446,7 +446,7 @@ def log_prior_SFR_gaussian(theta, data):
     
     log_beta, SFR, v_c = theta
     
-    if 0.0 < log_beta < 2.0 and SFR >= 1. and 100. < v_c < 500.:
+    if 0.0 < log_beta < 2.0 and SFR >= 1. and 100. < v_c < 450.:
         prior =  0.0
         
         prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
