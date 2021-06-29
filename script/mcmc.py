@@ -52,7 +52,7 @@ data = obs_data_list[1]
 
 data.params_obs.update(beta_best_fit = 6.0)
 
-filename = "{}_{:.0f}_old_priors".format(data.params_obs["name_short"], nsteps)
+filename = "{}_{:.0f}_new_priors".format(data.params_obs["name_short"], nsteps)
 
 filename_log = filename
 
@@ -244,7 +244,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     n = n_cm3 # in cm-3
     T = T_K # in K
     
-    print("profiles nans =", np.isnan(np.sum(v+n+T)))
+    #print("profiles nans =", np.isnan(np.sum(v+n+T)))
 
     # ionization part
 
@@ -326,6 +326,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     intensity_raw *= 1e26 #transformation to mJy 
     intensity_raw /= 4.2e10 #transforming sr to arcsec^2
     
+    print("raw nans =", np.isnan(np.sum(intensity_raw)))
 
     # convolution
 
@@ -345,6 +346,8 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     cprofile_2d = cimage[:, cimage.shape[1]//2]
     
     intensity_convolved = np.interp(h, grid[0][0], cprofile_2d, right=0.)
+
+    print("pre-norm nans =", np.isnan(np.sum(intensity_convolved)))
     
     #normalizes the convolved intensity
     
@@ -352,7 +355,6 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     
     intensity_convolved *= norm_intensity
     
-    print("emission nans =", np.isnan(np.sum(intensity_convolved)))
 
 
     if print_time_total:
@@ -378,7 +380,7 @@ def log_likelihood(theta, data, other_params, h, grid, f_beam):
     
     log_likelihood.counter += 1
 
-    logging.info("iteration {}: chi2 = {:.1f} for log_beta = {:.2f}, SFR = {:.1f}, v_c = {:.1f}".format(\
+    logging.info("iteration {}: chi2 = {:.1f} for log_beta = {:.3f}, SFR = {:.1f}, v_c = {:.1f}".format(\
           log_likelihood.counter, chi2, theta[0], theta[1], theta[2]))
 
     return - chi2
@@ -475,7 +477,7 @@ def log_probability(theta, data, other_params, h, grid, f_beam):
     priors value: float
 
     """    
-    lp = log_prior_gaussian(theta, data)
+    lp = log_prior_SFR_gaussian(theta, data)
     
     if not np.isfinite(lp):
         return -np.inf
