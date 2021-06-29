@@ -244,7 +244,8 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     n = n_cm3 # in cm-3
     T = T_K # in K
     
-    
+    print("profiles nans =", np.isnan(np.sum(v+n+T)))
+
     # ionization part
 
     
@@ -350,6 +351,9 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     norm_intensity = np.trapz(h * intensity_raw, h) / np.trapz(h * intensity_convolved, h)
     
     intensity_convolved *= norm_intensity
+    
+    print("emission nans =", np.isnan(np.sum(intensity_convolved)))
+
 
     if print_time_total:
         time_total = (time.perf_counter() - t_total)
@@ -366,8 +370,6 @@ def log_likelihood(theta, data, other_params, h, grid, f_beam):
     
     emission_profile = interp1d(h, intensity_convolved)
     
-    print("nans =", np.isnan(np.sum(intensity_convolved)))
-
     res = emission_profile(data.x/1e3/nc.pc) - data.data
     
     residuals = 2*res / (data.err_down + data.err_up) 
@@ -516,7 +518,9 @@ if __name__ == "__main__":
     
     ndim = len(theta_true)
     
-    pos = theta_true + np.asarray([0.2, 50., 50.]) * np.random.randn(nwalkers, ndim)
+    pos = theta_true + np.asarray([0., 50., 50.]) * np.random.randn(nwalkers, ndim)
+    
+    pos += np.asarray([0.5, 0., 0.]) * np.random.rand(nwalkers, ndim)
     
     pos[pos < 0] = 1.
 
