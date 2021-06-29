@@ -153,7 +153,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     log_beta, SFR_pure, v_c_pure = theta
     
     beta = 10**log_beta 
-    print("beta=",beta)
+
     f_esc_ion = 0.
     f_esc_FUV = 0.
     Zeta = 1. 
@@ -365,6 +365,8 @@ def log_likelihood(theta, data, other_params, h, grid, f_beam):
     intensity_convolved = get_emission_fast(theta, data, other_params, h, grid, f_beam)
     
     emission_profile = interp1d(h, intensity_convolved)
+    
+    print("nans =", np.isnan(np.sum(emission_profile)))
 
     res = emission_profile(data.x/1e3/nc.pc) - data.data
     
@@ -419,7 +421,7 @@ def log_prior_gaussian(theta, data):
     
     log_beta, SFR, v_c = theta
     
-    if 0.0 < log_beta < 2.0 and SFR >= 1. and 100. < v_c < 450.:
+    if 0.0 < log_beta < 2.0 and 1. < SFR < 250. and 100. < v_c < 450.:
         prior =  0.0
         
         prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
@@ -446,7 +448,7 @@ def log_prior_SFR_gaussian(theta, data):
     
     log_beta, SFR, v_c = theta
     
-    if 0.0 < log_beta < 2.0 and SFR >= 1. and 100. < v_c < 450.:
+    if 0.0 < log_beta < 2.0 and 1. < SFR < 250. and 100. < v_c < 450.:
         prior =  0.0
         
         prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
