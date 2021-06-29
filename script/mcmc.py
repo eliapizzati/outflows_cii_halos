@@ -366,7 +366,7 @@ def log_likelihood(theta, data, other_params, h, grid, f_beam):
     
     emission_profile = interp1d(h, intensity_convolved)
     
-    print("nans =", np.isnan(np.sum(emission_profile)))
+    print("nans =", np.isnan(np.sum(intensity_convolved)))
 
     res = emission_profile(data.x/1e3/nc.pc) - data.data
     
