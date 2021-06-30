@@ -25,7 +25,7 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
 emission = False 
 
 nwalkers= 96
-nsteps = 1e3
+nsteps = 1e4
 
 sample_step = int(20 * (nsteps/1e3))
 walker_step = int(12 * (nwalkers/96))

@@ -44,7 +44,7 @@ gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
 
 nwalkers= 96
-nsteps = 1e3
+nsteps = 1e4
 
 parallel = True
 
@@ -425,7 +425,7 @@ def log_prior_gaussian(theta, data):
     
     log_beta, SFR, v_c = theta
     
-    if 0.0 < log_beta < 2.0 and 1. < SFR < 250. and 100. < v_c < 450.:
+    if 0.0 < log_beta < 1.5 and 1. < SFR < 250. and 100. < v_c < 450.:
         prior =  0.0
         
         prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
