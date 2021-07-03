@@ -27,7 +27,7 @@ emission = False
 nwalkers= 96
 nsteps = 1e4
 
-sample_step = int(20 * (nsteps/1e3))
+sample_step = int(20 * (nsteps/1e4))
 walker_step = int(12 * (nwalkers/96))
 
 int_data = int(input("data number?"))
