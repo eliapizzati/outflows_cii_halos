@@ -48,7 +48,19 @@ nsteps = 1e4
 
 parallel = True
 
-data = obs_data_list[13]
+data = obs_data_list[8]
+
+"""
+1:  DC396844
+8:  DC683613
+13: DC881725
+17: vc...875
+3:  DC488399
+7:  630594
+12: 880016
+14: vc...582
+"""
+
 
 data.params_obs.update(beta_best_fit = 4.0)
 
@@ -452,7 +464,7 @@ def log_prior_SFR_gaussian(theta, data):
     
     log_beta, SFR, v_c = theta
     
-    if 0.0 < log_beta < 2.0 and 1. < SFR < 250. and 100. < v_c < 450.:
+    if 0.0 < log_beta < 1.5 and 1. < SFR < 250. and 100. < v_c < 450.:
         prior =  0.0
         
         prior += - 2*(SFR-data.params_obs["SFR"])**2/(data.params_obs["SFR_err_up"]+data.params_obs["SFR_err_down"])**2
