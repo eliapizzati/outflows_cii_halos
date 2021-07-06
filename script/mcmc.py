@@ -48,7 +48,7 @@ nsteps = 1e4
 
 parallel = True
 
-data = obs_data_list[12]
+data = obs_data_list[14]
 
 """
 1:  DC396844
