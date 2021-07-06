@@ -48,7 +48,7 @@ nsteps = 1e4
 
 parallel = True
 
-data = obs_data_list[14]
+data = obs_data_list[1]
 
 """
 1:  DC396844
@@ -415,7 +415,7 @@ def log_prior_uniform(theta, data):
     log_beta, SFR, v_c = theta
     
     
-    if 0.0 < log_beta < 2.0 and 10. < SFR < 100.0 and 150. < v_c < 250.:
+    if 0.0 < log_beta < 1.5 and 1. < SFR < 250. and 100. < v_c < 450.:
         return 0.0
     
     return -np.inf
@@ -489,7 +489,7 @@ def log_probability(theta, data, other_params, h, grid, f_beam):
     priors value: float
 
     """    
-    lp = log_prior_SFR_gaussian(theta, data)
+    lp = log_prior_uniform(theta, data)
     
     if not np.isfinite(lp):
         return -np.inf
