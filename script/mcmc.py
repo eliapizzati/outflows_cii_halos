@@ -64,7 +64,7 @@ data = obs_data_list[1]
 
 data.params_obs.update(beta_best_fit = 6.0)
 
-filename = "{}_{:.0f}_new_priors".format(data.params_obs["name_short"], nsteps)
+filename = "{}_{:.0f}_flat_priors".format(data.params_obs["name_short"], nsteps)
 
 filename_log = filename
 
