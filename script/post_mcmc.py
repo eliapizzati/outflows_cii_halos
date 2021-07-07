@@ -19,13 +19,23 @@ import natconst as nc
 from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
                       names_other,  observational_data_fuji
 
-             
+"""
+1:  DC396844
+8:  DC683613
+13: DC881725
+17: vc...875
+3:  DC488399
+7:  DC630594
+12: DC880016
+14: vc...582
+"""            
 
+log = False
 
 emission = False 
 
 nwalkers= 96
-nsteps = 1e4
+nsteps = 1e3
 
 sample_step = int(20 * (nsteps/1e4))
 walker_step = int(12 * (nwalkers/96))
@@ -33,7 +43,10 @@ walker_step = int(12 * (nwalkers/96))
 int_data = int(input("data number?"))
 data = obs_data_list[int_data]
 
-filename = "{}_{:.0f}_new_priors".format(data.params_obs["name_short"], nsteps)
+filename = "{}_{:.0f}".format(data.params_obs["name_short"], nsteps)
+
+if log:
+    filename += "_new_priors"
 
 print("###################################################################")
 
@@ -42,6 +55,7 @@ print("n steps = {}".format( nsteps))
 print("n walkers = {}".format( nwalkers))
 print("data object = {}".format( data.params_obs["name_short"]))
 print("filename = {}".format( filename))
+print("beta log =", log)
              
 print("###################################################################")
 
@@ -69,7 +83,11 @@ samples_flat = reader.get_chain(flat=True)
 ndim = 3
 
 fig, axes = plt.subplots(3, figsize=(10, 7), sharex=True)
-labels = ["beta", "SFR", "v_c"]
+
+if log:
+    labels = ["log beta", "SFR", "v_c"]
+else:
+    labels = ["beta", "SFR", "v_c"]
 
 for i in range(ndim):
     ax = axes[i]
@@ -105,7 +123,10 @@ all_samples = np.concatenate(
 
 ndim = 3
 
-labels = ["beta", "SFR", "v_c"]
+if log:
+    labels = ["log beta", "SFR", "v_c"]
+else:
+    labels = ["beta", "SFR", "v_c"]
 #labels += ["log prob"]# "log prior"]
 
 
@@ -158,16 +179,25 @@ for yi in range(naxes):
         if xi == 1 or xi == 2:
             ax.axvline(true_values[xi], color=kwargs["truth_color"], linestyle='--', linewidth=1.3)
             ax.axvspan(err_downs[xi], err_ups[xi], alpha=0.2, color='red')
+            if xi == 1:
+                ax.set_xlim(1.,250.)
+            if xi == 2:
+                ax.set_xlim(100.,450.)
+
 
         if yi == 1 or yi == 2:
             ax.axhline(true_values[yi], color=kwargs["truth_color"], linestyle='--', linewidth=1.3)
             ax.axhspan(err_downs[yi], err_ups[yi], alpha=0.2, color='red')
+            if yi == 1:
+                ax.set_ylim(1.,250.)
+            if yi == 2:
+                ax.set_ylim(100.,450.)
+
 
         
 fig.suptitle("{0:}, v_c = {1:.1f} km/s, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
 
 plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "corner_{}.png".format(filename)))
-
 
 # emission
 

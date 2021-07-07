@@ -193,6 +193,8 @@ for name, name_short in zip(names, names_short):
                        ("redshift", redshift),
                        ("line_FWHM", CII_FWHM*nc.km),
                        ("M_star", 10**log_M_star),
+                       ("M_star_err_up", 10**log_M_star_lim_up-10**log_M_star),            
+                       ("M_star_err_down", 10**log_M_star-10**log_M_star_lim_down),
                        ("M_vir", M_halo),
                        ("M_vir_err_up", M_halo_lim_up-M_halo),            
                        ("M_vir_err_down", M_halo-M_halo_lim_down),
@@ -205,6 +207,7 @@ for name, name_short in zip(names, names_short):
                        ("sersic_effective_radius", 1.1),
                        ("sersic_index", 1.),
                        ("beta_best_fit", None),
+                       ("beta_uncertainty", None),
                        ("likelihood_best_fit", 0.)])
                     
     
