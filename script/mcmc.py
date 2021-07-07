@@ -338,7 +338,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     intensity_raw *= 1e26 #transformation to mJy 
     intensity_raw /= 4.2e10 #transforming sr to arcsec^2
     
-    print("raw nans =", np.isnan(np.sum(intensity_raw)))
+    #print("raw nans =", np.isnan(np.sum(intensity_raw)))
 
     # convolution
 
@@ -359,7 +359,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     
     intensity_convolved = np.interp(h, grid[0][0], cprofile_2d, right=0.)
 
-    print("pre-norm nans =", np.isnan(np.sum(intensity_convolved)))
+    #print("pre-norm nans =", np.isnan(np.sum(intensity_convolved)))
     
     #normalizes the convolved intensity
     

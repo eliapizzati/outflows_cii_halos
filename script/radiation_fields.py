@@ -319,7 +319,7 @@ if __name__ == "__main__":
     flux_LW = 10**40.7 / nc.angs # in erg/s/cm
     
     Gamma_LW_1000 = 1.38e9 * flux_LW * (963*nc.angs)**2 / (4**2*np.pi**2*(R_sample)**2*nc.cc)  # in s^-1
-    
+
     # UV intensity (for the CMB suppression)
     
     intensity_gal = lum_wav * wav**2 / (4**2*np.pi**2*(R_sample)**2*nc.cc) # in erg/s/cm^2/Hz/sr
