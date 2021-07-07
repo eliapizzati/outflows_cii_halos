@@ -51,7 +51,7 @@ post_profiles = True  # switcher for the steps after the profiles integration (i
 
 params = dict([("DM_model", "NFW"),
                ("beta", 3.0),
-               ("SFR", 1000.),
+               ("SFR", 500.),
                ("f_esc_ion", 0.0),
                ("f_esc_FUV", 0.0),
                ("v_c", 250.),
@@ -116,5 +116,6 @@ time_elapsed = (time.perf_counter() - time_start)
 print("total time elapsed (s)=", time_elapsed)
 
 intensity_conv.to_file()
+intensity_raw.to_file()
 
 
