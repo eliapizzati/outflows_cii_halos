@@ -30,14 +30,14 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
 14: vc...582
 """            
 
-log = False
+log = True
 
-emission = False 
+emission = True
 
 nwalkers= 96
-nsteps = 1e3
+nsteps = 1e4
 
-sample_step = int(20 * (nsteps/1e4))
+sample_step = int(40 * (nsteps/1e4))
 walker_step = int(12 * (nwalkers/96))
 
 int_data = int(input("data number?"))
@@ -229,11 +229,13 @@ if emission:
             counter += 1
             print("computing emission for theta =", theta, "\t", "iteration number {}/{}"\
                   .format(counter, int( nsteps*nwalkers/sample_step/walker_step)))
-            
-            intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)    
-            
+
+            #if theta[2]<150. and theta[1]>50.:
+
+            intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)
+
             ax_int_conv.plot(h, intensity, alpha=0.1, color="gray")
-        
+
         
     alpine = ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
             markerfacecolor='maroon',markeredgecolor='maroon', marker='o',\
@@ -245,6 +247,6 @@ if emission:
     plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "emission_{}.png".format(filename)))
         
             
-            
+    plt.show()
         
     
