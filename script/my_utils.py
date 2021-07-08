@@ -49,6 +49,13 @@ def to_habing_flux(I_UV):
     return  4*np.pi*I_UV*(13.6-6.)*nc.ev/nc.hh/nc.cc/5.29e-14
 
 
+def from_habing_flux(I_g0):
+    return I_g0 * nc.hh * nc.cc * 5.29e-14 / 4 / np.pi / (13.6 - 6.) / nc.ev
+
+def plw_from_habing_flux(I_g0):
+    I_UV = I_g0 * nc.hh * nc.cc * 5.29e-14 / 4 / np.pi / (13.6 - 6.) / nc.ev #erg/s/Hz/sr/cm2
+    plw = 1.38e9 * I_UV #s^-1
+    return plw
 
 def get_concentration(M_vir, z):
     """

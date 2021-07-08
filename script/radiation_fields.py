@@ -202,13 +202,13 @@ if __name__ == "__main__":
     wav_z_rev = np.flip(wav_z)
     
     line_UV_wav_rest_frame =  nc.cc / nc.line_UV_mixing_rest_frame # in cm
-    
+
     index_UVB = np.searchsorted(wav_z_rev, line_UV_wav_rest_frame)
-    
+
     intensity_UVB_z_rev = np.flip(flux_UVB_z)
     
     intensity_UVB_UV = intensity_UVB_z_rev[index_UVB-1]
-    
+
     
         
         
@@ -237,8 +237,9 @@ if __name__ == "__main__":
     # LW photodestruction coefficient
         
     index = np.searchsorted(energy_eV_z, 12.87)
-        
-    Gamma_LW_UVB = 1.38e9 * flux_UVB_z[index] #s^-1 --> value ca 2.05e-13
+
+    intensity_LW_UVB = flux_UVB_z[index]
+    Gamma_LW_UVB = 1.38e9 * intensity_LW_UVB  #s^-1 --> value ca 2.05e-13
     
 
     print("######### UVB ###########")
@@ -250,6 +251,8 @@ if __name__ == "__main__":
     print("Gamma_LW_UVB (s^-1) =", Gamma_LW_UVB)  
     print("intensity_UV_UVB (erg/cm^2/s/Hz/sr) =", intensity_UVB_UV) 
     print("intensity_UV_UVB (G_0) =", to_habing_flux(intensity_UVB_UV))          
+    print("intensity_LW_UVB (erg/cm^2/s/Hz/sr) =", intensity_LW_UVB)
+    print("intensity_LW_UVB (G_0) =", to_habing_flux(intensity_LW_UVB))
     print("#########     ###########")
     
     
@@ -316,7 +319,7 @@ if __name__ == "__main__":
     flux_LW = 10**40.7 / nc.angs # in erg/s/cm
     
     Gamma_LW_1000 = 1.38e9 * flux_LW * (963*nc.angs)**2 / (4**2*np.pi**2*(R_sample)**2*nc.cc)  # in s^-1
-    
+
     # UV intensity (for the CMB suppression)
     
     intensity_gal = lum_wav * wav**2 / (4**2*np.pi**2*(R_sample)**2*nc.cc) # in erg/s/cm^2/Hz/sr
@@ -324,7 +327,7 @@ if __name__ == "__main__":
     line_UV_wav_rest_frame =  nc.cc / nc.line_UV_mixing_rest_frame  # in cm
     
     index_gal = np.searchsorted(wav, line_UV_wav_rest_frame)
-        
+
     intensity_UV_1000 = intensity_gal[index_gal-1]
     
     
