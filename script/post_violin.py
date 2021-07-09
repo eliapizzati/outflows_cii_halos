@@ -217,7 +217,7 @@ if fit:
         data.params_obs.update(likelihood_best_fit=likelihood.mean())
 
         likelihood_means.append(likelihood.mean())
-        beta_means.append(beta.mean())
+        beta_means.append(np.median(beta))
         mstars.append(data.params_obs["M_star"]/1e10)
         sfrs.append(data.params_obs["SFR"])
         vcs.append(data.params_obs["v_c"])
@@ -337,7 +337,7 @@ if fit:
     
     norm = colors.Normalize(vmin=v_c_min, vmax=v_c_max)
     
-        
+    plt.show()
     
     cii = ax.scatter(sfrs, beta_means,\
                marker='o', color = cmap_rend_col((vcs-v_c_min)/(v_c_max-v_c_min)),\
@@ -392,3 +392,5 @@ if fit:
     ax.plot(xaxis, power(xaxis, a ,b), color="C0", linestyle="-")
     
     ax.fill_between(xaxis, power(xaxis, a-sigma_a ,b-sigma_b), power(xaxis, a+sigma_a ,b+sigma_b), color="C0", alpha=0.05)
+
+    plt.show()
