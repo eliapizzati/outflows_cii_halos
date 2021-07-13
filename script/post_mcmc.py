@@ -230,7 +230,7 @@ if emission:
             print("computing emission for theta =", theta, "\t", "iteration number {}/{}"\
                   .format(counter, int( nsteps*nwalkers/sample_step/walker_step)))
 
-            #if theta[2]<150. and theta[1]>50.:
+            #if theta[0]>1.15:# and theta[1]>50.:
 
             intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)
 
@@ -244,7 +244,7 @@ if emission:
     fig_int_conv.suptitle("{0:}, v_c = {1:.1f} km/s, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
 
     fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
-    plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "emission_{}.png".format(filename)))
+    #plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "emission_{}.png".format(filename)))
         
             
     plt.show()
