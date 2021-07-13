@@ -195,6 +195,9 @@ if fit:
     
     def muratov_fit(x):
         return 3.6*x**(-0.35)
+
+    def fluetsch_agn_fit(x):
+        return 0.85*x**(0.76)
     
     
     likelihood_means = []
@@ -270,7 +273,7 @@ if fit:
     yticks = [3.,4.,6.,10.,20.]
     xticks_mstar = [0.3,0.4,0.6,1.,2.0]
     xticks_sfr = [10.,20.,50.,100.]
-
+    
     #ax.set_ylim(1.3,6.0)
     ax.set_xlabel("M_star [M_sun]/1e10")
     ax.set_ylabel("beta")
@@ -392,3 +395,5 @@ if fit:
     ax.plot(xaxis, power(xaxis, a ,b), color="C0", linestyle="-")
     
     ax.fill_between(xaxis, power(xaxis, a-sigma_a ,b-sigma_b), power(xaxis, a+sigma_a ,b+sigma_b), color="C0", alpha=0.05)
+
+
