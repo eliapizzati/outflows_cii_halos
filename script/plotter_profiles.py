@@ -51,7 +51,7 @@ matplotlib.rcParams.update({
 plot1 = True  #profiles v,n,T
 plot2 = False      # ionization state
 plot3 = False    # cmb emission
-plot3 = False    # final emission
+plot4 = False    # final emission
 
 
 
@@ -287,3 +287,159 @@ if plot2:
     cb.set_label(r'$\eta$',rotation=0.)
     cb.set_ticks(np.arange(1.0,10.,1.0))
     cb.set_ticklabels(np.arange(1.0,10.,1.0))
+
+
+if plot3:
+    """
+    #cmb emission
+    """
+
+    from sol_modules import get_profiles, get_ionization_states, get_surface_density
+
+        
+    betas = np.arange(0.2,8,0.8)
+    betas = np.append(betas,  [0.4,1.3])
+    cmap_rend_col = matplotlib.cm.get_cmap('viridis_r')
+    
+    norm = matplotlib.colors.Normalize(vmin=betas.min(), vmax=betas.max())
+
+    fig, [ax_eta, ax_sigma] = plt.subplots(1,2,figsize=(1.3*8.27,1.3*3.2))
+
+    ax_eta.set_xlabel("b [kpc]")
+    ax_eta.set_ylabel(r"$\eta$")
+    ax_eta.set_ylim((0,1))
+    ax_eta.set_xlim((np.log10(0.3),np.log10(30)))
+    
+    ax_sigma.set_xlabel("b [kpc]")
+    ax_sigma.set_ylabel(r"log ($\Sigma_{CII}$ [erg/cm s$^2$])")
+
+
+    for i in range(len(betas)):
+    
+        params.update(beta = betas[i])
+
+        
+        profiles = get_profiles(params, resol=1000)
+        ionization_state = get_ionization_states(profiles, params)
+        sigma_CII = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=True)    
+
+
+        ax_eta.plot(sigma_CII.h/1e3/nc.pc, sigma_CII.eta,  color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
+        ax_sigma.plot(sigma_CII.h/(1e3*nc.pc),sigma_CII.var, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
+
+
+    
+    plt.subplots_adjust(left = 0.08,  # the left side of the subplots of the figure
+    right = 0.95,   # the right side of the subplots of the figure
+    bottom = 0.22,  # the bottom of the subplots of the figure
+    top = 0.95,     # the top of the subplots of the figure
+    wspace = 0.2,  # the amount of width reserved for space between subplots,
+    # expressed as a fraction of the average axis width
+    hspace = 0.15)  # the amount of height reserved for space between subplots,
+                  # expressed as a fraction of the average axis height
+    
+    
+    cax = plt.axes([0.15, 0.1,  0.72,0.015*10/7])
+    
+    cmap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap_rend_col)
+    cmap.set_array([])
+    
+    cb = fig.colorbar(cmap, ticks=betas, cax=cax, orientation='horizontal')
+    cb.set_label(r'$\eta$',rotation=0.)
+    cb.set_ticks(np.arange(1.0,10.,1.0))
+    cb.set_ticklabels(np.arange(1.0,10.,1.0))
+
+
+
+
+if plot4:
+    """
+    #final emission
+    """
+    from sol_modules import get_profiles, get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved
+
+    from load_data import observational_data_fuji
+
+    data = observational_data_fuji
+
+    cmap_rend_col = matplotlib.cm.get_cmap('tab10')
+    
+    norm = matplotlib.colors.Normalize(vmin=betas.min()-0.05, vmax=betas.max()+0.05)
+    
+    
+    fig, (ax_em, ax_comp) = plt.subplots(1, 2, sharey=True, figsize=(1.3*8.27,1.3*4.))
+    
+    
+    ax_em.set_xlabel("b [kpc]")
+    ax_em.set_ylabel(r"flux [mJy/arcsec$^2$]")
+    ax_em.set_yscale('log')
+    ax_em.set_ylim((0.01,12))    
+    ax_em.set_xlim((0.3,10))
+    
+    
+    ax_comp.set_xlabel("b [kpc]")
+    #ax_comp.set_ylabel("flux [mJy/arcsec$^2$]", size=size)
+    ax_comp.set_yscale('log')
+    ax_comp.set_xlim((0.3,10))
+    
+    
+    
+    for i in range(len(betas)):
+        
+        
+        params.update(beta = betas[i])
+
+        
+        profiles = get_profiles(params, resol=1000)
+        ionization_state = get_ionization_states(profiles, params)
+        sigma_CII = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=True)    
+        intensity_raw = get_intensity_raw(sigma_CII, params, data.params_obs)
+        intensity_conv = get_intensity_convolved(intensity_raw, params, data.params_obs, data, add_central_contribution=False)
+     
+    
+        ax_em.plot(intensity_raw.h/(1e3*nc.pc),intensity_raw.var, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
+        
+        ax_comp.plot(intensity_conv.h/(1e3*nc.pc),intensity_conv.var, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
+                    
+            
+    fuji = ax_comp.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
+                 markerfacecolor='maroon',markeredgecolor='maroon', marker='o',\
+                 linestyle='', ecolor = 'maroon')
+    
+
+    # central contribution
+
+    factor_data = data.data[0]/data.beam[0]
+    
+    ax_comp.plot(data.x_beam/1e3/nc.pc, data.beam*factor_data, linestyle="--", color="gray")
+
+    
+    
+    plt.subplots_adjust(left = 0.1,  # the left side of the subplots of the figure
+    right = 0.95,   # the right side of the subplots of the figure
+    bottom = 0.3,  # the bottom of the subplots of the figure
+    top = 0.95,     # the top of the subplots of the figure
+    wspace = 0.05,  # the amount of width reserved for space between subplots,
+    # expressed as a fraction of the average axis width
+    hspace = 0.05)  # the amount of height reserved for space between subplots,
+                  # expressed as a fraction of the average axis height
+    
+    cax = plt.axes([0.15, 0.13,  0.72,0.03])
+    
+    cmap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap_rend_col)
+    cmap.set_array([])
+    
+    #betas_ticks = betas[10*betas%2 ==0]
+    betas_ticks = betas
+    
+    
+    cb = fig.colorbar(cmap, ticks=betas_ticks.round(1), cax=cax, orientation='horizontal')
+    cb.set_label(r'$\eta$', rotation=0.)
+    
+    ax_comp.legend([fuji], ["Fujimoto+19"])##
+
+    #ax_comp.legend(loc='upper right', fontsize = 'x-large', frameon=False )
+    #ax_em.legend(loc='upper right', fontsize = 'large')
+    
+
+    
