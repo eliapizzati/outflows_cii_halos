@@ -149,7 +149,7 @@ def UVB_rates(redshift, quantity):
 
 if __name__ == "__main__":
     
-    redshift = 5
+    redshift = 6
     
     # photoionization params (THE ORDER IS H, He, CI, CII, CVI?)
     
