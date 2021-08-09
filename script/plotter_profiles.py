@@ -37,8 +37,8 @@ matplotlib.rcParams.update({
         "ytick.labelsize": 16.,
         "xtick.major.size": 6.0,
         "ytick.major.size": 6.0,
-        "xtick.minor.size": 4.0,
-        "ytick.minor.size": 4.0,
+        "xtick.minor.size": 3.0,
+        "ytick.minor.size": 3.0,
         "legend.fontsize": 13.0,
         "legend.frameon": False
  #       "figure.dpi": 200,
@@ -48,20 +48,20 @@ matplotlib.rcParams.update({
 
 
 
-plot1 = True  #profiles v,n,T
+plot1 = False  #profiles v,n,T
 plot2 = False      # ionization state
-plot3 = False    # cmb emission
-plot4 = False    # final emission
+plot3 = True   # cmb emission
+plot4 = False  # final emission
 
 
 
-params = dict([("DM_model", None),
+params = dict([("DM_model", "NFW"),
            ("beta", 1.0), 
            ("SFR", 50.),
            ("f_esc_ion", 0.), 
            ("f_esc_FUV", 0.), 
-           ("v_c", 175.),
-           ("redshift", 6.),
+           ("v_c", 200.),
+           ("redshift", 5.),
            ("Zeta", 1.0),
            ("alfa", 1.0),
            ("R_in", 0.3)])    
@@ -76,13 +76,13 @@ if plot1:
 
      
     betas = np.arange(0.2,8,0.8)
-    betas = np.append(betas,  [0.4,1.3])
+    betas = np.append(betas,  [0.4,1.,1.8])
     cmap_rend_col = matplotlib.cm.get_cmap('viridis_r')
     
     norm = matplotlib.colors.Normalize(vmin=betas.min(), vmax=betas.max())
 
 
-    fig, axs = plt.subplots(3, 2, sharex=True, figsize=(1.3*8.27,1.3*10.))
+    fig, axs = plt.subplots(3, 2, sharex=True,sharey=False, figsize=(1.3*8.27,1.3*10.))
 
 
     ax_v_gal = axs[0,0] 
@@ -98,13 +98,13 @@ if plot1:
       
     #ax_v_gal.set_xlabel("log (r [kpc])", size=size)
     ax_v_gal.set_ylabel("v [1000 km/s] ")
-    ax_v_gal.set_title(r'$f\,_\mathrm{esc}\,=\,0.2$', fontsize = 'x-large', pad = 7)
+    ax_v_gal.set_title(r'$f\,_\mathrm{esc}\,=\,0.2$', pad = 7)
     #ax_v_gal.tight_layout()
     ax_v_gal.set_xlim((np.log10(0.3),np.log10(30)))
     
     #ax_v.set_xlabel("log (r [kpc])", size=size)
     #ax_v.set_ylabel("v [1000 km/s] ", size=size)
-    ax_v.set_title(r'$f\,_\mathrm{esc}\,=\,0.0$', fontsize = 'x-large', pad = 7)
+    ax_v.set_title(r'$f\,_\mathrm{esc}\,=\,0.0$', pad = 7)
     #ax_v.tight_layout()
     ax_v.set_xlim((np.log10(0.3),np.log10(30)))
     
@@ -120,17 +120,20 @@ if plot1:
     
     ax_T_gal.set_xlabel("log (r [kpc])")
     ax_T_gal.set_ylabel("log (T [K])")
-    ax_T_gal.set_ylim((2,8))
+    ax_T_gal.set_ylim((1.7,8))
     #ax_T_gal.tight_layout()
     
     ax_T.set_xlabel("log (r [kpc])")
     #ax_T.set_ylabel("log (T [K])", size=size)
-    ax_T.set_ylim((2,8))
+    ax_T.set_ylim((1.7,8))
     #ax_T.tight_layout()
 
 
     for i in range(len(betas)):
-        
+        print("beta=", betas[i])
+        params.update(f_esc_ion = 0.)
+        params.update(f_esc_FUV = 0.)
+
         params.update(beta = betas[i])
 
         
@@ -167,7 +170,7 @@ if plot1:
 
 
     plt.subplots_adjust(left = 0.08,  # the left side of the subplots of the figure
-            right = 0.95,   # the right side of the subplots of the figure
+            right = 0.97,   # the right side of the subplots of the figure
             bottom = 0.22,  # the bottom of the subplots of the figure
             top = 0.95,     # the top of the subplots of the figure
             wspace = 0.12,  # the amount of width reserved for space between subplots,
@@ -185,24 +188,25 @@ if plot1:
     cb.set_label(r'$\eta$', rotation=0.)
     cb.set_ticks(np.arange(1.0,10.,1.0))
     cb.set_ticklabels(np.arange(1.0,10.,1.0))
-
+    plt.show()
 
 
 if plot2:
     """
     #ionization state
     """
-    from sol_modules import get_profiles, get_ionization_states
+    from sol_modules import get_profiles
+    from post_sol_modules import get_ionization_states
 
         
     betas = np.arange(0.2,8,0.8)
-    betas = np.append(betas,  [0.4,1.3])
+    betas = np.append(betas,  [0.4,1.,1.8])
     cmap_rend_col = matplotlib.cm.get_cmap('viridis_r')
     
     norm = matplotlib.colors.Normalize(vmin=betas.min(), vmax=betas.max())
 
         
-    fig, axs = plt.subplots(2, 2, sharex=True, figsize=(1.3*8.27,1.3*7.))
+    fig, axs = plt.subplots(2, 2, sharex=True, figsize=(1.3*8.27,1.3*5.5))
     
     ax_xe_gal = axs[0,0] 
     ax_xCII_gal = axs[1,0]
@@ -213,13 +217,13 @@ if plot2:
     
     #ax_xe.set_xlabel("log (r [kpc])", size=size)
     ax_xe.set_ylabel("n$_\\mathrm{HI}$/n$_\\mathrm{H}$")
-    ax_xe.set_title(r'$f\,_\mathrm{esc}\,=\,0.0$', fontsize = 'x-large', pad = 7)
+    ax_xe.set_title(r'$f\,_\mathrm{esc}\,=\,0.0$', pad = 7)
     ax_xe.set_ylim((0,1))
     ax_xe.set_xlim((np.log10(0.3),np.log10(30)))
     
     #ax_xe_gal.set_xlabel("log (r [kpc])", size=size)
     ax_xe_gal.set_ylabel("log (n$_\\mathrm{HI}$/n$_\\mathrm{H})$")
-    ax_xe_gal.set_title(r'$f\,_\mathrm{esc}\,=\,0.2$', fontsize = 'x-large', pad = 7)
+    ax_xe_gal.set_title(r'$f\,_\mathrm{esc}\,=\,0.2$', pad = 7)
     ax_xe_gal.set_ylim((-9.6,0))
     
     
@@ -234,7 +238,11 @@ if plot2:
     ax_xCII.set_ylim((0,1))
     
     for i in range(len(betas)):
-    
+        print("beta=", betas[i])
+
+        params.update(f_esc_ion = 0.)
+        params.update(f_esc_FUV = 0.)
+
         params.update(beta = betas[i])
 
         
@@ -263,22 +271,19 @@ if plot2:
         ax_xe_gal.plot(np.log10(r/(1000*nc.pc)),np.log10(1.-x_e_gal), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
     
         ax_xCII_gal.plot(np.log10(r/(1000*nc.pc)),np.log10(x_CII_gal), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
-        
-    
-      
-    
+
     
     plt.subplots_adjust(left = 0.08,  # the left side of the subplots of the figure
-    right = 0.95,   # the right side of the subplots of the figure
+    right = 0.97,   # the right side of the subplots of the figure
     bottom = 0.22,  # the bottom of the subplots of the figure
     top = 0.95,     # the top of the subplots of the figure
-    wspace = 0.2,  # the amount of width reserved for space between subplots,
+    wspace = 0.22,  # the amount of width reserved for space between subplots,
     # expressed as a fraction of the average axis width
     hspace = 0.15)  # the amount of height reserved for space between subplots,
                   # expressed as a fraction of the average axis height
     
     
-    cax = plt.axes([0.15, 0.1,  0.72,0.015*10/7])
+    cax = plt.axes([0.15, 0.09,  0.72,0.017])
     
     cmap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap_rend_col)
     cmap.set_array([])
@@ -288,13 +293,15 @@ if plot2:
     cb.set_ticks(np.arange(1.0,10.,1.0))
     cb.set_ticklabels(np.arange(1.0,10.,1.0))
 
+    plt.show()
 
 if plot3:
     """
     #cmb emission
     """
 
-    from sol_modules import get_profiles, get_ionization_states, get_surface_density
+    from sol_modules import get_profiles
+    from post_sol_modules import get_ionization_states, get_surface_density
 
         
     betas = np.arange(0.2,8,0.8)
@@ -303,43 +310,53 @@ if plot3:
     
     norm = matplotlib.colors.Normalize(vmin=betas.min(), vmax=betas.max())
 
-    fig, [ax_eta, ax_sigma] = plt.subplots(1,2,figsize=(1.3*8.27,1.3*3.2))
+    fig, [ax_eta, ax_sigma] = plt.subplots(1,2,figsize=(1.3*8.27,1.3*4.))
 
     ax_eta.set_xlabel("b [kpc]")
-    ax_eta.set_ylabel(r"$\eta$")
-    ax_eta.set_ylim((0,1))
-    ax_eta.set_xlim((np.log10(0.3),np.log10(30)))
-    
+    ax_eta.set_ylabel(r"$\eta$",  labelpad=-8)
+    ax_eta.set_ylim((3e-2,1))
+    ax_eta.set_xlim((0.3,15.5))
+    ax_eta.set_yscale("log")
+    ax_eta.set_yticks([0.1,1])
+    ax_eta.set_yticklabels([0.1,1])
+
     ax_sigma.set_xlabel("b [kpc]")
-    ax_sigma.set_ylabel(r"log ($\Sigma_{CII}$ [erg/cm s$^2$])")
+    ax_sigma.set_ylabel(r"log ($\Sigma_{\rm CII}$ [erg/cm s$^2$])", labelpad=-1)
+    ax_sigma.set_yscale("log")
+    ax_sigma.set_xlim((0.3, 15.5))
+    ax_sigma.set_ylim(1e-8,2e-2)
+
 
 
     for i in range(len(betas)):
-    
+        print("beta=", betas[i])
+
         params.update(beta = betas[i])
 
         
         profiles = get_profiles(params, resol=1000)
         ionization_state = get_ionization_states(profiles, params)
         sigma_CII = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=True)    
+        sigma_CII_no_cmb = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=False)
 
 
         ax_eta.plot(sigma_CII.h/1e3/nc.pc, sigma_CII.eta,  color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
         ax_sigma.plot(sigma_CII.h/(1e3*nc.pc),sigma_CII.var, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
+        ax_sigma.plot(sigma_CII_no_cmb.h/(1e3*nc.pc),sigma_CII_no_cmb.var, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=0.4)
 
 
     
-    plt.subplots_adjust(left = 0.08,  # the left side of the subplots of the figure
-    right = 0.95,   # the right side of the subplots of the figure
-    bottom = 0.22,  # the bottom of the subplots of the figure
-    top = 0.95,     # the top of the subplots of the figure
-    wspace = 0.2,  # the amount of width reserved for space between subplots,
+    plt.subplots_adjust(left = 0.06,  # the left side of the subplots of the figure
+    right = 0.98,   # the right side of the subplots of the figure
+    bottom = 0.28,  # the bottom of the subplots of the figure
+    top = 0.96,     # the top of the subplots of the figure
+    wspace = 0.25,  # the amount of width reserved for space between subplots,
     # expressed as a fraction of the average axis width
-    hspace = 0.15)  # the amount of height reserved for space between subplots,
+    hspace = 0.27)  # the amount of height reserved for space between subplots,
                   # expressed as a fraction of the average axis height
     
     
-    cax = plt.axes([0.15, 0.1,  0.72,0.015*10/7])
+    cax = plt.axes([0.15, 0.12,  0.72,0.015*10/7])
     
     cmap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap_rend_col)
     cmap.set_array([])
@@ -350,21 +367,24 @@ if plot3:
     cb.set_ticklabels(np.arange(1.0,10.,1.0))
 
 
-
+    plt.show()
 
 if plot4:
     """
     #final emission
     """
-    from sol_modules import get_profiles, get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved
+    from sol_modules import get_profiles
+    from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved
 
     from load_data import observational_data_fuji
+
+    betas = np.arange(1.0,9.0,0.8)
 
     data = observational_data_fuji
 
     cmap_rend_col = matplotlib.cm.get_cmap('tab10')
     
-    norm = matplotlib.colors.Normalize(vmin=betas.min()-0.05, vmax=betas.max()+0.05)
+    norm = matplotlib.colors.Normalize(vmin=betas.min()-0.4, vmax=betas.max()+0.4)
     
     
     fig, (ax_em, ax_comp) = plt.subplots(1, 2, sharey=True, figsize=(1.3*8.27,1.3*4.))
@@ -385,8 +405,11 @@ if plot4:
     
     
     for i in range(len(betas)):
-        
-        
+        print("beta=", betas[i])
+
+        params.update(f_esc_ion = 0.)
+        params.update(f_esc_FUV = 0.)
+
         params.update(beta = betas[i])
 
         
@@ -413,18 +436,16 @@ if plot4:
     
     ax_comp.plot(data.x_beam/1e3/nc.pc, data.beam*factor_data, linestyle="--", color="gray")
 
-    
-    
-    plt.subplots_adjust(left = 0.1,  # the left side of the subplots of the figure
-    right = 0.95,   # the right side of the subplots of the figure
-    bottom = 0.3,  # the bottom of the subplots of the figure
-    top = 0.95,     # the top of the subplots of the figure
-    wspace = 0.05,  # the amount of width reserved for space between subplots,
-    # expressed as a fraction of the average axis width
-    hspace = 0.05)  # the amount of height reserved for space between subplots,
-                  # expressed as a fraction of the average axis height
-    
-    cax = plt.axes([0.15, 0.13,  0.72,0.03])
+    plt.subplots_adjust(left=0.1,  # the left side of the subplots of the figure
+                        right=0.98,  # the right side of the subplots of the figure
+                        bottom=0.29,  # the bottom of the subplots of the figure
+                        top=0.97,  # the top of the subplots of the figure
+                        wspace=0.05,  # the amount of width reserved for space between subplots,
+                        # expressed as a fraction of the average axis width
+                        hspace=0.15)  # the amount of height reserved for space between subplots,
+    # expressed as a fraction of the average axis height
+
+    cax = plt.axes([0.15, 0.12,  0.72,0.03])
     
     cmap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap_rend_col)
     cmap.set_array([])
@@ -441,5 +462,5 @@ if plot4:
     #ax_comp.legend(loc='upper right', fontsize = 'x-large', frameon=False )
     #ax_em.legend(loc='upper right', fontsize = 'large')
     
-
+    plt.show()
     
