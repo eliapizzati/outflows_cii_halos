@@ -40,9 +40,9 @@ matplotlib.rcParams.update({
 
 
 
-plot1 = False  #cc85 + NFW vc
+plot1 = True  #cc85 + NFW vc
 plot2 = False      # cooling
-plot3 = True    # cmb suppression theory
+plot3 = False    # cmb suppression theory
 
 
 if plot1:
@@ -274,7 +274,7 @@ if plot3:
                       levels = [0.0,0.05,0.1,0.15,0.2,0.3,0.6,0.8,1.0, 1.4,1.8,2.4,3.0,4.0])
     # Create colorbar
     
-    cax = plt.axes([0.9, 0.15, 0.018,0.8])
+    cax = plt.axes([0.9, 0.17, 0.018,0.78])
 
     cbar = ax_texc.figure.colorbar(im, cax=cax)
     cbar.ax.set_ylabel(r"log( T$_{exc}$ / T$_{\rm CMB}$(z) )", rotation=90., labelpad=0)
