@@ -147,7 +147,9 @@ def diff_system(r, y, params, Plw, Ph1, Pg1):
     v = y[0] # velocity
     rho = y[1] # density
     T = y[2] # temperature
-        
+
+    if T<0.:
+        T=0.
     c_S2 = nc.gamma*nc.knorm * T
     c_T2 = nc.knorm * T
     
@@ -286,7 +288,7 @@ def get_profiles(params, resol=1000, print_time=False, integrator="RK45"):
     v = sol.y[0] #cm/s
     rho = sol.y[1]
     n = rho / (nc.mus*nc.mp) #cm^-3 # NB CHECK CONSISTENCY WITH METALLICITY
-    T = sol.y[2] #K
+    T = abs(sol.y[2]) #K
     
     mask = v > 0.
 

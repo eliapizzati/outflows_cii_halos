@@ -41,8 +41,8 @@ matplotlib.rcParams.update({
 
 
 plot1 = False  #cc85 + NFW vc
-plot2 = False      # cooling
-plot3 = True    # cmb suppression theory
+plot2 = True      # cooling
+plot3 = False    # cmb suppression theory
 
 
 if plot1:
@@ -142,23 +142,23 @@ if plot2:
     """
     from cooling import cooling_vectorized, heating_vectorized
 
-    fig, (ax_gal, ax_no) = plt.subplots(1, 2, sharey=True,figsize=(1.3*8.27,1.3*3.2))
+    fig, (ax_gal, ax_no) = plt.subplots(1, 2, sharey=True,figsize=(1.3*8.27,1.3*4.5))
     
-    cmap_rend_col = matplotlib.cm.get_cmap('Dark2')
+    cmap_rend_col = matplotlib.cm.get_cmap('Dark2_r')
     
-    T = np.logspace(3,8)
+    T = np.logspace(3,8,1000)
     n_s = np.logspace(-6,1, 8)
     
     n_min = min(n_s)
     n_max = max(n_s)
     
-    norm = matplotlib.colors.LogNorm(vmin=n_min/10**0.5, vmax=n_max*10**0.5)
+    norm = matplotlib.colors.Normalize(vmin=np.log10(n_min)-0.5, vmax=np.log10(n_max)+0.5)
     
     
 
     ax_gal.set_xlim((3.2,8.2))
     #plt.yscale('log')
-    ax_gal.set_title(r'$f\,_\mathrm{esc}\,=\,0.2$', fontsize = 'x-large', pad = 7)
+    ax_gal.set_title(r'$f\,_\mathrm{esc}\,=\,0.2$', pad = 7)
     ax_gal.set_xlabel("log (T [K])")
     ax_gal.set_ylabel("log ($|\Lambda$(T)| $[\mathrm{erg}\,\mathrm{cm}^3\,\mathrm{s}^{-1}]$)")
     
@@ -166,7 +166,7 @@ if plot2:
     ax_no.set_ylim((-26,-21.4))
     
     #plt.yscale('log')
-    ax_no.set_title(r'$f\,_\mathrm{esc}\,=\,0.0$', fontsize = 'x-large', pad = 7)
+    ax_no.set_title(r'$f\,_\mathrm{esc}\,=\,0.0$', pad = 7)
     ax_no.set_xlabel("log (T [K])")
     #ax_no.set_ylabel("log ($|\Lambda$(T)| $[\mathrm{erg}\,\mathrm{cm}^3\,\mathrm{s}^{-1}]$)" , size=18)
     
@@ -178,14 +178,16 @@ if plot2:
         Ph1 =  5.48031935502901e-09 # s^-1
         Pg1 = 1.7687762344020628e-09 # s^-1
         
-        cooling = cooling_vectorized(T, n, Plw, Ph1, Pg1, 0.) - heating_vectorized(T, n, Plw, Ph1, Pg1, 0.)
+        T, cooling = cooling_vectorized(T, n, Plw, Ph1, Pg1, 0.)
+        T, heating = heating_vectorized(T, n, Plw, Ph1, Pg1, 0.)
 
-        T_min = np.argmin(cooling)
+        net_cooling = np.abs(cooling - heating)
+        T_min = np.argmin(net_cooling)
 
-        ax_gal.plot(np.log10(T[T > T[T_min]]), cooling[T > T[T_min]],\
+        ax_gal.plot(np.log10(T[T > T[T_min-1]]), np.log10(net_cooling[T > T[T_min-1]]),\
                     color = cmap_rend_col((np.log10(n)-np.log10(n_min))/(np.log10(n_max)-np.log10(n_min))))
 
-        ax_gal.plot(np.log10(T[T < T[T_min]]), cooling[T < T[T_min]], linestyle='--',\
+        ax_gal.plot(np.log10(T[T < T[T_min-1]]), np.log10(net_cooling[T < T[T_min-1]]), linestyle='--',\
                     color = cmap_rend_col((np.log10(n)-np.log10(n_min))/(np.log10(n_max)-np.log10(n_min))))
     
         # UVB        
@@ -194,37 +196,45 @@ if plot2:
         Ph1 = 2.3335173959061055e-13
         Pg1 = 1.348999532748642e-13
         
-        cooling = cooling_vectorized(T, n, Plw, Ph1, Pg1, 0.) - heating_vectorized(T, n, Plw, Ph1, Pg1, 0.)
+        T, cooling = cooling_vectorized(T, n, Plw, Ph1, Pg1, 0.)
+        T, heating = heating_vectorized(T, n, Plw, Ph1, Pg1, 0.)
 
-        T_min = np.argmin(cooling)
+        net_cooling = np.abs(cooling - heating)
 
-        ax_no.plot(np.log10(T[T > T[T_min]]), cooling[T > T[T_min]],\
+        T_min = np.argmin(net_cooling)
+
+        ax_no.plot(np.log10(T[T > T[T_min]]), np.log10(net_cooling[T > T[T_min]]),\
                     color = cmap_rend_col((np.log10(n)-np.log10(n_min))/(np.log10(n_max)-np.log10(n_min))))
 
-        ax_no.plot(np.log10(T[T < T[T_min]]), cooling[T < T[T_min]], linestyle='--',\
+        ax_no.plot(np.log10(T[T < T[T_min]]), np.log10(net_cooling[T < T[T_min]]), linestyle="--",\
                     color = cmap_rend_col((np.log10(n)-np.log10(n_min))/(np.log10(n_max)-np.log10(n_min))))
-    
-    ax_gal.plot(np.log10(T), cooling_vectorized(T, 1.,0.,0.,0.,0.)-heating_vectorized(T,1.,0.,0.,0.,0.),color="gray")
-    ax_no.plot(np.log10(T), cooling_vectorized(T, 1.,0.,0.,0.,0.)-heating_vectorized(T,1.,0.,0.,0.,0.),color="gray")
+
+    net_cooling_cie = np.abs(cooling_vectorized(T, 1.,0.,0.,0.,0.)[1]-heating_vectorized(T,1.,0.,0.,0.,0.)[1])
+    print(net_cooling_cie)
+    ax_gal.plot(np.log10(T), np.log10(net_cooling_cie),color="gray", linestyle=":")
+    ax_no.plot(np.log10(T), np.log10(net_cooling_cie),color="gray", linestyle=":")
     
     
     plt.subplots_adjust(left = 0.1,  # the left side of the subplots of the figure
-    right = 0.95,   # the right side of the subplots of the figure
-    bottom = 0.28,  # the bottom of the subplots of the figure
-    top = 0.9,     # the top of the subplots of the figure
+    right = 0.98,   # the right side of the subplots of the figure
+    bottom = 0.285,  # the bottom of the subplots of the figure
+    top = 0.92,     # the top of the subplots of the figure
     wspace = 0.05,  # the amount of width reserved for space between subplots,
     # expressed as a fraction of the average axis width
     hspace = 0.05)  # the amount of height reserved for space between subplots,
                   # expressed as a fraction of the average axis height
     
-    cax = plt.axes([0.15, 0.13,  0.72,0.03])
+    cax = plt.axes([0.15, 0.12,  0.72,0.03])
     
-    cmap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap_rend_col, cax=cax)
+    cmap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap_rend_col)
     cmap.set_array([])
     
-    cb = fig.colorbar(cmap, orientation='horizontal')
-    cb.set_label(r'n [cm$^{-3}$]', rotation=0.)
-
+    cb = fig.colorbar(cmap, orientation='horizontal',  cax=cax)
+    cb.set_label(r'log( n [cm$^{-3}$] )', rotation=0.)
+    cb.set_ticks(np.arange(-6.0,2.0,1.0))
+    cb.set_ticklabels(np.arange(-6.0,2.0,1.0))
+    cb.minorticks_off()
+    plt.show()
 
 if plot3:
     """
