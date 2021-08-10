@@ -78,8 +78,8 @@ if plot1:
     nwalkers= 96
     nsteps = 1e3
 
-    sample_step = int(1000 * (nsteps/1e3))
-    walker_step = int(48 * (nwalkers/96))
+    sample_step = int(100 * (nsteps/1e3))
+    walker_step = int(24 * (nwalkers/96))
 
 
     fig, axs = plt.subplots(4, 2, sharey=True, sharex=True, figsize=(1.3*8.27,1.3*12.))
@@ -89,11 +89,12 @@ if plot1:
          #ax.set_xlabel("b [kpc]")
          #ax.set_ylabel(r"flux [mJy/arcsec$^2$]")
          ax.set_yscale('log')
-         ax.set_ylim((0.008,12))
+         ax.set_ylim((0.003,12))
          ax.set_xlim((0.3,16))
 
-    fig.text(0.5, 0.04, 'b [kpc]', ha='center')
-    fig.text(0.015, 0.6, 'flux [mJy/arcsec$^2$]', va='center', rotation='vertical')
+    axs[3,0].set_xlabel("b [kpc]")
+    axs[3,1].set_xlabel("b [kpc]")
+    fig.text(0.013, 0.53, 'flux [mJy/arcsec$^2$]', va='center', rotation='vertical')
 
     
 
@@ -160,11 +161,11 @@ if plot1:
 
     plt.subplots_adjust(left=0.1,  # the left side of the subplots of the figure
                         right=0.98,  # the right side of the subplots of the figure
-                        bottom=0.1,  # the bottom of the subplots of the figure
+                        bottom=0.08,  # the bottom of the subplots of the figure
                         top=0.95,  # the top of the subplots of the figure
                         wspace=0.05,  # the amount of width reserved for space between subplots,
                         # expressed as a fraction of the average axis width
-                        hspace=0.26)  # the amount of height reserved for space between subplots,
+                        hspace=0.27)  # the amount of height reserved for space between subplots,
     # expressed as a fraction of the average axis height
 
     plt.show()
