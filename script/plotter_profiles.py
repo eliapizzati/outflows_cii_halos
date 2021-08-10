@@ -46,8 +46,8 @@ matplotlib.rcParams.update({
 
 plot1 = False  #profiles v,n,T
 plot2 = False      # ionization state
-plot3 = True   # cmb emission
-plot4 = False  # final emission
+plot3 = False   # cmb emission
+plot4 = True  # final emission
 
 
 
@@ -370,7 +370,7 @@ if plot4:
     #final emission
     """
     from sol_modules import get_profiles
-    from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved
+    from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved, get_luminosity_CII, get_halo_mass
 
     from load_data import observational_data_fuji
 
@@ -415,7 +415,8 @@ if plot4:
         intensity_raw = get_intensity_raw(sigma_CII, params, data.params_obs)
         intensity_conv = get_intensity_convolved(intensity_raw, params, data.params_obs, data, add_central_contribution=False)
      
-    
+        print("L_CII=", get_luminosity_CII(sigma_CII))
+        print("M_halo=", get_halo_mass(profiles, params))
         ax_em.plot(intensity_raw.h/(1e3*nc.pc),intensity_raw.var, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
         
         ax_comp.plot(intensity_conv.h/(1e3*nc.pc),intensity_conv.var, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))

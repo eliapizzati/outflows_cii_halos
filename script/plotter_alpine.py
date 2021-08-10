@@ -56,33 +56,37 @@ if plot1:
     """
     #single profiles results 
     """
-    from sol_modules import get_profiles, get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved
+    from sol_modules import get_profiles
+    from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved
 
     from load_data import obs_data_list
 
-    betas = np.arange(1.0,9.0,0.8)
+    betas = np.arange(4.0,8.8,0.4)
 
-    cmap_rend_col = matplotlib.cm.get_cmap('tab10')
+    cmap_rend_col = matplotlib.cm.get_cmap('Set3')
     
     norm = matplotlib.colors.Normalize(vmin=betas.min()-0.4, vmax=betas.max()+0.4)
 
 
     fig, axs = plt.subplots(4, 2, sharey=True, sharex=True, figsize=(1.3*8.27,1.3*12.))
 
-    for ax in axs:
-        ax.set_xlabel("b [kpc]")
-        ax.set_ylabel(r"flux [mJy/arcsec$^2$]")
-        ax.set_yscale('log')
-        ax.set_ylim((0.01,12))    
-        ax.set_xlim((0.3,10))
-    
+    axs_flat = axs.flatten()
+    for ax in axs_flat:
+         #ax.set_xlabel("b [kpc]")
+         #ax.set_ylabel(r"flux [mJy/arcsec$^2$]")
+         ax.set_yscale('log')
+         ax.set_ylim((0.01,12))
+         ax.set_xlim((0.3,15))
 
+    fig.text(0.5, 0.3, 'b [kpc]', ha='center')
+    fig.text(0.01, 0.5, 'flux [mJy/arcsec$^2$]', va='center', rotation='vertical')
 
     for data,  data_counter in zip(obs_data_list, range(len(obs_data_list))):
-    
+        print("NEW DATA=", data.params_obs["name_short"])
+
         for i in range(len(betas)):
-        
-        
+            print("beta=", betas[i])
+
             params.update(beta = betas[i])
             
             profiles = get_profiles(params, resol=1000)
@@ -92,18 +96,18 @@ if plot1:
             intensity_conv = get_intensity_convolved(intensity_raw, params, data.params_obs, data, add_central_contribution=False)
          
             
-            axs[data_counter].plot(intensity_conv.h/(1e3*nc.pc),intensity_conv.var, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
+            axs_flat[data_counter].plot(intensity_conv.h/(1e3*nc.pc),intensity_conv.var, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
             
             
-        alpine = axs[data_counter].errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
+        axs_flat[data_counter].errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
                  markerfacecolor='maroon',markeredgecolor='maroon', marker='o',\
-                 linestyle='', ecolor = 'maroon')
+                 linestyle='', ecolor = 'maroon', label="{}".format(data.params_obs["name_short"]))
 
-
+        axs_flat[data_counter].set_title("{}".format(data.params_obs["name_short"]))
         factor_data = data.data[0]/data.beam[0]        
-        axs[data_counter].plot(data.x_beam/1e3/nc.pc, data.beam*factor_data, linestyle="--", color="gray")
+        axs_flat[data_counter].plot(data.x_beam/1e3/nc.pc, data.beam*factor_data, linestyle="--", color="gray")
 
-        axs[data_counter].legend([alpine], ["{}".format(data["name_short"])])##
+        axs_flat[data_counter].legend()##
     
     plt.subplots_adjust(left = 0.1,  # the left side of the subplots of the figure
     right = 0.95,   # the right side of the subplots of the figure
@@ -111,10 +115,10 @@ if plot1:
     top = 0.95,     # the top of the subplots of the figure
     wspace = 0.05,  # the amount of width reserved for space between subplots,
     # expressed as a fraction of the average axis width
-    hspace = 0.05)  # the amount of height reserved for space between subplots,
+    hspace = 0.2)  # the amount of height reserved for space between subplots,
                   # expressed as a fraction of the average axis height
     
-    cax = plt.axes([0.15, 0.13,  0.72,0.03])
+    cax = plt.axes([0.1, 0.15,  0.72,0.015])
     
     cmap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap_rend_col)
     cmap.set_array([])
@@ -126,7 +130,7 @@ if plot1:
     cb = fig.colorbar(cmap, ticks=betas_ticks.round(1), cax=cax, orientation='horizontal')
     cb.set_label(r'$\eta$', rotation=0.)
 
-   
+    plt.show()
 
 if plot2:
     """

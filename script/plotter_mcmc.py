@@ -28,10 +28,10 @@ matplotlib.rcParams.update({
         "axes.labelsize": 16.,
         "xtick.labelsize": 16.,
         "ytick.labelsize": 16.,
-        "xtick.major.size": 6.0,
-        "ytick.major.size": 6.0,
-        "xtick.minor.size": 3.0,
-        "ytick.minor.size": 3.0,
+        "xtick.major.size": 5.0,
+        "ytick.major.size": 5.0,
+        "xtick.minor.size": 2.0,
+        "ytick.minor.size": 2.0,
         "legend.fontsize": 13.0,
         "legend.frameon": False
  #       "figure.dpi": 200,
@@ -41,8 +41,8 @@ matplotlib.rcParams.update({
 
 
 
-plot1 = False  # emission chains
-plot2 = True      # corners
+plot1 = True  # emission chains
+plot2 = False      # corners
 plot3 = False   # violins
 plot4 = False  # final trends
 
@@ -76,25 +76,31 @@ if plot1:
     folder_plot = "plot_emcee"
 
     nwalkers= 96
-    nsteps = 1e4
+    nsteps = 1e3
 
-    sample_step = int(40 * (nsteps/1e4))
-    walker_step = int(12 * (nwalkers/96))
+    sample_step = int(1000 * (nsteps/1e3))
+    walker_step = int(48 * (nwalkers/96))
 
 
     fig, axs = plt.subplots(4, 2, sharey=True, sharex=True, figsize=(1.3*8.27,1.3*12.))
 
-    for ax in axs:
-        ax.set_xlabel("b [kpc]")
-        ax.set_ylabel(r"flux [mJy/arcsec$^2$]")
-        ax.set_yscale('log')
-        ax.set_ylim((0.01,12))    
-        ax.set_xlim((0.3,10))
+    axs_flat = axs.flatten()
+    for ax in axs_flat:
+         #ax.set_xlabel("b [kpc]")
+         #ax.set_ylabel(r"flux [mJy/arcsec$^2$]")
+         ax.set_yscale('log')
+         ax.set_ylim((0.008,12))
+         ax.set_xlim((0.3,16))
+
+    fig.text(0.5, 0.04, 'b [kpc]', ha='center')
+    fig.text(0.015, 0.6, 'flux [mJy/arcsec$^2$]', va='center', rotation='vertical')
+
     
 
 
     for data,  data_counter in zip(obs_data_list, range(len(obs_data_list))):
-        
+
+        axs_flat[data_counter].set_title("{}".format(data.params_obs["name_short"]))
 
         filename = "{}_{:.0f}".format(data.params_obs["name_short"], nsteps)
 
@@ -106,22 +112,30 @@ if plot1:
         samples = reader.get_chain()
         samples_flat = reader.get_chain(flat=True)
 
+        print("###################################################################")
+
+        print("postprocessing an MCMC with the following params:")
+        print("n steps = {}".format(nsteps))
+        print("n walkers = {}".format(nwalkers))
+        print("data object = {}".format(data.params_obs["name_short"]))
+        print("filename = {}".format(filename))
+
+        print("###################################################################")
+
         ndim = 3
 
-
         other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"])
-    
-        beam_interp = np.interp(h, data.x_beam/1e3/nc.pc, data.beam, right=0.)
-    
-        beam_interp[beam_interp<0.] = 0.
-    
+
+        beam_interp = np.interp(h, data.x_beam / 1e3 / nc.pc, data.beam, right=0.)
+
+        beam_interp[beam_interp < 0.] = 0.
+
         beam_func = interp1d(h, beam_interp, \
-                         fill_value = (beam_interp[0], 0.), bounds_error=False)
-    
-        beam_2d = beam_func(np.sqrt(grid[0]**2 + grid[1]**2))
+                             fill_value=(beam_interp[0], 0.), bounds_error=False)
+
+        beam_2d = beam_func(np.sqrt(grid[0] ** 2 + grid[1] ** 2))
         f_beam = np.fft.fft2(beam_2d)
 
-                
         counter = 0
         for  walker in samples[::sample_step]:
             for theta in walker[::walker_step]:
@@ -130,21 +144,30 @@ if plot1:
                   .format(counter, int( nsteps*nwalkers/sample_step/walker_step)))
 
                 #if theta[0]>1.15:# and theta[1]>50.:
-
+                theta_true = theta
+                theta_true[0] = np.log10(theta[0])
                 intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)
 
-                ax[data_counter].plot(h, intensity, alpha=0.1, color="gray")
+                axs_flat[data_counter].plot(h, intensity, alpha=0.1, color="gray")
 
-        
-        alpine = ax[data_counter].errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
+
+        alpine = axs_flat[data_counter].errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
             markerfacecolor='maroon',markeredgecolor='maroon', marker='o',\
             linestyle='', ecolor = 'maroon')
     
 
-        ax[data_counter].legend(loc="lower center", ncol=8, fontsize="small")
-        
-            
-        plt.show()
+        axs_flat[data_counter].legend(loc="lower center", ncol=8, fontsize="small")
+
+    plt.subplots_adjust(left=0.1,  # the left side of the subplots of the figure
+                        right=0.98,  # the right side of the subplots of the figure
+                        bottom=0.1,  # the bottom of the subplots of the figure
+                        top=0.95,  # the top of the subplots of the figure
+                        wspace=0.05,  # the amount of width reserved for space between subplots,
+                        # expressed as a fraction of the average axis width
+                        hspace=0.26)  # the amount of height reserved for space between subplots,
+    # expressed as a fraction of the average axis height
+
+    plt.show()
             
     
 if plot2:
