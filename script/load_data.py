@@ -24,6 +24,8 @@ from data_classes import obs_data
 from astropy.cosmology import Planck15 as cosmo
 
 
+
+
 """
 ALPINE
 """
@@ -69,7 +71,11 @@ names_wo_CII_halo_short = ["DC_351640", "DC_416105", "DC_539609", \
 names_other_short = ["DC_494057", "DC_494763", "DC_834764", "vc_5100969402", "vc_5100994794", "ve_530029038" ]
 
 
+
 obs_data_list = []
+
+
+latex = True
 
 redshift=6
 
@@ -110,9 +116,18 @@ stellar_masses_lim_up = halo_masses + halo_mass_ratio + halo_mass_ratio_err_up
 stellar_masses_lim_down = halo_masses + halo_mass_ratio - halo_mass_ratio_err_down
     
 if __name__ == "__main__":
-    print("######################################################")
-    print("name", "\t", "SFR","\t", "Mstar(1e10)","\t", "Mhalo(1e11)","\t", "redshift", "\t", "v_c(1e5)")
-    print("######################################################")
+    if latex == True:
+        print("\hline")
+        print("Name  ", "&", "redshift   ", "&",  "\mathrm{SFR} [$\msun\,\mathrm{yr}^{-1}$]  ", "&", "$M_\mathrm{star}$ [$10^{10}\,\msun$])   ",\
+             "&", "M_{vir} [$10^{11}\,\msun$]    ","&", "$v_c$ [$\kms$]  ")
+        print("\hline")
+        print("\hline")
+
+    
+    else:
+        print("######################################################")
+        print("name", "\t", "SFR","\t", "Mstar(1e10)","\t", "Mhalo(1e11)","\t", "redshift", "\t", "v_c(1e5)")
+        print("######################################################")
     
 
 for name, name_short in zip(names_CII_halo, names_CII_halo_short):
@@ -224,10 +239,19 @@ for name, name_short in zip(names_CII_halo, names_CII_halo_short):
         #observational_data.print_values()
 
         ax_star.scatter(log_M_star, log_SFR)
-        print(name_short, "\t", round(10**log_SFR, 1),"\p", round(10**log_SFR_lim_up, 1),"\m", round(10**log_SFR_lim_down, 1),\
+        
+        if latex == True:
+            print("{0:}    &    {1:.2f}    &    {2:.0f}^+{3:.0f}_{4:.0f}    &   {5:.1f}^+{6:.1f}_{7:.1f}   &   {8:.1f}^+{9:.1f}_{10:.1f}    &   {11:.0f}^+{12:.0f}_{13:.0f}".\
+                  format(name_short, redshift, 10**log_SFR,10**log_SFR_lim_up-10**log_SFR, 10**log_SFR-10**log_SFR_lim_down,\
+                         10**log_M_star/1e9, (10**log_M_star_lim_up-10**log_M_star)/1e9, (10**log_M_star-10**log_M_star_lim_down)/1e9,\
+                         M_halo/1e11,  (M_halo_lim_up-M_halo)/1e11, (M_halo-M_halo_lim_down)/1e11,\
+                         v_c/1e5, (v_c_lim_up-v_c)/1e5,(v_c-v_c_lim_down)/1e5))
+        else:
+            print(name_short, "\t", round(10**log_SFR, 1),"\p", round(10**log_SFR_lim_up, 1),"\m", round(10**log_SFR_lim_down, 1),\
               "\t", round(10**log_M_star/1e10, 3),"\t", round(M_halo/1e11,3), "\p", round(M_halo_lim_up/1e11,3), "\m", round(M_halo_lim_down/1e11,3),\
               "\t", round(redshift,2), "\t", round(v_c/1e5,1), "\p", round(v_c_lim_up/1e5), "\m",  round(v_c_lim_down/1e5), halo_class)
 
+        
 plt.show()
 
 #
