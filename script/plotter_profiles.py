@@ -19,10 +19,6 @@ import matplotlib.pyplot as plt
 import natconst as nc
 
 
-from cc85 import cc85_profiles
-from my_utils import get_circular_velocity_profile_NFW, get_vc_from_virial_mass
-from cmb_suppression import eta_func, T_spin_func
-
 import matplotlib
 
 

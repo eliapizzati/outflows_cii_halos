@@ -115,7 +115,7 @@ if __name__ == "__main__":
     print("######################################################")
     
 
-for name, name_short in zip(names, names_short):
+for name, name_short in zip(names_CII_halo, names_CII_halo_short):
     
     
     L_CII = evt_data[evt_data["name"] == name]["LCII"][0]
