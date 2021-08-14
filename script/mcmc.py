@@ -48,7 +48,9 @@ nsteps = 1e4
 
 parallel = True
 
-data = obs_data_list[0]
+
+data_counter = int(input("which data object?"))
+data = obs_data_list[data_counter]
 
 """
 1:  DC396844
