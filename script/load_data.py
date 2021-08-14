@@ -135,6 +135,7 @@ for name, name_short in zip(names_CII_halo, names_CII_halo_short):
     
     L_CII = evt_data[evt_data["name"] == name]["LCII"][0]
     redshift = evt_data[evt_data["name"] == name]["zCII"][0]
+    sigma_redshift = evt_data[evt_data["name"] == name]["unc_zCII"][0]
     CII_FWHM = evt_data[evt_data["name"] == name]["CII_FWHM"][0]
     log_M_star = evt_data[evt_data["name"] == name]["logMstar"][0]
     log_M_star_lim_up = evt_data[evt_data["name"] == name]["logMstar_higheff1sig"][0]
@@ -241,11 +242,11 @@ for name, name_short in zip(names_CII_halo, names_CII_halo_short):
         ax_star.scatter(log_M_star, log_SFR)
         
         if latex == True:
-            print("{0:}    &    {1:.2f}    &    {2:.0f}^+{3:.0f}_{4:.0f}    &   {5:.1f}^+{6:.1f}_{7:.1f}   &   {8:.1f}^+{9:.1f}_{10:.1f}    &   {11:.0f}^+{12:.0f}_{13:.0f}".\
+            print("{0:}    &    {1:.2f} \pm{14:}   &    {2:.0f}^+{3:.0f}_{4:.0f}    &   {5:.1f}^+{6:.1f}_{7:.1f}   &   {8:.1f}^+{9:.1f}_{10:.1f}    &   {11:.0f}^+{12:.0f}_{13:.0f}".\
                   format(name_short, redshift, 10**log_SFR,10**log_SFR_lim_up-10**log_SFR, 10**log_SFR-10**log_SFR_lim_down,\
                          10**log_M_star/1e9, (10**log_M_star_lim_up-10**log_M_star)/1e9, (10**log_M_star-10**log_M_star_lim_down)/1e9,\
                          M_halo/1e11,  (M_halo_lim_up-M_halo)/1e11, (M_halo-M_halo_lim_down)/1e11,\
-                         v_c/1e5, (v_c_lim_up-v_c)/1e5,(v_c-v_c_lim_down)/1e5))
+                         v_c/1e5, (v_c_lim_up-v_c)/1e5,(v_c-v_c_lim_down)/1e5, sigma_redshift))
         else:
             print(name_short, "\t", round(10**log_SFR, 1),"\p", round(10**log_SFR_lim_up, 1),"\m", round(10**log_SFR_lim_down, 1),\
               "\t", round(10**log_M_star/1e10, 3),"\t", round(M_halo/1e11,3), "\p", round(M_halo_lim_up/1e11,3), "\m", round(M_halo_lim_down/1e11,3),\

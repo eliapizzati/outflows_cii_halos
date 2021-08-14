@@ -48,7 +48,7 @@ nsteps = 1e4
 
 parallel = True
 
-data = obs_data_list[1]
+data = obs_data_list[0]
 
 """
 1:  DC396844
@@ -64,7 +64,7 @@ data = obs_data_list[1]
 
 data.params_obs.update(beta_best_fit = 6.0)
 
-filename = "{}_{:.0f}_new_priors".format(data.params_obs["name_short"], nsteps)
+filename = "{}_{:.0f}_final".format(data.params_obs["name_short"], nsteps)
 
 filename_log = filename
 
@@ -489,7 +489,7 @@ def log_probability(theta, data, other_params, h, grid, f_beam):
     priors value: float
 
     """    
-    lp = log_prior_SFR_gaussian(theta, data)
+    lp = log_prior_gaussian(theta, data)
     
     if not np.isfinite(lp):
         return -np.inf
