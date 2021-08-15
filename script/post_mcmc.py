@@ -30,9 +30,9 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
 14: vc...582
 """            
 
-log = True
+log = False
 
-emission = True
+emission = False
 
 nwalkers= 96
 nsteps = 1e4
@@ -77,8 +77,8 @@ path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
 
 reader = emcee.backends.HDFBackend(path)
 
-samples = reader.get_chain()
-samples_flat = reader.get_chain(flat=True)
+samples = reader.get_chain(thin=100)
+samples_flat = reader.get_chain(flat=True, thin=100)
 
 ndim = 3
 
@@ -106,13 +106,15 @@ plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "chain_{}.png".format(file
 #tau = reader.get_autocorr_time()
 #burnin = int(2 * np.max(tau))
 #thin = int(0.5 * np.min(tau))
-log_prob_samples = reader.get_log_prob(flat=True)
+log_prob_samples = reader.get_log_prob(flat=True, thin=100)
 #log_prior_samples = reader.get_blobs(flat=True)
 
 #print("burn-in: {0}".format(burnin))
 #print("thin: {0}".format(thin))
 #print("flat chain shape: {0}".format(samples.shape))
 print("flat log prob shape: {0}".format(log_prob_samples.shape))
+#print(reader.get_autocorr_time())
+
 #print("flat log prior shape: {0}".format(log_prior_samples.shape))
 
 

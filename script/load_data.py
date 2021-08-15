@@ -44,7 +44,7 @@ names = ["DEIMOS_COSMOS_351640", "DEIMOS_COSMOS_396844", "DEIMOS_COSMOS_416105",
 
 names_CII_halo = ["DEIMOS_COSMOS_396844", "DEIMOS_COSMOS_488399", "DEIMOS_COSMOS_630594", "DEIMOS_COSMOS_683613",\
                   "DEIMOS_COSMOS_880016", "DEIMOS_COSMOS_881725", \
-                  "vuds_cosmos_5100537582", "vuds_cosmos_5110377875"]
+                  "vuds_cosmos_5100537582", "vuds_cosmos_5110377875", "DEIMOS_COSMOS_494057"]
 
 names_wo_CII_halo = ["DEIMOS_COSMOS_351640", "DEIMOS_COSMOS_416105", "DEIMOS_COSMOS_539609", \
                      "DEIMOS_COSMOS_709575", "DEIMOS_COSMOS_733857"]#"vuds_cosmos_510596653",
@@ -63,7 +63,7 @@ names_short = ["DC_351640", "DC_396844", "DC_416105", "DC_488399",\
 
 
 names_CII_halo_short = ["DC_396844", "DC_488399", "DC_630594", "DC_683613", "DC_880016",\
-                        "DC_881725", "VC_5100537582", "VC_5110377875"]
+                        "DC_881725", "VC_5100537582", "VC_5110377875", "DC_494057"]
 
 names_wo_CII_halo_short = ["DC_351640", "DC_416105", "DC_539609", \
                      "DC_709575", "DC_733857"]#"vc_510596653",
@@ -134,6 +134,7 @@ for name, name_short in zip(names_CII_halo, names_CII_halo_short):
     
     
     L_CII = evt_data[evt_data["name"] == name]["LCII"][0]
+    print(L_CII/1e8)
     redshift = evt_data[evt_data["name"] == name]["zCII"][0]
     sigma_redshift = evt_data[evt_data["name"] == name]["unc_zCII"][0]
     CII_FWHM = evt_data[evt_data["name"] == name]["CII_FWHM"][0]

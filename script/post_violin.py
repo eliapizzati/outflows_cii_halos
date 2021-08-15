@@ -89,7 +89,7 @@ for data in datas[::]:
     sfrs.append(all_samples[:,1][all_samples[:,3]>-20])
     vcs.append(all_samples[:,2][all_samples[:,3]>-20])
     log_probs.append(all_samples[:,3][all_samples[:,3]>-20])
-
+    
 betas = 10**np.asarray(log_betas)
 logprobs = np.asarray(log_probs)
 sfrs = np.asarray(sfrs)
@@ -390,6 +390,7 @@ if fit:
     sigma_a, sigma_b = np.sqrt(pcov.diagonal())
     
     print("best fit for beta vs sfrs: y = ({:.2f}\pm{:.2f}) * x ** ({:.2f}\pm{:.2f})".format(a,sigma_a,b,sigma_b))
+    
     xaxis = np.linspace(10.,150.)
     
     ax.plot(xaxis, power(xaxis, a ,b), color="C0", linestyle="-")
