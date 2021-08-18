@@ -539,7 +539,7 @@ if __name__ == "__main__":
     
     #pos += np.asarray([0.5, 0., 0.]) * np.random.rand(nwalkers, ndim)
     
-    pos[2][pos[2]<1.] = 1. + np.abs(pos[2])
+    pos[2][pos[2]<1.] = 1. + np.abs(pos[2][pos[2]<1.])
     
     pos[pos<0.] = 1e-3
 
