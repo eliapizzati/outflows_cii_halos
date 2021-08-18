@@ -45,9 +45,9 @@ matplotlib.rcParams.update({
 
 
 
-plot1 = False  # emission chains
+plot1 = True  # emission chains
 plot2 = False      # corners
-plot3 = True   # violins
+plot3 = False   # violins
 plot4 = False  # final trends
 
 
@@ -86,8 +86,8 @@ if plot1:
     discard =4000
 
 
-    sample_step = int(100 * (nsteps/1e3))
-    walker_step = int(24 * (nwalkers/96))
+    sample_step = int(12 * (nsteps/1e3))
+    walker_step = int(12 * (nwalkers/96))
 
 
     fig, axs = plt.subplots(4, 2, sharey=True, sharex=True, figsize=(1.3*8.27,1.3*12.))
@@ -102,7 +102,7 @@ if plot1:
 
     axs[3,0].set_xlabel("b [kpc]")
     axs[3,1].set_xlabel("b [kpc]")
-    fig.text(0.013, 0.53, 'flux [mJy/arcsec$^2$]', va='center', rotation='vertical')
+    fig.text(0.011, 0.53, 'flux [mJy/arcsec$^2$]', va='center', rotation='vertical')
 
     
 
@@ -163,7 +163,7 @@ if plot1:
             linestyle='', ecolor = 'maroon')
     
 
-        axs_flat[data_counter].legend(loc="lower center", ncol=8, fontsize="small")
+        #axs_flat[data_counter].legend(loc="lower center", ncol=8, fontsize="small")
 
     plt.subplots_adjust(left=0.1,  # the left side of the subplots of the figure
                         right=0.98,  # the right side of the subplots of the figure
