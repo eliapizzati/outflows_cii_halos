@@ -44,7 +44,7 @@ gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
 
 nwalkers= 96
-nsteps = 1e4
+nsteps = 1e5
 
 parallel = True
 
@@ -63,8 +63,9 @@ data = obs_data_list[data_counter]
 14: vc...582
 """
 
+beta_best_fits = [5.5,8.4,6.4,5.3,5.9,4.0,8.2,4.3]
 
-data.params_obs.update(beta_best_fit = 6.0)
+data.params_obs.update(beta_best_fit = beta_best_fits[data_counter])
 
 filename = "{}_{:.0f}_final".format(data.params_obs["name_short"], nsteps)
 
@@ -534,9 +535,9 @@ if __name__ == "__main__":
     
     ndim = len(theta_true)
     
-    pos = theta_true + np.asarray([0., 50., 50.]) * np.random.randn(nwalkers, ndim)
+    pos = theta_true + np.asarray([0.2, 50., 50.]) * np.random.randn(nwalkers, ndim)
     
-    pos += np.asarray([0.5, 0., 0.]) * np.random.rand(nwalkers, ndim)
+    #pos += np.asarray([0.5, 0., 0.]) * np.random.rand(nwalkers, ndim)
     
     pos[pos < 0] = 1.
 

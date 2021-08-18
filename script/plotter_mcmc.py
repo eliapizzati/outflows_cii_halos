@@ -47,8 +47,8 @@ matplotlib.rcParams.update({
 
 plot1 = False  # emission chains
 plot2 = False      # corners
-plot3 = False   # violins
-plot4 = True  # final trends
+plot3 = True   # violins
+plot4 = False  # final trends
 
 
 
@@ -80,7 +80,11 @@ if plot1:
     folder_plot = "plot_emcee"
 
     nwalkers= 96
-    nsteps = 1e3
+    nsteps = 1e4
+    
+    thin = 1
+    discard =4000
+
 
     sample_step = int(100 * (nsteps/1e3))
     walker_step = int(24 * (nwalkers/96))
@@ -107,15 +111,15 @@ if plot1:
 
         axs_flat[data_counter].set_title("{}".format(data.params_obs["name_short"]))
 
-        filename = "{}_{:.0f}_new_priors".format(data.params_obs["name_short"], nsteps)
+        filename = "{}_{:.0f}_final".format(data.params_obs["name_short"], nsteps)
 
     
         path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
 
         reader = emcee.backends.HDFBackend(path)
 
-        samples = reader.get_chain()
-        samples_flat = reader.get_chain(flat=True)
+        samples = reader.get_chain(thin=thin, discard=discard)
+        samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
 
         print("###################################################################")
 
@@ -178,27 +182,32 @@ if plot2:
     #corners
     """
     from load_data import obs_data_list
-    data = obs_data_list[0]
+    
+    data = obs_data_list[2]
     
     folder_data = "data_emcee"
     
     folder_plot = "plot_emcee"
 
     nwalkers= 96
-    nsteps = 1e3
+    nsteps = 1e4
+    
+    thin = 10
+    discard =4000
+
     
     ndim = 3
     
     labels = [r"log( $\eta$ )", "SFR [M$_\odot$ yr$^{-1}$]", r"$v_c$ [km s$^{-1}$]"]
 
-    filename = "{}_{:.0f}_new_priors".format(data.params_obs["name_short"], nsteps)
+    filename = "{}_{:.0f}_final".format(data.params_obs["name_short"], nsteps)
 
     path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
 
     reader = emcee.backends.HDFBackend(path)
 
-    samples = reader.get_chain()
-    samples_flat = reader.get_chain(flat=True)
+    samples = reader.get_chain(thin=thin, discard=discard)
+    samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
 
     print("###################################################################")
 
@@ -309,7 +318,8 @@ if plot3:
     """
     # violins
     """
-    
+    from load_data import obs_data_list
+
     datas = []
     names_plot = []
 
@@ -323,6 +333,8 @@ if plot3:
 
     folder_plot = "plot_emcee"
 
+    thin = 10
+    discard =4000
 
     nwalkers = 96
     nsteps = 1e4
@@ -334,7 +346,7 @@ if plot3:
 
     for data in datas[::]:
 
-        filename = "{}_{:.0f}_new_priors".format(data.params_obs["name_short"], nsteps)
+        filename = "{}_{:.0f}_final".format(data.params_obs["name_short"], nsteps)
     
         print("###################################################################")
         
@@ -351,19 +363,22 @@ if plot3:
         
         reader = emcee.backends.HDFBackend(path)
         
-        samples_flat = reader.get_chain(flat=True)
+        samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
         
-        log_prob_samples = reader.get_log_prob(flat=True)
+        log_prob_samples = reader.get_log_prob(flat=True, thin=thin, discard=discard)
     
+        #log_prior_samples = reader.get_blobs(flat=True, thin=thin, discard=discard)
+
         all_samples = np.concatenate(
                 (samples_flat, log_prob_samples[:, None]),\
                 #log_prior_samples[:, None]), \
                 axis=1)
-    
-        log_betas.append(all_samples[:,0][all_samples[:,3]>-20])
+        
+        mask = np.logical_and(all_samples[:,3]>-20, all_samples[:,0]<1.3)
+        log_betas.append(all_samples[:,0][mask])
         #sfrs.append(all_samples[:,1][all_samples[:,3]>-20])
         #vcs.append(all_samples[:,2][all_samples[:,3]>-20])
-        log_probs.append(all_samples[:,3][all_samples[:,3]>-20])
+        log_probs.append(all_samples[:,3][mask])#-all_samples[:,4][mask])
 
     betas = 10**np.asarray(log_betas)
     logprobs = np.asarray(log_probs)
@@ -400,12 +415,12 @@ if plot3:
     ax_betas.set_xlim(1.,20.)
     
     ax_probs.set_xlim(-15,1)
-    ax_probs.set_xlabel(r"log( p($\theta$) )")
+    ax_probs.set_xlabel(r"log( $\mathcal{L}$(d|$\theta$,m) )")
     
     ax_betas.set_yticks(np.arange(1,len(names_plot)+1))
     ax_betas.set_yticklabels(names_plot, rotation=35.)
     
-    ax_probs.axvline(-9, color = "gray", linestyle="--")
+    ax_probs.axvline(-8, color = "gray", linestyle="--")
     
     plt.subplots_adjust(left = 0.17,  # the left side of the subplots of the figure
         right = 0.95,   # the right side of the subplots of the figure
@@ -422,6 +437,8 @@ if plot4:
     """
     # final trends
     """    
+    from load_data import obs_data_list
+
     
     def power(x, a,b):
         return a*x**b
@@ -446,12 +463,78 @@ if plot4:
     sigma_sfrs_down = []
     
 
+    datas = []
+    names_plot = []
+
+    for data in obs_data_list:
+
+        datas.append(data)
+        names_plot.append(data.params_obs["name_short"])
+
+    
+    folder_data = "data_emcee"
+
+    folder_plot = "plot_emcee"
+
+    thin = 10
+    discard =4000
+
+    nwalkers = 96
+    nsteps = 1e4
+
+    log_betas = []
+    log_probs = []
+    #sfrs = []
+    #vcs = []
+
+    for data in datas[::]:
+
+        filename = "{}_{:.0f}_final".format(data.params_obs["name_short"], nsteps)
+    
+        print("###################################################################")
+        
+        print("postprocessing an MCMC with the following params:")
+        print("n steps = {}".format( nsteps))
+        print("n walkers = {}".format( nwalkers))
+        print("data object = {}".format( data.params_obs["name_short"]))
+        print("filename = {}".format( filename))
+                     
+        print("###################################################################")
+    
+    
+        path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
+        
+        reader = emcee.backends.HDFBackend(path)
+        
+        samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
+        
+        log_prob_samples = reader.get_log_prob(flat=True, thin=thin, discard=discard)
+    
+        #log_prior_samples = reader.get_blobs(flat=True, thin=thin, discard=discard)
+
+        all_samples = np.concatenate(
+                (samples_flat, log_prob_samples[:, None]),\
+                #log_prior_samples[:, None]), \
+                axis=1)
+        
+        mask = np.logical_and(all_samples[:,3]>-20, all_samples[:,0]<1.1)
+        log_betas.append(all_samples[:,0][mask])
+        #sfrs.append(all_samples[:,1][all_samples[:,3]>-20])
+        #vcs.append(all_samples[:,2][all_samples[:,3]>-20])
+        log_probs.append(all_samples[:,3][mask])#-all_samples[:,4][mask])
+
+    betas = 10**np.asarray(log_betas)
+    logprobs = np.asarray(log_probs)
+    #sfrs = np.asarray(sfrs)
+    #vcs = np.asarray(vcs)
+
+
     
     for data, beta, likelihood in zip(datas, betas, logprobs):
-        print(data.params_obs["name_short"], beta.mean(), 10**likelihood.mean())
-        data.params_obs.update(beta_best_fit=beta.mean())
-        data.params_obs.update(beta_uncertainty=np.std(beta))    
-        data.params_obs.update(likelihood_best_fit=likelihood.mean())
+        print(data.params_obs["name_short"], np.median(beta), 10**likelihood.mean())
+        #data.params_obs.update(beta_best_fit=beta.mean())
+        #data.params_obs.update(beta_uncertainty=np.std(beta))    
+        #data.params_obs.update(likelihood_best_fit=likelihood.mean())
 
         likelihood_means.append(likelihood.mean())
         beta_means.append(np.median(beta))
@@ -480,7 +563,8 @@ if plot4:
     sigma_sfrs_down = np.asarray(sigma_sfrs_down)
 
     
-    
+    #beta_means = np.asarray([5.5,8.4,6.4,5.3,5.9,4.0,8.2,4.3])
+
     
 
     fig, [ax_vc, ax_sfr] = plt.subplots(1,2,sharey=True,figsize=(1.3*8.27,1.3*3.2))
@@ -535,7 +619,9 @@ if plot4:
 
 
     
-    mask = beta_means < 10.
+    
+    #mask = beta_means < 10.
+    mask = beta_means < 10.6
     popt, pcov = curve_fit(power, mstars[mask], beta_means[mask], [3.6,-0.35],np.sqrt((sigma_betas_down[mask]+sigma_betas_up[mask])**2 + (sigma_mstars_down[mask]+sigma_mstars_up[mask])**2/4))
 
         
@@ -610,7 +696,9 @@ if plot4:
     cmap.set_array([])
     
     
-    mask = beta_means < 10.
+    #mask = beta_means < 10.
+    mask = beta_means < 10.6
+
     popt, pcov = curve_fit(power, sfrs[mask], beta_means[mask], [3.6,-0.35],np.sqrt(((sigma_betas_down[mask]+sigma_betas_up[mask])**2 + (sigma_sfrs_down[mask]+sigma_sfrs_up[mask])**2)/4))
     
     a, b = popt

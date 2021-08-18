@@ -42,9 +42,9 @@ names = ["DEIMOS_COSMOS_351640", "DEIMOS_COSMOS_396844", "DEIMOS_COSMOS_416105",
          "vuds_cosmos_5110377875", "vuds_efdcs_530029038"]
 
 
-names_CII_halo = ["DEIMOS_COSMOS_396844", "DEIMOS_COSMOS_488399", "DEIMOS_COSMOS_630594", "DEIMOS_COSMOS_683613",\
-                  "DEIMOS_COSMOS_880016", "DEIMOS_COSMOS_881725", \
-                  "vuds_cosmos_5100537582", "vuds_cosmos_5110377875", "DEIMOS_COSMOS_494057"]
+names_CII_halo = ["DEIMOS_COSMOS_396844", "DEIMOS_COSMOS_494057", "DEIMOS_COSMOS_630594", "DEIMOS_COSMOS_683613",\
+                  "DEIMOS_COSMOS_880016", "DEIMOS_COSMOS_881725",  #"DEIMOS_COSMOS_488399"
+                  "vuds_cosmos_5100537582", "vuds_cosmos_5110377875"]
 
 names_wo_CII_halo = ["DEIMOS_COSMOS_351640", "DEIMOS_COSMOS_416105", "DEIMOS_COSMOS_539609", \
                      "DEIMOS_COSMOS_709575", "DEIMOS_COSMOS_733857"]#"vuds_cosmos_510596653",
@@ -62,8 +62,8 @@ names_short = ["DC_351640", "DC_396844", "DC_416105", "DC_488399",\
          "vc_5110377875", "ve_530029038"]
 
 
-names_CII_halo_short = ["DC_396844", "DC_488399", "DC_630594", "DC_683613", "DC_880016",\
-                        "DC_881725", "VC_5100537582", "VC_5110377875", "DC_494057"]
+names_CII_halo_short = ["DC_396844","DC_494057", "DC_630594", "DC_683613", "DC_880016",\
+                        "DC_881725", "VC_5100537582", "VC_5110377875"]# "DC_488399"
 
 names_wo_CII_halo_short = ["DC_351640", "DC_416105", "DC_539609", \
                      "DC_709575", "DC_733857"]#"vc_510596653",
@@ -114,7 +114,18 @@ halo_masses, halo_mass_ratio, halo_mass_ratio_err_up, halo_mass_ratio_err_down =
 stellar_masses = halo_masses + halo_mass_ratio
 stellar_masses_lim_up = halo_masses + halo_mass_ratio + halo_mass_ratio_err_up
 stellar_masses_lim_down = halo_masses + halo_mass_ratio - halo_mass_ratio_err_down
-    
+
+halo_masses_lim_up = stellar_masses_lim_up - halo_mass_ratio
+halo_masses_lim_down = stellar_masses_lim_down - halo_mass_ratio
+
+
+stellar_masses_fine = np.linspace(9.,12.,1000)
+
+halo_masses_fine = np.interp(stellar_masses_fine, stellar_masses, halo_masses)
+halo_masses_lim_up_fine = np.interp(stellar_masses_fine, stellar_masses, halo_masses_lim_up)
+halo_masses_lim_down_fine = np.interp(stellar_masses_fine, stellar_masses, halo_masses_lim_down)
+
+
 if __name__ == "__main__":
     if latex == True:
         print("\hline")
@@ -145,14 +156,14 @@ for name, name_short in zip(names_CII_halo, names_CII_halo_short):
     log_SFR_lim_up = evt_data[evt_data["name"] == name]["logSFR_SED_higheff1sig"][0]
     log_SFR_lim_down = evt_data[evt_data["name"] == name]["logSFR_SED_loweff1sig"][0]
     
-    index_masses = np.searchsorted(stellar_masses, log_M_star)
-    index_masses_up = np.searchsorted(stellar_masses, log_M_star_lim_up)
-    index_masses_down = np.searchsorted(stellar_masses, log_M_star_lim_down)
+    index_masses = np.searchsorted(stellar_masses_fine, log_M_star)
+    index_masses_up = np.searchsorted(stellar_masses_fine, log_M_star_lim_up)
+    index_masses_down = np.searchsorted(stellar_masses_fine, log_M_star_lim_down)
     
     
-    log_M_halo = halo_masses[index_masses]
-    log_M_halo_lim_up = halo_masses[index_masses_up]
-    log_M_halo_lim_down = halo_masses[index_masses_down]
+    log_M_halo = halo_masses_fine[index_masses]
+    log_M_halo_lim_up = halo_masses_lim_up_fine[index_masses_up]
+    log_M_halo_lim_down = halo_masses_lim_down_fine[index_masses_down]
     
     M_halo = 10**log_M_halo # in solar masses
     M_halo_lim_up = 10**log_M_halo_lim_up
