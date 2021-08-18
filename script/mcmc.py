@@ -63,7 +63,7 @@ data = obs_data_list[data_counter]
 14: vc...582
 """
 
-beta_best_fits = [5.5,8.4,6.4,5.3,5.9,4.0,8.2,4.3]
+beta_best_fits = [5.5,7.5,6.4,5.3,5.9,4.0,8.2,4.3]
 
 data.params_obs.update(beta_best_fit = beta_best_fits[data_counter])
 
@@ -495,9 +495,9 @@ def log_probability(theta, data, other_params, h, grid, f_beam):
     lp = log_prior_gaussian(theta, data)
     
     if not np.isfinite(lp):
-        return -np.inf
+        return -np.inf, -np.inf
     
-    return lp + log_likelihood(theta, data, other_params, h, grid, f_beam)
+    return lp + log_likelihood(theta, data, other_params, h, grid, f_beam), lp
 
 
 if __name__ == "__main__":
@@ -535,11 +535,11 @@ if __name__ == "__main__":
     
     ndim = len(theta_true)
     
-    pos = theta_true + np.asarray([0.2, 50., 50.]) * np.random.randn(nwalkers, ndim)
+    pos = theta_true + np.asarray([0.2, 30., 80.]) * np.random.randn(nwalkers, ndim)
     
     #pos += np.asarray([0.5, 0., 0.]) * np.random.rand(nwalkers, ndim)
     
-    pos[pos < 0] = 1.
+    pos[pos < 1] = 1.+np.abs(pos)
 
 
     backend = emcee.backends.HDFBackend(path)
