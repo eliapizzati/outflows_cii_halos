@@ -35,10 +35,10 @@ log = True
 emission = False
 
 thin = 1
-discard =4000
+discard =1
 
 nwalkers= 96
-nsteps = 1e4
+nsteps = 1e5
 
 sample_step = int(40 * (nsteps/1e4))
 walker_step = int(12 * (nwalkers/96))

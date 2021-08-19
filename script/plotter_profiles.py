@@ -46,8 +46,8 @@ matplotlib.rcParams.update({
 
 plot1 = False  #profiles v,n,T
 plot2 = False      # ionization state
-plot3 = False   # cmb emission
-plot4 = True  # final emission
+plot3 = True   # cmb emission
+plot4 = False  # final emission
 
 
 

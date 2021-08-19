@@ -46,8 +46,8 @@ matplotlib.rcParams.update({
 
 
 plot1 = False  # emission chains
-plot2 = False      # corners
-plot3 = True   # violins
+plot2 = True      # corners
+plot3 = False   # violins
 plot4 = False  # final trends
 
 
@@ -183,17 +183,17 @@ if plot2:
     """
     from load_data import obs_data_list
     
-    data = obs_data_list[2]
+    data = obs_data_list[7]
     
     folder_data = "data_emcee"
     
     folder_plot = "plot_emcee"
 
     nwalkers= 96
-    nsteps = 1e4
+    nsteps = 1e5
     
-    thin = 10
-    discard =4000
+    thin = 1
+    discard =1000
 
     
     ndim = 3
@@ -333,11 +333,11 @@ if plot3:
 
     folder_plot = "plot_emcee"
 
-    thin = 10
-    discard =4000
+    thin = 1
+    discard =1000
 
     nwalkers = 96
-    nsteps = 1e4
+    nsteps = 1e5
 
     log_betas = []
     log_probs = []
@@ -367,18 +367,18 @@ if plot3:
         
         log_prob_samples = reader.get_log_prob(flat=True, thin=thin, discard=discard)
     
-        #log_prior_samples = reader.get_blobs(flat=True, thin=thin, discard=discard)
+        log_prior_samples = reader.get_blobs(flat=True, thin=thin, discard=discard)
 
         all_samples = np.concatenate(
-                (samples_flat, log_prob_samples[:, None]),\
-                #log_prior_samples[:, None]), \
+                (samples_flat, log_prob_samples[:, None],\
+                log_prior_samples[:, None]), \
                 axis=1)
         
         mask = np.logical_and(all_samples[:,3]>-20, all_samples[:,0]<1.3)
         log_betas.append(all_samples[:,0][mask])
         #sfrs.append(all_samples[:,1][all_samples[:,3]>-20])
         #vcs.append(all_samples[:,2][all_samples[:,3]>-20])
-        log_probs.append(all_samples[:,3][mask])#-all_samples[:,4][mask])
+        log_probs.append(all_samples[:,3][mask]-all_samples[:,4][mask])
 
     betas = 10**np.asarray(log_betas)
     logprobs = np.asarray(log_probs)
@@ -476,11 +476,11 @@ if plot4:
 
     folder_plot = "plot_emcee"
 
-    thin = 10
-    discard =4000
+    thin = 1
+    discard =1000
 
     nwalkers = 96
-    nsteps = 1e4
+    nsteps = 1e5
 
     log_betas = []
     log_probs = []
@@ -591,7 +591,7 @@ if plot4:
     for axis in [ax_vc.xaxis, ax_vc.yaxis]:
         axis.set_major_formatter(ScalarFormatter())
         
-    yticks = [3.,4.,6.,10.,20.]
+    yticks = [2.,3.,4.,6.,10.,20.]
     xticks_mstar = [0.3,0.4,0.6,1.,2.0]
     xticks_sfr = [10.,20.,50.,100.]
     
@@ -621,7 +621,7 @@ if plot4:
     
     
     #mask = beta_means < 10.
-    mask = beta_means < 10.6
+    mask = [True,False,True,True,True,True,True,True]
     popt, pcov = curve_fit(power, mstars[mask], beta_means[mask], [3.6,-0.35],np.sqrt((sigma_betas_down[mask]+sigma_betas_up[mask])**2 + (sigma_mstars_down[mask]+sigma_mstars_up[mask])**2/4))
 
         
@@ -697,7 +697,7 @@ if plot4:
     
     
     #mask = beta_means < 10.
-    mask = beta_means < 10.6
+    mask = [True,False,True,True,True,True,True,True]
 
     popt, pcov = curve_fit(power, sfrs[mask], beta_means[mask], [3.6,-0.35],np.sqrt(((sigma_betas_down[mask]+sigma_betas_up[mask])**2 + (sigma_sfrs_down[mask]+sigma_sfrs_up[mask])**2)/4))
     

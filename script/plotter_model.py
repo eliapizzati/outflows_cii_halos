@@ -40,9 +40,9 @@ matplotlib.rcParams.update({
 
 
 
-plot1 = True  #cc85 + NFW vc
+plot1 = False  #cc85 + NFW vc
 plot2 = False      # cooling
-plot3 = False    # cmb suppression theory
+plot3 = True    # cmb suppression theory
 
 
 if plot1:
@@ -259,7 +259,7 @@ if plot3:
     #ax_eta.set_xscale("log")
     ax_eta.set_ylim(0.,1.)
     ax_eta.set_xlabel(r"log( T$_{exc}$ / T$_{\rm CMB}$(z) )")
-    ax_eta.set_ylabel(r"$\eta$", labelpad = -5)
+    ax_eta.set_ylabel(r"$\zeta$", labelpad = -5)
     ax_eta.axvline(0., linestyle='--', color='gray')
     ax_eta.legend(ncol=2)
     
