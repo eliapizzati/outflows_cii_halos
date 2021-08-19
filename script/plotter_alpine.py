@@ -82,7 +82,7 @@ if plot1:
     axs[3,1].set_xlabel("b [kpc]")
 
     #fig.text(0.5, 0.3, 'b [kpc]', ha='center')
-    fig.text(0.01, 0.49, 'flux [mJy/arcsec$^2$]', va='center', rotation='vertical')
+    fig.text(0.01, 0.55, 'flux [mJy/arcsec$^2$]', va='center', rotation='vertical')
 
     for data,  data_counter in zip(obs_data_list, range(len(obs_data_list))):
         print("NEW DATA=", data.params_obs["name_short"])
@@ -165,14 +165,12 @@ if plot2:
     ax_sfr.set_ylim((0.005, 12))
     ax_sfr.set_xlim((0.3, 16))
 
-    data = obs_data_list[3]
+    data = obs_data_list[0]
     
     
-    M_vir_up = data.params_obs["M_vir"]+data.params_obs["M_vir_err_up"]
-    v_c_up = get_vc_from_virial_mass(M_vir_up, params["redshift"])/1e5
 
-    M_vir_down = data.params_obs["M_vir"]-data.params_obs["M_vir_err_down"]
-    v_c_down = get_vc_from_virial_mass(M_vir_down, params["redshift"])/1e5
+    v_c_up = data.params_obs["v_c"] + data.params_obs["v_c_err_up"]
+    v_c_down = data.params_obs["v_c"] - data.params_obs["v_c_err_down"]
 
     SFR_up = data.params_obs["SFR"]+data.params_obs["SFR_err_up"]
     SFR_down = data.params_obs["SFR"]-data.params_obs["SFR_err_down"]
@@ -190,7 +188,7 @@ if plot2:
             intensity_conv = get_intensity_convolved(intensity_raw, params, data.params_obs, data, add_central_contribution=False)
          
             
-            params.update(M_vir = M_vir_up)
+            #params.update(M_vir = M_vir_up)
             params.update(v_c = v_c_up)
                 
             profiles_up = get_profiles(params, resol=1000)
@@ -199,7 +197,7 @@ if plot2:
             intensity_raw_up = get_intensity_raw(sigma_CII_up, params, data.params_obs)
             intensity_conv_up = get_intensity_convolved(intensity_raw_up, params, data.params_obs, data, add_central_contribution=False)
 
-            params.update(M_vir = M_vir_down)
+            #params.update(M_vir = M_vir_down)
             params.update(v_c = v_c_down)
 
             profiles_down = get_profiles(params, resol=1000)
@@ -208,7 +206,7 @@ if plot2:
             intensity_raw_down = get_intensity_raw(sigma_CII_down, params, data.params_obs)
             intensity_conv_down = get_intensity_convolved(intensity_raw_down, params, data.params_obs, data, add_central_contribution=False)
 
-            params.update(M_vir = data.params_obs["M_vir"])
+            #params.update(M_vir = data.params_obs["M_vir"])
             params.update(v_c = data.params_obs["v_c"])
 
             ax_vc.plot(intensity_conv_up.h/(1000*nc.pc), intensity_conv_up.var, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))

@@ -48,10 +48,6 @@ nsteps = 1e5
 
 parallel = True
 
-
-data_counter = int(input("which data object?"))
-data = obs_data_list[data_counter]
-
 """
 1:  DC396844
 8:  DC683613
@@ -63,21 +59,6 @@ data = obs_data_list[data_counter]
 14: vc...582
 """
 
-beta_best_fits = [5.5,7.5,6.4,5.3,5.9,4.0,8.2,4.3]
-
-data.params_obs.update(beta_best_fit = beta_best_fits[data_counter])
-
-filename = "{}_{:.0f}_final".format(data.params_obs["name_short"], nsteps)
-
-filename_log = filename
-
-# other params loading
-
-
-redshift = data.params_obs["redshift"]
-
-FWHM_vel = data.params_obs["line_FWHM"]
-
 rmax = 30
 h_resol = 500
 r_resol = 500
@@ -86,23 +67,37 @@ cut = 45.
 
 integrator = "RK45"
 
+h = np.linspace(0.3, rmax, h_resol)
 
-h = np.linspace(0.3,rmax, h_resol)
+h_ext = np.linspace(-rmax, rmax, 2 * h_resol)
 
-h_ext = np.linspace(-rmax, rmax, 2*h_resol)
-    
-grid = np.meshgrid(h_ext,h_ext)
+grid = np.meshgrid(h_ext, h_ext)
 
+if __name__ == "__main__":
+    data_counter = int(input("which data object?"))
+    data = obs_data_list[data_counter]
 
-beam_interp = np.interp(h, data.x_beam/1e3/nc.pc, data.beam, right=0.)
+    beta_best_fits = [5.5, 7.5, 6.4, 5.3, 5.9, 4.0, 8.2, 4.3]
 
-beam_interp[beam_interp<0.] = 0.
+    data.params_obs.update(beta_best_fit=beta_best_fits[data_counter])
 
-beam_func = interp1d(h, beam_interp, \
+    filename = "{}_{:.0f}_final".format(data.params_obs["name_short"], nsteps)
+
+    filename_log = filename
+
+    redshift = data.params_obs["redshift"]
+
+    FWHM_vel = data.params_obs["line_FWHM"]
+
+    beam_interp = np.interp(h, data.x_beam/1e3/nc.pc, data.beam, right=0.)
+
+    beam_interp[beam_interp<0.] = 0.
+
+    beam_func = interp1d(h, beam_interp, \
                      fill_value = (beam_interp[0], 0.), bounds_error=False)
 
-beam_2d = beam_func(np.sqrt(grid[0]**2 + grid[1]**2))
-f_beam = np.fft.fft2(beam_2d)
+    beam_2d = beam_func(np.sqrt(grid[0]**2 + grid[1]**2))
+    f_beam = np.fft.fft2(beam_2d)
 
 
 def get_other_params(redshift, FWHM_vel, r_resol = 500, cut = 45., integrator = "RK45"):
@@ -146,9 +141,9 @@ def get_other_params(redshift, FWHM_vel, r_resol = 500, cut = 45., integrator = 
                 
     return other_params
 
-#if __name__ == "__main__":
+if __name__ == "__main__":
     
-other_params = get_other_params(redshift, FWHM_vel, r_resol, cut, integrator)
+    other_params = get_other_params(redshift, FWHM_vel, r_resol, cut, integrator)
 
 # MCMC definitions
 
