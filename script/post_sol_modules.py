@@ -194,7 +194,11 @@ def get_surface_density(profiles, ionization_states, params, add_CMB_suppression
     
     #epsilon = 7.9e-20 * n**2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII * T**(-0.5) * np.exp(-92./T)
 
-    epsilon = 7.9e-20 *  n**2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII * np.exp(-92./T) /  92.**0.5
+    #epsilon = 7.9e-20 * n**2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII * T**(-0.5) * np.exp(-92./T)
+
+    epsilon = 0.67 * T ** 0.13 * T ** (-0.5) * 8.6e-6 / 2 * np.exp(-92. / T) * 0.0079 * 1.6e-12 * n**2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII
+
+    #epsilon = 7.9e-20 *  n**2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII * np.exp(-92./T) /  92.**0.5
     
     if add_CMB_suppression == True:
         
