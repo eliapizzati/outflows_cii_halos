@@ -30,13 +30,13 @@ load_sol_from_file = False
 
 to_file = False
 
-plot_hydro = False
+plot_hydro = True
 
 plot_emission = True
 
 save_chi2 = False
 
-plot_eta = False
+plot_eta = True
 
 plot_vc_uncertainty = False
 
@@ -44,7 +44,7 @@ plot_SFR_uncertainty = False
 
 f_esc_ion = 0.0
 
-f_esc_FUV = 0.0
+f_esc_FUV = 0.2
 
 betas = np.asarray([4.0,4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9,\
                     5.0,5.1,5.2,5.3,5.4,5.5,5.6,5.7,5.8,5.9,\
@@ -52,8 +52,8 @@ betas = np.asarray([4.0,4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9,\
                     7.0,7.1,7.2,7.3,7.4,7.5,7.6,7.7,7.8,7.9])
 #betas = np.asarray([1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1])
 #betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8])
-#○betas = np.asarray([2.0,2.5,3.0,3.5,4.0,4.5])
-betas = np.asarray([7.9,8.0,8.1,8.2,8.3,8.4,8.5,8.6,8.7])
+betas = np.asarray([4.0,4.5,5.0,5.5,6.0,6.5,7.0,7.5,8.0,8.5,9.0,9.5])
+#betas = np.asarray([7.9,8.0,8.1,8.2,8.3,8.4,8.5,8.6,8.7])
 #betas = np.asarray([1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1])
 #betas = np.asarray([4.4,4.5,4.6,4.7,4.8,4.9,5.0,5.1,5.2,5.3,5.4,5.5,5.6,5.7,5.8,5.9])
 #betas = np.asarray([2.6,2.7,2.8,2.9,3.0])
@@ -71,9 +71,9 @@ data_container_name = "CII_halo_NFW"
 
 for data in datas:
     
-    if data.params_obs["name"] not in names_CII_halo:
+    #if data.params_obs["name"] not in names_CII_halo:
     #if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
-    #if data.params_obs["name"] != "vuds_cosmos_5110377875":
+    if data.params_obs["name_short"] != "DC_396844":
         pass
     else:
         datas_real.append(data)
@@ -103,13 +103,13 @@ for data in datas:
             fig_ion.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
         
         if plot_emission:
-            fig_int_raw, ax_int_raw = pltc.plot_configurator(plot_type="int", xlim=15) 
-            fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=15)
+            #fig_int_raw, ax_int_raw = pltc.plot_configurator(plot_type="int", xlim=17)
+            fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=17)
         
-            ax_int_raw.set_ylim((1e-3,1e2))
+            #ax_int_raw.set_ylim((1e-3,1e2))
             ax_int_conv.set_ylim((1e-3,1e2))
  
-            fig_int_raw.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
+            #fig_int_raw.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
             fig_int_conv.suptitle("{0:}, v_c = {1:.1f} km/h, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"], data.params_obs["SFR"]))
     
         if plot_eta:
@@ -175,7 +175,7 @@ for data in datas:
             if plot_emission:
                 #sigma_CII.plot(ax=ax_sigma)
 
-                intensity_raw.plot(ax=ax_int_raw,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
+                #intensity_raw.plot(ax=ax_int_raw,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
 
                 intensity_conv.plot(ax=ax_int_conv,  label=r"$\beta$={:.1f}".format(beta_el), color="C{}".format(beta_counter))
 
@@ -229,9 +229,9 @@ for data in datas:
                 ax_int_conv.plot(intensity_conv_down.h/(1000*nc.pc), intensity_conv_down.var, color="C{}".format(beta_counter))
                 ax_int_conv.fill_between(intensity_conv.h/(1000*nc.pc), intensity_conv_down.var, intensity_conv_up.var, color="C{}".format(beta_counter), alpha=0.2)
 
-                ax_int_raw.plot(intensity_raw_up.h/(1000*nc.pc), intensity_raw_up.var, color="C{}".format(beta_counter))
-                ax_int_raw.plot(intensity_raw_down.h/(1000*nc.pc), intensity_raw_down.var, color="C{}".format(beta_counter))
-                ax_int_raw.fill_between(intensity_raw.h/(1000*nc.pc), intensity_raw_down.var, intensity_raw_up.var, color="C{}".format(beta_counter), alpha=0.2)
+                #ax_int_raw.plot(intensity_raw_up.h/(1000*nc.pc), intensity_raw_up.var, color="C{}".format(beta_counter))
+                #ax_int_raw.plot(intensity_raw_down.h/(1000*nc.pc), intensity_raw_down.var, color="C{}".format(beta_counter))
+                #ax_int_raw.fill_between(intensity_raw.h/(1000*nc.pc), intensity_raw_down.var, intensity_raw_up.var, color="C{}".format(beta_counter), alpha=0.2)
 
                 if plot_hydro:
                     profiles_up.plot(ax=axs_sol,color="C{}".format(beta_counter))
@@ -296,9 +296,9 @@ for data in datas:
                 ax_int_conv.plot(intensity_conv_down.h/(1000*nc.pc), intensity_conv_down.var, color="C{}".format(beta_counter))
                 ax_int_conv.fill_between(intensity_conv.h/(1000*nc.pc), intensity_conv_down.var, intensity_conv_up.var, color="C{}".format(beta_counter), alpha=0.2)
 
-                ax_int_raw.plot(intensity_raw_up.h/(1000*nc.pc), intensity_raw_up.var, color="C{}".format(beta_counter))
-                ax_int_raw.plot(intensity_raw_down.h/(1000*nc.pc), intensity_raw_down.var, color="C{}".format(beta_counter))
-                ax_int_raw.fill_between(intensity_raw.h/(1000*nc.pc), intensity_raw_down.var, intensity_raw_up.var, color="C{}".format(beta_counter), alpha=0.2)
+                #ax_int_raw.plot(intensity_raw_up.h/(1000*nc.pc), intensity_raw_up.var, color="C{}".format(beta_counter))
+                #ax_int_raw.plot(intensity_raw_down.h/(1000*nc.pc), intensity_raw_down.var, color="C{}".format(beta_counter))
+                #ax_int_raw.fill_between(intensity_raw.h/(1000*nc.pc), intensity_raw_down.var, intensity_raw_up.var, color="C{}".format(beta_counter), alpha=0.2)
 
 
                 if plot_hydro:
@@ -363,7 +363,7 @@ for data in datas:
                         fig_ion.legend(loc="lower center", ncol=8, fontsize="small")
                         
                 if plot_emission:
-                        fig_int_raw.legend(loc="lower center", ncol=8, fontsize="small")
+                        #fig_int_raw.legend(loc="lower center", ncol=8, fontsize="small")
                         fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
         
             

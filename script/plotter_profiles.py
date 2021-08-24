@@ -309,7 +309,7 @@ if plot3:
     fig, [ax_eta, ax_sigma] = plt.subplots(1,2,figsize=(1.3*8.27,1.3*4.))
 
     ax_eta.set_xlabel("b [kpc]")
-    ax_eta.set_ylabel(r"$\eta$",  labelpad=-8)
+    ax_eta.set_ylabel(r"$\zeta$",  labelpad=-8)
     ax_eta.set_ylim((3e-2,1))
     ax_eta.set_xlim((0.3,15.5))
     ax_eta.set_yscale("log")
