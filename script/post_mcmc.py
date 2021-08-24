@@ -34,8 +34,8 @@ log = True
 
 emission = False
 
-thin = 1
-discard =1
+thin = 100
+discard =3000
 
 nwalkers= 96
 nsteps = 1e5

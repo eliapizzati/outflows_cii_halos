@@ -192,8 +192,8 @@ if plot2:
     nwalkers= 96
     nsteps = 1e5
     
-    thin = 1
-    discard =1000
+    thin = 10
+    discard =3000
 
     
     ndim = 3
@@ -208,6 +208,8 @@ if plot2:
 
     samples = reader.get_chain(thin=thin, discard=discard)
     samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
+
+    #tau = reader.get_autocorr_time(thin=thin, discard=discard)
 
     print("###################################################################")
 
@@ -264,7 +266,7 @@ if plot2:
             ax.set_title(r"$ %.2f_{-%.2f}^{+%.2f} $ "%(summary.median, summary.minus, summary.plus))
     
         if i == 1:
-            ax.set_title(r"$ %.0f_{-%.0f}^{+%.0f} \ \mathrm{M}_\odot$"%(summary.median, summary.minus, summary.plus))
+            ax.set_title(r"$ %.0f_{-%.0f}^{+%.0f} \ \mathrm{M}_\odot\mathrm{yr}^{-1}$"%(summary.median, summary.minus, summary.plus))
            
         if i == 2:
             ax.set_title(r"$ %.0f_{-%.0f}^{+%.0f} \ \mathrm{km s}^{-1}$"%(summary.median, summary.minus, summary.plus))
@@ -333,8 +335,8 @@ if plot3:
 
     folder_plot = "plot_emcee"
 
-    thin = 1
-    discard =1000
+    thin = 300
+    discard =4000
 
     nwalkers = 96
     nsteps = 1e5
@@ -476,8 +478,8 @@ if plot4:
 
     folder_plot = "plot_emcee"
 
-    thin = 1
-    discard =1000
+    thin = 300
+    discard =4000
 
     nwalkers = 96
     nsteps = 1e5

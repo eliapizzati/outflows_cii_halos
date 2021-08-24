@@ -132,6 +132,7 @@ for beta_el in betas:
 
         intensity_conv = get_intensity_convolved(intensity_raw, params, data.params_obs, data, add_central_contribution=False)
 
+        print(np.trapz(1./profiles.v, profiles.r)/1e6/nc.year)
         if to_file:                         
             profiles.to_file()
             ionization_state.to_file()

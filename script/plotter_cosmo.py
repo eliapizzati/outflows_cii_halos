@@ -168,7 +168,7 @@ if plot3:
     # starburst99
     """
     
-    fig, ax = plt.subplots(1,1,figsize=(7,7))
+    fig, ax = plt.subplots(1,1,figsize=(8,5))
 
     
     data = np.loadtxt("starburst_data.dat", unpack=True)
@@ -192,7 +192,7 @@ if plot3:
        
     plt.subplots_adjust(left = 0.15,  # the left side of the subplots of the figure
     right = 0.95,   # the right side of the subplots of the figure
-    bottom = 0.1,  # the bottom of the subplots of the figure
+    bottom = 0.15,  # the bottom of the subplots of the figure
     top = 0.95,     # the top of the subplots of the figure
     wspace = 0.2,  # the amount of width reserved for space between subplots,
     # expressed as a fraction of the average axis width
