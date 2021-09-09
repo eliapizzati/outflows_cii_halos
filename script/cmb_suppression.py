@@ -120,11 +120,11 @@ def T_spin_func_vec(n_vec, T_vec, I_UV_vec, x_e_vec, z, T_UV = 3.61e4):
 
 def eta_func(T_spin, z):
        
-    return 1. - (np.exp(nc.hh*nc.line_CII_rest_frame / (nc.kk*(T_spin))) - 1.) /\
-           (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+z)*nc.CMB_temperature)) - 1.)
+    #return 1. - (np.exp(nc.hh*nc.line_CII_rest_frame / (nc.kk*(T_spin))) - 1.) /\
+    #       (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+z)*nc.CMB_temperature)) - 1.)
 
-    #return 1. - (np.exp(nc.hh*nc.line_CII_rest_frame / (nc.kk*(1.+z)*(T_spin))) - 1.) /\
-    #       (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+z)**2*nc.CMB_temperature)) - 1.)
+    return 1. - (np.exp(nc.hh*nc.line_CII_rest_frame / (nc.kk*(1.+z)*(T_spin))) - 1.) /\
+           (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+z)**2*nc.CMB_temperature)) - 1.)
 
 
 if __name__ == "__main__":

@@ -112,7 +112,7 @@ if plot2:
     """
     from cooling import cooling_vectorized, heating_vectorized
 
-    fesc = 0.0
+    fesc = 0.2
     
     fig, ax = plt.subplots(1, 1, figsize=(1.3*4.93,1.3*3.8))
     
@@ -198,7 +198,7 @@ if plot2:
     print(net_cooling_cie)
     ax.plot(np.log10(T), np.log10(net_cooling_cie),color="gray", linestyle=":")
     
-    ax.text(0.19,0.87,s=r'$f_{{esc}}$={:.1f}'.format(fesc), fontsize=16, bbox={'facecolor': 'lightgray', 'alpha': 0.8,\
+    ax.text(0.76,0.17,s=r'$f_{{esc}}$={:.1f}'.format(fesc), fontsize=16, bbox={'facecolor': 'lightgray', 'alpha': 0.8,\
                                                       'boxstyle':"round", 'edgecolor':'none','pad': 0.5},\
                  horizontalalignment='center',verticalalignment='center',\
                  transform=ax.transAxes)
@@ -234,13 +234,10 @@ if plot3:
     """
     cmb theory
     """
+
     
-    """
-    # cmb suppression theory
-    """
-    
-#    from sol_modules import get_profiles
-#    from post_sol_modules import get_ionization_states, get_surface_density
+    from sol_modules import get_profiles
+    from post_sol_modules import get_ionization_states, get_surface_density
 
     params = dict([("DM_model", "NFW"),
            ("beta", 1.0), 
@@ -356,12 +353,12 @@ if plot3:
         params.update(beta = betas[i])
 
         
-#        profiles = get_profiles(params, resol=1000)
-#        ionization_state = get_ionization_states(profiles, params)
-#        sigma_CII = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=True)    
+        profiles = get_profiles(params, resol=1000)
+        ionization_state = get_ionization_states(profiles, params)
+        sigma_CII = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=True)
 
 
-#        ax_eta.plot(sigma_CII.h/1e3/nc.pc, sigma_CII.eta,  color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
+        ax_profile.plot(sigma_CII.h/1e3/nc.pc, sigma_CII.eta,  color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
 
 
         
@@ -376,16 +373,16 @@ if plot3:
     cb.set_ticks(np.arange(1.0,10.,1.0))
     cb.set_ticklabels(np.arange(1.0,10.,1.0))
 
-
+    plt.show()
 
 
 if plot4:
     """
     profiles
     """
-#    from sol_modules import get_profiles
+    from sol_modules import get_profiles
 
-    fesc = 0.0
+    fesc = 0.2
     
     if fesc == 0.2:
             
@@ -440,41 +437,41 @@ if plot4:
     
     
     for i in range(len(betas)):
-        print("beta=", betas[i])
-        params.update(f_esc_ion = 0.)
-        params.update(f_esc_FUV = 0.)
+       print("beta=", betas[i])
+       params.update(f_esc_ion = 0.)
+       params.update(f_esc_FUV = 0.)
 
-        params.update(beta = betas[i])
+       params.update(beta = betas[i])
      
-#        profiles = get_profiles(params, resol=1000)
-#
-#        r = profiles.r
-#        n = profiles.n
-#        T = profiles.T
-#        v = profiles.v
-#        
-#        ax_v.plot(np.log10(r/(1000*nc.pc)),v/10**8, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_uvb)
-#
-#        ax_n.plot(np.log10(r/(1000*nc.pc)),np.log10(n), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_uvb)
-#
-#        ax_T.plot(np.log10(r/(1000*nc.pc)),np.log10(T), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_uvb)
-#
-#        params.update(f_esc_ion = 0.2)
-#        params.update(f_esc_FUV = 0.2)
-#        
-#        profiles = get_profiles(params, resol=1000)
-#
-#        r = profiles.r
-#        n_gal = profiles.n
-#        T_gal = profiles.T
-#        v_gal = profiles.v
-#
-#        
-#        ax_v.plot(np.log10(r/(1000*nc.pc)),v_gal/10**8, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_gal)
-#       
-#        ax_n.plot(np.log10(r/(1000*nc.pc)),np.log10(n_gal), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_gal)
-#           
-#        ax_T.plot(np.log10(r/(1000*nc.pc)),np.log10(T_gal), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_gal)
+       profiles = get_profiles(params, resol=1000)
+
+       r = profiles.r
+       n = profiles.n
+       T = profiles.T
+       v = profiles.v
+
+       ax_v.plot(np.log10(r/(1000*nc.pc)),v/10**8, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_uvb)
+
+       ax_n.plot(np.log10(r/(1000*nc.pc)),np.log10(n), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_uvb)
+
+       ax_T.plot(np.log10(r/(1000*nc.pc)),np.log10(T), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_uvb)
+
+       params.update(f_esc_ion = 0.2)
+       params.update(f_esc_FUV = 0.2)
+
+       profiles = get_profiles(params, resol=1000)
+
+       r = profiles.r
+       n_gal = profiles.n
+       T_gal = profiles.T
+       v_gal = profiles.v
+
+
+       ax_v.plot(np.log10(r/(1000*nc.pc)),v_gal/10**8, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_gal)
+
+       ax_n.plot(np.log10(r/(1000*nc.pc)),np.log10(n_gal), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_gal)
+
+       ax_T.plot(np.log10(r/(1000*nc.pc)),np.log10(T_gal), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_gal)
         
     
 
@@ -512,8 +509,8 @@ if plot5:
     """
     
     
-#    from sol_modules import get_profiles
-#    from post_sol_modules import get_ionization_states
+    from sol_modules import get_profiles
+    from post_sol_modules import get_ionization_states
 
     fesc = 0.0
     
@@ -559,48 +556,51 @@ if plot5:
     
     ax_xe.set_xlabel("log (r [kpc])")
     ax_xe.set_ylabel("n$_\\mathrm{HI}$/n$_\\mathrm{H}$")
-    ax_xe.set_ylim((0,1))
+    #ax_xe.set_ylim((0,1))
     ax_xe.set_xlim((np.log10(0.3),np.log10(30)))
-        
+
+    #ax_xe.set_yscale("log")
+    #ax_xCII.set_yscale("log")
+
     ax_xCII.set_xlabel("log (r [kpc])")
     ax_xCII.set_ylabel("n$_\\mathrm{CII}$/n$_\\mathrm{C}$")
-    ax_xCII.ticklabel_format(axis='y', style='plain')
-    ax_xCII.set_ylim((0,1))
+    #ax_xCII.ticklabel_format(axis='y', style='plain')
+    #ax_xCII.set_ylim((0,1))
     
     for i in range(len(betas)):
-        print("beta=", betas[i])
+       print("beta=", betas[i])
 
-        params.update(f_esc_ion = 0.)
-        params.update(f_esc_FUV = 0.)
+       params.update(f_esc_ion = 0.)
+       params.update(f_esc_FUV = 0.)
 
-        params.update(beta = betas[i])
+       params.update(beta = betas[i])
 
         
-#        profiles = get_profiles(params, resol=1000)
-#        ionization_state = get_ionization_states(profiles, params)
-#
-#        r = ionization_state.r
-#        x_e = ionization_state.x_e
-#        x_CII = ionization_state.x_CII
-#        
-#        ax_xCII.plot(np.log10(r/(1000*nc.pc)),x_CII, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_uvb)
-#
-#        ax_xe.plot(np.log10(r/(1000*nc.pc)),1.-x_e, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_uvb)
-#
-#        params.update(f_esc_ion = 0.2)
-#        params.update(f_esc_FUV = 0.2)
-#        
-#        profiles = get_profiles(params, resol=1000)
-#        ionization_state = get_ionization_states(profiles, params)
-#
-#        r = ionization_state.r
-#        x_e_gal = ionization_state.x_e
-#        x_CII_gal = ionization_state.x_CII
-#        
-#    
-#        ax_xe_gal.plot(np.log10(r/(1000*nc.pc)),np.log10(1.-x_e_gal), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_gal)
-#    
-#        ax_xCII_gal.plot(np.log10(r/(1000*nc.pc)),np.log10(x_CII_gal), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_gal)
+       profiles = get_profiles(params, resol=1000)
+       ionization_state = get_ionization_states(profiles, params)
+
+       r = ionization_state.r
+       x_e = ionization_state.x_e
+       x_CII = ionization_state.x_CII
+
+       ax_xCII.plot(np.log10(r/(1000*nc.pc)),np.log10(x_CII), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_uvb)
+
+       ax_xe.plot(np.log10(r/(1000*nc.pc)),np.log10(1.-x_e), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_uvb)
+
+       params.update(f_esc_ion = 0.2)
+       params.update(f_esc_FUV = 0.2)
+
+       profiles = get_profiles(params, resol=1000)
+       ionization_state = get_ionization_states(profiles, params)
+
+       r = ionization_state.r
+       x_e_gal = ionization_state.x_e
+       x_CII_gal = ionization_state.x_CII
+
+
+       ax_xe.plot(np.log10(r/(1000*nc.pc)),np.log10(1.-x_e_gal), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_gal)
+
+       ax_xCII.plot(np.log10(r/(1000*nc.pc)),np.log10(x_CII_gal), color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())), alpha=alpha_gal)
 
     
     plt.subplots_adjust(left = 0.08,  # the left side of the subplots of the figure
@@ -613,10 +613,10 @@ if plot5:
                   # expressed as a fraction of the average axis height
     
     
-    ax_xCII.text(0.79,0.87,s=r'$f_{{esc}}$={:.1f}'.format(fesc), fontsize=16, bbox={'facecolor': 'lightgray', 'alpha': 0.8,\
+    ax_xe.text(0.80,0.15,s=r'$f_{{esc}}$={:.1f}'.format(fesc), fontsize=16, bbox={'facecolor': 'lightgray', 'alpha': 0.8,\
                                                       'boxstyle':"round", 'edgecolor':'none','pad': 0.5},\
                  horizontalalignment='center',verticalalignment='center',\
-                 transform=ax_xCII.transAxes)
+                 transform=ax_xe.transAxes)
 
     cax = plt.axes([0.91,  0.17, 0.015,0.78])
     
