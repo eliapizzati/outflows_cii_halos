@@ -192,8 +192,8 @@ if plot2:
     nwalkers= 96
     nsteps = 1e5
     
-    thin = 10
-    discard =3000
+    thin = 1
+    discard =5000
 
     
     ndim = 3
@@ -209,7 +209,7 @@ if plot2:
     samples = reader.get_chain(thin=thin, discard=discard)
     samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
 
-    #tau = reader.get_autocorr_time(thin=thin, discard=discard)
+    tau = reader.get_autocorr_time(thin=thin, discard=discard)
 
     print("###################################################################")
 
