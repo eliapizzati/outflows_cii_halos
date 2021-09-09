@@ -44,8 +44,8 @@ matplotlib.rcParams.update({
 
 plot1 = False  #cc85 
 plot2 = False      # cooling
-plot3 = False    # cmb suppression theory
-plot4 = True    # profiles
+plot3 = True    # cmb suppression theory
+plot4 = False    # profiles
 plot5 = False   # ionization
 
 if plot1:
@@ -235,7 +235,148 @@ if plot3:
     cmb theory
     """
     
-    pass
+    """
+    # cmb suppression theory
+    """
+    
+#    from sol_modules import get_profiles
+#    from post_sol_modules import get_ionization_states, get_surface_density
+
+    params = dict([("DM_model", "NFW"),
+           ("beta", 1.0), 
+           ("SFR", 50.),
+           ("f_esc_ion", 0.), 
+           ("f_esc_FUV", 0.), 
+           ("v_c", 200.),
+           ("redshift", 5.),
+           ("Zeta", 1.0),
+           ("alfa", 1.0),
+           ("R_in", 0.3)]) 
+        
+    betas = np.arange(0.2,8,0.8)
+    betas = np.append(betas,  [0.4,1.3])
+    cmap_rend_col = matplotlib.cm.get_cmap('viridis_r')
+    
+    norm = matplotlib.colors.Normalize(vmin=betas.min(), vmax=betas.max())
+
+    fig, [ ax_texc, ax_eta, ax_profile] = plt.subplots(1,3,figsize=(1.5*12.27,1.5*3.0))
+    
+    for z in [3,4,5,6]:
+        
+        redshift_CII_temp = z
+        T_CMB_z = nc.CMB_temperature*(1+z)
+
+        T_spin_list = np.linspace(T_CMB_z, 200., 1000)
+    
+        eta_list = eta_func(T_spin_list, z)
+        
+
+        
+        ax_eta.plot(np.log10(T_spin_list/T_CMB_z), eta_list, label="z={}".format(z))
+    
+    #ax_eta.set_xscale("log")
+    ax_eta.set_ylim(0.,1.)
+    ax_eta.set_xlabel(r"log( T$_{exc}$ / T$_{\rm CMB}$(z) )")
+    ax_eta.set_ylabel(r"$\zeta$", labelpad = -5)
+    ax_eta.axvline(0., linestyle='--', color='gray')
+    ax_eta.legend(ncol=2)
+    
+
+    ax_texc.set_xlabel(r"log( $n_e$ [cm$^{-3}$] )")
+
+    ax_profile.set_xlabel("b [kpc]")
+    ax_profile.set_ylabel(r"$\zeta$",  labelpad=-8)
+    ax_profile.set_ylim((3e-2,1))
+    ax_profile.set_xlim((0.3,15.5))
+    ax_profile.set_yscale("log")
+    ax_profile.set_yticks([0.1,1])
+    ax_profile.set_yticklabels([0.1,1])
+    
+    n_es = np.logspace(-5,3, 10000)
+    I_UVs = np.logspace(-12,-19,1000)
+
+    nn, II = np.meshgrid(n_es, I_UVs)
+    
+    habing_g0 = 4*np.pi*I_UVs*(13.6-6.)*nc.ev/nc.hh/nc.cc/5.29e-14
+
+    T_spin = T_spin_func(n=nn/0.5, T=1e3, I_UV=II, x_e=0.5, z=z)
+
+    z = 6.
+    T_CMB_z = nc.CMB_temperature*(1+z)
+    
+    ax_texc.set_yticks([])
+    
+    twin = ax_texc.twinx()
+    
+    twin.yaxis.tick_left()
+    twin.yaxis.set_label_position("left")
+
+    habing_g0 = 4*np.pi*I_UVs*(13.6-6.)*nc.ev/nc.hh/nc.cc/5.29e-14
+    
+    twin.set_yticks(np.around(np.log10(habing_g0[5::90]),1))
+    twin.set_ylabel(r"log( G$_0 )$",labelpad=10)
+
+
+    im = ax_texc.contourf(np.log10(nn),np.log10(II),np.log10(T_spin/T_CMB_z), cmap=matplotlib.cm.inferno, \
+                      norm=matplotlib.colors.PowerNorm(gamma=0.4),\
+                      vmin=0., vmax=5,\
+                      levels = [0.0,0.05,0.1,0.15,0.2,0.3,0.6,0.8,1.0, 1.4,1.8,2.4,3.0,4.0])
+    
+    
+    # Create colorbar
+    
+    cax = plt.axes([0.05,  0.17, 0.012,0.78])
+    
+    cbar = ax_texc.figure.colorbar(im, cax=cax, orientation="vertical")
+    cbar.set_label(r"log( T$_{exc}$ / T$_{\rm CMB}$(z) )", rotation=90., labelpad=0)
+       
+    cax.yaxis.set_ticks_position('left')
+    cax.yaxis.set_label_position('left')
+    
+ 
+
+    ax_texc.text(0.17,0.87,s=r'z=6', fontsize=16, bbox={'facecolor': 'lightgray', 'alpha': 0.8,\
+                                                      'boxstyle':"round", 'edgecolor':'none','pad': 0.5},\
+                 horizontalalignment='center',verticalalignment='center',\
+                 transform=ax_texc.transAxes)
+
+    plt.subplots_adjust(left = 0.12,  # the left side of the subplots of the figure
+    right = 0.92,   # the right side of the subplots of the figure
+    bottom = 0.17,  # the bottom of the subplots of the figure
+    top = 0.95,     # the top of the subplots of the figure
+    wspace = 0.18,  # the amount of width reserved for space between subplots,
+    # expressed as a fraction of the average axis width
+    hspace = 0.05)  # the amount of height reserved for space between subplots,
+                  # expressed as a fraction of the average axis height
+
+
+    for i in range(len(betas)):
+        print("beta=", betas[i])
+
+        params.update(beta = betas[i])
+
+        
+#        profiles = get_profiles(params, resol=1000)
+#        ionization_state = get_ionization_states(profiles, params)
+#        sigma_CII = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=True)    
+
+
+#        ax_eta.plot(sigma_CII.h/1e3/nc.pc, sigma_CII.eta,  color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
+
+
+        
+    
+    cax = plt.axes([0.94,  0.17, 0.012,0.78])
+    
+    cmap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap_rend_col)
+    cmap.set_array([])
+    
+    cb = fig.colorbar(cmap, ticks=betas, cax=cax, orientation='vertical')
+    cb.set_label(r'$\eta$',rotation=90.)
+    cb.set_ticks(np.arange(1.0,10.,1.0))
+    cb.set_ticklabels(np.arange(1.0,10.,1.0))
+
+
 
 
 if plot4:
