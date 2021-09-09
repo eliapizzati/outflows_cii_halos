@@ -45,8 +45,8 @@ matplotlib.rcParams.update({
 
 
 
-plot1 = False  # emission chains
-plot2 = True      # corners
+plot1 = True  # emission chains
+plot2 = False      # corners
 plot3 = False   # violins
 plot4 = False  # final trends
 
@@ -80,13 +80,13 @@ if plot1:
     folder_plot = "plot_emcee"
 
     nwalkers= 96
-    nsteps = 1e4
+    nsteps = 1e5
     
-    thin = 1
+    thin = 10
     discard =4000
 
 
-    sample_step = int(12 * (nsteps/1e3))
+    sample_step = int(12 * (nsteps/1e5))
     walker_step = int(12 * (nwalkers/96))
 
 
