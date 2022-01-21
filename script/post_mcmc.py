@@ -32,7 +32,7 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
 
 log = True
 
-emission = False
+emission = True
 
 thin = 100
 discard =3000
@@ -40,7 +40,7 @@ discard =3000
 nwalkers= 96
 nsteps = 1e5
 
-sample_step = int(40 * (nsteps/1e4))
+sample_step = int(40 * (nsteps/1e5))
 walker_step = int(12 * (nwalkers/96))
 
 int_data = int(input("data number?"))

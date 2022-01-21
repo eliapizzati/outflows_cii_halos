@@ -273,11 +273,11 @@ if plot3:
     nn, II = np.meshgrid(n_es, I_UVs)
     
     T_spin = T_spin_func(n=nn/0.5, T=1e3, I_UV=II, x_e=0.5, z=z)
-
+    print(z)
     z = 6.
     T_CMB_z = nc.CMB_temperature*(1+z)
                     
-
+    print(T_spin/T_CMB_z)
     im = plt.contourf(np.log10(nn),np.log10(II),np.log10(T_spin/T_CMB_z), cmap=matplotlib.cm.inferno, \
                       norm=matplotlib.colors.PowerNorm(gamma=0.4),\
                       vmin=0., vmax=5,\
@@ -312,3 +312,4 @@ if plot3:
     hspace = 0.05)  # the amount of height reserved for space between subplots,
                   # expressed as a fraction of the average axis height
 
+    plt.show()
