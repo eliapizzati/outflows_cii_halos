@@ -37,7 +37,7 @@ gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s, cut):
     """
     differential system for the Euler equations
-    
+
     Parameters
     ==========
     r: float
@@ -66,7 +66,7 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     Gamma_He_1000 = 1.7687762344020628e-09  # s^-1
     Gamma_LW_1000 = 1.4229125141877616e-08  # s^-1
 
-    # defining the equations 
+    # defining the equations
 
     v = y[0]  # velocity in kms
     n = y[1]  # density in cm-3
@@ -91,18 +91,25 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
 
     M_r = M_vir_pure / A_NFW * (np.log(1. + r / r_s) + r_s / (r_s + r) - 1)
 
+    R_pure = 0.3
 
-    v_c = np.sqrt(gg * M_r * ms / (r * 1e3 * pc)) / 1e5  # in km/s
+    x_R = r / R_pure
+
+    M_star = M_vir_pure / 100. * 2.
+
+    M_disk_r = (M_star / 2.) * (2. - (x_R * (x_R + 2) + 2) * np.exp(-x_R))
+
+    v_c = np.sqrt(gg * (M_r + M_disk_r) * ms / (r * 1e3 * pc)) / 1e5  # in km/s
     v_e = v_c * np.sqrt(2)  # in km/s
 
     derivative_a = (2 * v / r) * (c_S2 - v_e ** 2 / 4) / (v ** 2 - c_S2) + (gamma - 1.) * q / (
-                (v ** 2 - c_S2) * 1e2 / pc)
+            (v ** 2 - c_S2) * 1e2 / pc)
 
     derivative_b = (2 * n / r) * (v_e ** 2 / 4 - v ** 2) / (v ** 2 - c_S2) - n / (1e2 * v / pc) * (gamma - 1.) * q / (
-                v ** 2 - c_S2)
+            v ** 2 - c_S2)
 
     derivative_c = (gamma - 1.) * (2 * T / r) * (v_e ** 2 / 4 - v ** 2) / (v ** 2 - c_S2) - (gamma - 1.) * q / (
-                knorm_kmsK * (1e2 * v / pc)) * (v ** 2 - c_T2) / (v ** 2 - c_S2)
+            knorm_kmsK * (1e2 * v / pc)) * (v ** 2 - c_T2) / (v ** 2 - c_S2)
 
     output = np.asarray([derivative_a, derivative_b, derivative_c])
 
@@ -122,18 +129,18 @@ if __name__ == "__main__":
     def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45", cut=50.):
         """
         computes the profiles for v, n, T as a function of r
-        
+
         Parameters
         ==========
         params: dict
             parameters to be passed to all functions
         resol: int, optional
             number of r-steps
-        
+
         Returns
         =======
         profiles: sol_profiles class element
-    
+
         """
 
         # params definition
@@ -190,7 +197,7 @@ if __name__ == "__main__":
 
                 M_vir_pure = get_virial_mass_from_vc(v_c_pure * 1e5, redshift)
 
-        # getting some preliminar values 
+        # getting some preliminar values
 
         # gravity part
 
@@ -248,7 +255,8 @@ if __name__ == "__main__":
 
         sol = si.solve_ivp(diff_system_fast, r_bound, y0, t_eval=r_eval, \
                            args=(
-                           SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s, cut), \
+                               SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s,
+                               cut), \
                            method=integrator, events=stopping_condition)  # ,rtol=1.0e-3
 
         if print_time:

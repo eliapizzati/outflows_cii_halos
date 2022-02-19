@@ -30,26 +30,23 @@ from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
 14: vc...582
 """            
 
-log = True
 
 emission = True
 
-thin = 100
-discard =3000
+thin = 1
+discard = 1
 
 nwalkers= 96
-nsteps = 1e5
+nsteps = 1000
 
-sample_step = int(40 * (nsteps/1e5))
+sample_step = int(40 * (nsteps/1000))
 walker_step = int(12 * (nwalkers/96))
 
 int_data = int(input("data number?"))
 data = obs_data_list[int_data]
 
-filename = "{}_{:.0f}".format(data.params_obs["name_short"], nsteps)
+filename = "{}_{:.0f}_new".format(data.params_obs["name_short"], nsteps)
 
-if log:
-    filename += "_final"
 
 print("###################################################################")
 
@@ -58,8 +55,7 @@ print("n steps = {}".format( nsteps))
 print("n walkers = {}".format( nwalkers))
 print("data object = {}".format( data.params_obs["name_short"]))
 print("filename = {}".format( filename))
-print("beta log =", log)
-             
+
 print("###################################################################")
 
 
@@ -87,10 +83,7 @@ ndim = 3
 
 fig, axes = plt.subplots(3, figsize=(10, 7), sharex=True)
 
-if log:
-    labels = ["log beta", "SFR", "v_c"]
-else:
-    labels = ["beta", "SFR", "v_c"]
+labels = ["log beta", "SFR", "v_c"]
 
 for i in range(ndim):
     ax = axes[i]
@@ -128,10 +121,7 @@ all_samples = np.concatenate(
 
 ndim = 3
 
-if log:
-    labels = ["log beta", "SFR", "v_c"]
-else:
-    labels = ["beta", "SFR", "v_c"]
+labels = ["log beta", "SFR", "v_c"]
 #labels += ["log prob"]# "log prior"]
 
 
@@ -207,8 +197,8 @@ plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "corner_{}.png".format(fil
 # emission
 
 if emission:
-    from mcmc import get_emission_fast, get_other_params
-    from mcmc import h, grid
+    from mcmc_new import get_emission_fast, get_other_params
+    from mcmc_new import h, grid
         
     
     other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"])

@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 import natconst as nc
 
 
-from cc85 import cc85_profiles
-from my_utils import get_circular_velocity_profile_NFW, get_vc_from_virial_mass, get_virial_radius
+from my_utils import get_circular_velocity_profile_NFW_and_disk, get_vc_from_virial_mass, get_virial_radius,\
+                     get_circular_velocity_profile_NFW
 from cmb_suppression import eta_func, T_spin_func
 
 import matplotlib
@@ -40,15 +40,15 @@ matplotlib.rcParams.update({
 #        "text.usetex": True
 })
 
-plot1 = False  # gravity
-plot2 = True      # cmb
+plot1 = True  # gravity
+plot2 = False      # cmb
 
 if plot1:
     """
     # NFW vc + comparison
     """
 
-    params = dict([("DM_model", "NFW"),
+    params = dict([("DM_model", "NFW+disk"),
                    ("beta", 1.0),
                    ("SFR", 50.),
                    ("f_esc_ion", 0.),
@@ -78,7 +78,7 @@ if plot1:
 
     for i in range(len(betas)):
         print("beta=", betas[i])
-        params.update(DM_model="NFW")
+        params.update(DM_model="NFW+disk")
 
         params.update(beta=betas[i])
 
@@ -131,14 +131,16 @@ if plot1:
 
     norm = matplotlib.colors.Normalize(vmin=M_vir.min(), vmax=M_vir.max())
 
-    radius = np.linspace(1, 55, 1000)
+    radius = np.linspace(1, 55, 10000)
+
 
     for i in range(len(M_vir)):
-        v_c = get_circular_velocity_profile_NFW(radius * nc.pc * 1e3, M_vir[i] * 1e11, z=5)
+        v_c = get_circular_velocity_profile_NFW_and_disk(radius * nc.pc * 1e3, M_vir[i] * 1e11, z=5)
         v_c_global = get_vc_from_virial_mass(M_vir[i] * 1e11, z=5)
-        #print(get_virial_radius(M_vir[i] * 1e11, z=5)/nc.pc/1e3)
 
-        ax_nfw.plot(radius, v_c / 1e5, color=cmap_rend_col((M_vir[i] - M_vir.min()) / (M_vir.max() - M_vir.min())))
+        rvir = get_virial_radius(M_vir[i] * 1e11, z=5)/nc.pc/1e3
+
+        ax_nfw.plot(radius[radius<rvir], v_c[radius<rvir] / 1e5, color=cmap_rend_col((M_vir[i] - M_vir.min()) / (M_vir.max() - M_vir.min())))
         ax_nfw.plot(radius, [v_c_global / 1e5] * len(radius),
                     color=cmap_rend_col((M_vir[i] - M_vir.min()) / (M_vir.max() - M_vir.min())), \
                     linestyle="--")

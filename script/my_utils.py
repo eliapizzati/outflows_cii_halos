@@ -7,11 +7,36 @@ Created on Mon Mar  8 14:50:57 2021
 
 
 import numpy as np
-
+import os
 import scipy.interpolate
 import natconst as nc
 
+import mydir
+
 from astropy.cosmology import Planck13 as cosmo
+
+input_filename_behroozi = os.path.join(mydir.script_dir, "input_data", "behroozi_z_5.dat")
+
+
+def mstar_behroozi(M_vir):
+
+    # First, you can open the file and check the information in it
+
+    halo_masses, halo_mass_ratio, halo_mass_ratio_err_up, halo_mass_ratio_err_down = np.loadtxt(input_filename_behroozi, \
+                                                                                                unpack=True)
+
+    stellar_masses = halo_masses + halo_mass_ratio
+
+    stellar_masses_fine = np.linspace(9.,12.,1000)
+
+    halo_masses_fine = np.interp(stellar_masses_fine, stellar_masses, halo_masses)
+
+    index_masses = np.searchsorted(halo_masses_fine, np.log10(M_vir))
+
+    log_M_halo = halo_masses_fine[index_masses]
+    log_M_star = stellar_masses_fine[index_masses]
+
+    return 10**log_M_star
 
 
 
@@ -22,6 +47,7 @@ def sersic(r, r_e, sersic_index, central):
     I_e = central * np.exp(b*((1/r_e)**(1/sersic_index)-1))
     
     return I_e*np.exp(-b*((r/r_e)**(1/sersic_index)-1.))
+
 
 def halo(r, r_n, central):
         
@@ -132,15 +158,31 @@ def get_mass_profile_NFW(r,M_vir,z):
     c = get_concentration(M_vir, z)
     
     A_NFW = np.log(1+c) - c/(1.+c)
-    
-    r_s = get_virial_radius(M_vir,z) / c 
-    
-    M = M_vir/A_NFW * (np.log(1.+r/r_s)+r_s/(r_s+r) - 1)
-    
-    return M
-    
+
+    r_vir = get_virial_radius(M_vir,z)
+    r_s = r_vir / c
+
+    return M_vir/A_NFW * (np.log(1.+r/r_s)+r_s/(r_s+r) - 1)
+
 
     
+def get_mass_profile_disk(r, M_star, model="exp", R_pure = 0.3):
+
+    if model == "exp":
+
+        R = R_pure * 1e3 * nc.pc
+
+        x = r/R
+
+        return (M_star/2.) * (2. - (x*(x+2)+2)*np.exp(-x))
+
+    elif model == "uniform":
+        return M_star
+
+    else:
+        raise ValueError("model not supported")
+
+
 
 def get_circular_velocity_profile_NFW(r,M_vir,z):
     """
@@ -164,9 +206,40 @@ def get_circular_velocity_profile_NFW(r,M_vir,z):
 
     """
     M_r = get_mass_profile_NFW(r,M_vir,z)
-    
+
+
     return np.sqrt(nc.gg*M_r*nc.ms/r)
-    
+
+
+def get_circular_velocity_profile_NFW_and_disk(r, M_vir, z):
+    """
+    gets the mass inside a radius r using a NFW profile
+
+    Parameters
+    ==========
+    r: float
+        radius of interest in cm
+
+    M_vir: float
+        halo mass in solar masses
+
+    z: float
+        redshift
+
+    Returns
+    =======
+    float
+        circular velocity at r in cm/s
+
+    """
+    M_r = get_mass_profile_NFW(r, M_vir, z)
+
+    M_star = mstar_behroozi(M_vir)
+
+    M_disk_r = get_mass_profile_disk(r, M_star, model = "exp")
+
+    return np.sqrt(nc.gg * (M_r+M_disk_r) * nc.ms / r)
+
 
 def get_virial_mass_from_vc(v_c, z, overdensity=200.):
     """
@@ -213,3 +286,6 @@ def get_vc_from_virial_mass(M_vir, z):
     R_vir = get_virial_radius(M_vir, z)
     
     return np.sqrt(nc.gg*M_vir*nc.ms/R_vir)
+
+
+

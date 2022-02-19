@@ -30,13 +30,13 @@ load_sol_from_file = False
 
 to_file = False
 
-plot_hydro = True
+plot_hydro = False
 
 plot_emission = True
 
 save_chi2 = False
 
-plot_eta = True
+plot_eta = False
 
 plot_vc_uncertainty = False
 
@@ -44,7 +44,7 @@ plot_SFR_uncertainty = False
 
 f_esc_ion = 0.0
 
-f_esc_FUV = 0.2
+f_esc_FUV = 0.0
 
 betas = np.asarray([4.0,4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9,\
                     5.0,5.1,5.2,5.3,5.4,5.5,5.6,5.7,5.8,5.9,\
@@ -52,7 +52,7 @@ betas = np.asarray([4.0,4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9,\
                     7.0,7.1,7.2,7.3,7.4,7.5,7.6,7.7,7.8,7.9])
 #betas = np.asarray([1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1])
 #betas = np.asarray([1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8])
-betas = np.asarray([4.0,4.5,5.0,5.5,6.0,6.5,7.0,7.5,8.0,8.5,9.0,9.5])
+betas = np.asarray([3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5,7.0,7.5,8.0])
 #betas = np.asarray([7.9,8.0,8.1,8.2,8.3,8.4,8.5,8.6,8.7])
 #betas = np.asarray([1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1])
 #betas = np.asarray([4.4,4.5,4.6,4.7,4.8,4.9,5.0,5.1,5.2,5.3,5.4,5.5,5.6,5.7,5.8,5.9])
@@ -73,7 +73,7 @@ for data in datas:
     
     #if data.params_obs["name"] not in names_CII_halo:
     #if data.params_obs["name"] in names_wo_CII_halo or data.params_obs["name"] in names_CII_halo:#names_wo_CII_halodata.params_obs["name"] != "DEIMOS_COSMOS_881725":
-    if data.params_obs["name_short"] != "DC_396844":
+    if data.params_obs["name_short"] != "VC_5110377875":
         pass
     else:
         datas_real.append(data)
@@ -81,13 +81,13 @@ for data in datas:
         print(data.params_obs["name"], "(number {})".format(data_counter) )
         print("#####################")
     
-        params = dict([("DM_model", "NFW"),
+        params = dict([("DM_model", "NFW+disk"),
                    ("beta", 1.0), 
                    ("SFR", data.params_obs["SFR"]),
                    ("f_esc_ion", f_esc_ion), 
                    ("f_esc_FUV", f_esc_FUV), 
                    ("v_c", data.params_obs["v_c"]),
-                   ("M_vir", data.params_obs["M_vir"]),
+                   #("M_vir", data.params_obs["M_vir"]),
                    ("redshift", data.params_obs["redshift"]),
                    ("Zeta", 1.0),
                    ("alfa", 1.0),
@@ -211,6 +211,7 @@ for data in datas:
 
                 params.update(M_vir = M_vir_down)
                 params.update(v_c = v_c_down)
+                print("{:.1f}".format(v_c_down))
 
                 if load_sol_from_file == False:
                     profiles_down = get_profiles(params, resol=1000)
@@ -340,11 +341,12 @@ for data in datas:
                                      markerfacecolor='maroon',markeredgecolor='maroon', marker='o',\
                                      linestyle='', ecolor = 'maroon')
                         
-                        fuji = ax_int_conv.errorbar(observational_data_fuji.x/(1000*nc.pc), observational_data_fuji.data, yerr=observational_data_fuji.err, \
-                                     markerfacecolor='navy',markeredgecolor='navy', marker='d',\
-                                     linestyle='', ecolor = 'navy')
+                        #fuji = ax_int_conv.errorbar(observational_data_fuji.x/(1000*nc.pc), observational_data_fuji.data, yerr=observational_data_fuji.err, \
+                        #             markerfacecolor='navy',markeredgecolor='navy', marker='d',\
+                        #             linestyle='', ecolor = 'navy')
                         
-                        ax_int_conv.legend([alpine, fuji], [data.params_obs["name_short"], "Fujimoto+19"])##
+                        #ax_int_conv.legend([alpine, fuji], [data.params_obs["name_short"], "Fujimoto+19"])##
+                        ax_int_conv.legend([alpine], [data.params_obs["name_short"]])  ##
 
                         # central contribution
                     

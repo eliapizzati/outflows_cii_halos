@@ -17,7 +17,7 @@ import numpy as np
 from model_classes import sol_profiles
 from radiation_fields import UVB_rates
 
-from my_utils import get_circular_velocity_profile_NFW, get_virial_mass_from_vc
+from my_utils import get_circular_velocity_profile_NFW_and_disk, get_circular_velocity_profile_NFW, get_virial_mass_from_vc
 
 # FUNCTIONS
         
@@ -113,23 +113,23 @@ def diff_system(r, y, params, Plw, Ph1, Pg1):
     
     # params definition
      
-    if params["DM_model"] == "NFW":    
+    if params["DM_model"] == "NFW" or params["DM_model"] == "NFW+disk":
 
         if "redshift" in params:
             redshift = params["redshift"]
         else: 
             raise ValueError("No redshift given")
-        
+
         if "M_vir" in params:
             M_vir_pure = params["M_vir"]
-        else: 
+        else:
             if "v_c" in params:
                 v_c_pure = params["v_c"]
-            else: 
+            else:
                 raise ValueError("No v_c given")
-            
-            M_vir_pure = get_virial_mass_from_vc(v_c_pure*1e5, redshift)
-            
+
+            M_vir_pure = get_virial_mass_from_vc(v_c_pure * 1e5, redshift)
+
     elif params["DM_model"] == "iso_sphere" or params["DM_model"] is None:
 
             if "v_c" in params:
@@ -160,7 +160,10 @@ def diff_system(r, y, params, Plw, Ph1, Pg1):
     if params["DM_model"] == "NFW":    
         
         v_c = get_circular_velocity_profile_NFW(r, M_vir_pure, redshift)
-                
+
+    if params["DM_model"] == "NFW+disk":
+        v_c = get_circular_velocity_profile_NFW_and_disk(r, M_vir_pure, redshift)
+
     elif params["DM_model"] == "iso_sphere" or params["DM_model"] is None:
 
         v_c = v_c_pure * 1e5 #cm/s 
