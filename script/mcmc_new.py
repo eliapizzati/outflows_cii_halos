@@ -23,8 +23,7 @@ import emcee
 import natconst as nc
 
 import mydir
-from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo, \
-    names_other, observational_data_fuji
+from load_data_updated import obs_data_list, names, names_CII_halo, observational_data_fuji
 
 from scipy.interpolate import interp1d
 from fast_solver_new import diff_system_fast, stopping_condition
@@ -38,25 +37,11 @@ gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 # preliminar parameters (TO CHECK EVERY TIME)
 
 
-nwalkers = 96
-nsteps = 1000
 
 parallel = True
 optimization = True
 display_single_step = False
 model = "old"
-
-"""
-1:  DC396844
-8:  DC683613
-13: DC881725
-17: vc...875
-3:  DC488399
-7:  DC630594
-12: DC880016
-14: vc...582
-"""
-
 
 
 rmax = 30
@@ -77,13 +62,14 @@ if __name__ == "__main__":
     data_counter = int(input("which data object?"))
     data = obs_data_list[data_counter]
 
+    nwalkers = 48
+    nsteps = int(input("number of steps?"))
+
     beta_best_fits = [5.5, 7.5, 6.4, 5.3, 5.9, 4.0, 8.2, 4.3]
 
     data.params_obs.update(beta_best_fit=beta_best_fits[data_counter])
 
-    filename = "{}_{:.0f}_new".format(data.params_obs["name_short"], nsteps)
-
-    filename_log = filename
+    filename = "{}_{:.0f}_updated_{}".format(data.params_obs["name_short"], nsteps, model)
 
     redshift = data.params_obs["redshift"]
 
@@ -156,9 +142,11 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
 
     # setting the parameters
 
-    log_beta, SFR_pure, v_c_pure = theta
+    log_beta, log_SFR_pure, log_vc_pure = theta
 
     beta = 10 ** log_beta
+    SFR_pure = 10**log_SFR_pure
+    v_c_pure = 10**log_vc_pure
 
     f_esc_ion = 0.
     f_esc_FUV = 0.
@@ -410,9 +398,9 @@ def log_prior_uniform(theta, data):
 
     """
 
-    log_beta, SFR, v_c = theta
+    log_beta, log_SFR, log_v_c = theta
 
-    if 0.0 < log_beta < 1.5 and 1. < SFR < 250. and 100. < v_c < 450.:
+    if 0.0 < log_beta < 1.5 and 0. < log_SFR < 2.4 and 2. < log_v_c < 2.6:
         return 0.0
 
     return -np.inf
@@ -432,15 +420,15 @@ def log_prior_gaussian(theta, data):
 
     """
 
-    log_beta, SFR, v_c = theta
+    log_beta, log_SFR, log_v_c = theta
 
-    if 0.0 < log_beta < 1.5 and 1. < SFR < 250. and 100. < v_c < 450.:
+    if 0.0 < log_beta < 1.5 and 0. < log_SFR < 2.4 and 2. < log_v_c < 2.6:
         prior = 0.0
 
-        prior += - 2 * (SFR - data.params_obs["SFR"]) ** 2 / (
-                    data.params_obs["SFR_err_up"] + data.params_obs["SFR_err_down"]) ** 2
-        prior += - 2 * (v_c - data.params_obs["v_c"]) ** 2 / (
-                    data.params_obs["v_c_err_up"] + data.params_obs["v_c_err_down"]) ** 2
+        prior += - 2 * (log_SFR - data.params_obs["log_SFR"]) ** 2 / (
+                    data.params_obs["log_SFR_err_up"] + data.params_obs["log_SFR_err_down"]) ** 2
+        prior += - 2 * (log_v_c - data.params_obs["log_v_c"]) ** 2 / (
+                    data.params_obs["log_v_c_err_up"] + data.params_obs["log_v_c_err_down"]) ** 2
 
         return prior
     else:
@@ -461,13 +449,13 @@ def log_prior_SFR_gaussian(theta, data):
 
     """
 
-    log_beta, SFR, v_c = theta
+    log_beta, log_SFR, log_v_c = theta
 
-    if 0.0 < log_beta < 1.5 and 1. < SFR < 250. and 100. < v_c < 450.:
+    if 0.0 < log_beta < 1.5 and 0. < log_SFR < 2.4 and 2. < log_v_c < 2.6:
         prior = 0.0
 
-        prior += - 2 * (SFR - data.params_obs["SFR"]) ** 2 / (
-                    data.params_obs["SFR_err_up"] + data.params_obs["SFR_err_down"]) ** 2
+        prior += - 2 * (log_SFR - data.params_obs["log_SFR"]) ** 2 / (
+                    data.params_obs["log_SFR_err_up"] + data.params_obs["log_SFR_err_down"]) ** 2
 
         return prior
     else:
@@ -502,7 +490,7 @@ if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', \
                         datefmt='%m/%d/%Y %I:%M:%S %p', \
                         level=logging.INFO, \
-                        handlers=[logging.FileHandler(os.path.join(mydir.log_dir, "{}.log".format(filename_log))), \
+                        handlers=[logging.FileHandler(os.path.join(mydir.log_dir, "{}.log".format(filename))), \
                                   logging.StreamHandler()])
 
     logging.info("###################################################################")
@@ -530,7 +518,7 @@ if __name__ == "__main__":
         # find optimal starting points for each walker
         chi2_func = lambda *args: -2 * log_probability(*args)[0]
 
-        bounds = [(0.1, 1.), (10.,150.), (100.,250.)]
+        bounds = [(0.1, 1.), (0.,2.4), (2.,2.6)]
 
 
         args = (data, other_params, h, grid, f_beam)
@@ -551,11 +539,11 @@ if __name__ == "__main__":
         print(pos)
     else:
 
-        theta_input = [np.log10(data.params_obs["beta_best_fit"]), data.params_obs["SFR"], data.params_obs["v_c"]]
+        theta_input = [np.log10(data.params_obs["beta_best_fit"]), data.params_obs["log_SFR"], data.params_obs["log_v_c"]]
 
         ndim = len(theta_input)
 
-        pos = theta_input + np.asarray([0.2, 30., 80.]) * np.random.randn(nwalkers, ndim)
+        pos = theta_input + np.asarray([0.2, 0.2, 0.2]) * np.random.randn(nwalkers, ndim)
 
         # pos += np.asarray([0.5, 0., 0.]) * np.random.rand(nwalkers, ndim)
 

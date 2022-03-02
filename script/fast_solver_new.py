@@ -18,7 +18,7 @@ import numpy as np
 
 from model_classes import sol_profiles
 from radiation_fields import UVB_rates
-from my_utils import get_virial_mass_from_vc, get_concentration, get_virial_radius
+from my_utils import get_virial_mass_from_vc, get_concentration, get_virial_radius, mstar_behroozi
 
 import plot_config as pltc
 
@@ -91,11 +91,21 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
 
     M_r = M_vir_pure / A_NFW * (np.log(1. + r / r_s) + r_s / (r_s + r) - 1)
 
-    R_pure = 0.3
+    overdensity = 200.
+    hubble2 = 2.1962761244736533e-18 ** 2 * (
+                0.30712 * (1 + redshift) ** 3 + 5.384308416949404e-05 * (1 + redshift) ** 4 + 0.6913912010962934)
+    critical_density = 3 * hubble2 / (8 * np.pi * gg)  # in g/cm^3
+
+    # gravity part
+
+    cosmo_h = 0.6774
+    r_vir_pure = np.cbrt(3 * M_vir_pure * nc.ms / (critical_density * 4 * np.pi * overdensity)) / 1e3 / pc  # in kpc
+
+    R_pure = r_vir_pure/1e2
 
     x_R = r / R_pure
 
-    M_star = M_vir_pure / 100. * 2.
+    M_star = mstar_behroozi(M_vir_pure, z=redshift)
 
     M_disk_r = (M_star / 2.) * (2. - (x_R * (x_R + 2) + 2) * np.exp(-x_R))
 

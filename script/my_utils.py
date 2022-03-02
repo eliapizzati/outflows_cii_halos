@@ -13,12 +13,12 @@ import natconst as nc
 
 import mydir
 
-from astropy.cosmology import Planck13 as cosmo
+from astropy.cosmology import Planck15 as cosmo
 
 input_filename_behroozi = os.path.join(mydir.script_dir, "input_data", "behroozi_z_5.dat")
 
 
-def mstar_behroozi(M_vir):
+def mstar_behroozi_from_file(M_vir):
 
     # First, you can open the file and check the information in it
 
@@ -38,6 +38,35 @@ def mstar_behroozi(M_vir):
 
     return 10**log_M_star
 
+
+def mstar_behroozi(M_vir, z=5.0):
+    # Behroozi+13
+    # https://arxiv.org/pdf/1207.6105.pdf
+
+    aexp = 1.0 / (1.0 + z)
+
+    nu = np.exp(-4.0 * aexp ** 2)
+    log_epsilon = -1.777 + (-0.006 * (aexp - 1) + 0.0 * z) * nu - 0.119 * (aexp - 1)
+    log_M1 = 11.514 + (-1.793 * (aexp - 1) - 0.251 * z) * nu
+    alpha = -1.412 + (0.731 * (aexp - 1)) * nu
+    delta = 3.508 + (2.608 * (aexp - 1) - 0.043 * z) * nu
+    gamma = 0.316 + (1.319 * (aexp - 1) + 0.279 * z) * nu
+
+    M1 = 10 ** log_M1
+    epsilon = 10 ** log_epsilon
+
+    # eq. 3
+    def f_be(x, alpha=0.0, delta=0.0, gamma=0.0):
+        return - np.log10(10.0 ** (alpha * x) + 1.0) + delta * ((np.log10(1.0 + np.exp(x))) ** gamma) / (
+                    1.0 + np.exp(10 ** (-x)))
+
+    #
+    out = np.log10(epsilon * M1) + f_be(x=np.log10(M_vir / M1), alpha=alpha, gamma=gamma, delta=delta) - f_be(x=0.0,
+                                                                                                           alpha=alpha,
+                                                                                                           gamma=gamma,
+                                                                                                           delta=delta)
+
+    return 10**out
 
 
 def sersic(r, r_e, sersic_index, central):
@@ -236,7 +265,9 @@ def get_circular_velocity_profile_NFW_and_disk(r, M_vir, z):
 
     M_star = mstar_behroozi(M_vir)
 
-    M_disk_r = get_mass_profile_disk(r, M_star, model = "exp")
+    r_vir = get_virial_radius(M_vir, z)
+
+    M_disk_r = get_mass_profile_disk(r, M_star, model = "exp", R_pure=r_vir/nc.pc/1e3/1e2)
 
     return np.sqrt(nc.gg * (M_r+M_disk_r) * nc.ms / r)
 

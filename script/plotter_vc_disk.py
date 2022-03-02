@@ -41,7 +41,7 @@ matplotlib.rcParams.update({
 })
 
 plot1 = True  # gravity
-plot2 = False      # exp profile
+plot2 = True      # exp profile
 
 if plot1:
     """
@@ -218,7 +218,9 @@ if plot2:
 
     r = np.linspace(0.1, 10 * nc.pc * 1e3, n_points)
 
-    R = 0.3 * nc.pc * 1e3
+    r_vir = get_virial_radius(M_vir, z=5.)
+
+    R = r_vir / 1e2
 
     x = r/R
 
