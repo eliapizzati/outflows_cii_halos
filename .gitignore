@@ -19,3 +19,4 @@ plot/*
 *.DS_Store
 *.gz
 *.pyc
+*.so
