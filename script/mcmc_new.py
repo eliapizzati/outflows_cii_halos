@@ -523,8 +523,11 @@ if __name__ == "__main__":
 
         args = (data, other_params, h, grid, f_beam)
 
+        seed = 125546
+        rand = np.random.RandomState(seed)
+
         result_opt = scipy.optimize.differential_evolution(chi2_func, bounds=bounds, popsize=25, recombination=0.7,
-                                                           disp=True, polish=True, args=args, )
+                                                           disp=True, polish=True, args=args, seed= rand)
 
         print(result_opt.x)
         print(result_opt.success)

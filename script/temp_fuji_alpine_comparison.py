@@ -95,5 +95,47 @@ plt.subplots_adjust(left=0.15,  # the left side of the subplots of the figure
 # expressed as a fraction of the average axis height
 
 
+
+fig, ax = plt.subplots(figsize = (7,6))
+
+
+ax.set_yscale("log")
+
+ax.set_ylim(1e-3, 1e2)
+
+ax.set_ylabel("flux [mJy/arcsec$^2$]", size=size)
+ax.set_xlabel("b [kpc]", size=size)
+
+data = datas[1]
+alpine = ax.errorbar(data.x / (1000 * nc.pc), data.data,
+                            yerr=data.err, \
+                            markerfacecolor='navy', markeredgecolor='navy', marker='d', \
+                            linestyle='', ecolor='navy', label="Data from Seiji")
+
+print(data.params_obs["name_short"])
+
+
+#x_mas = np.asarray([0.1471169994270768, 0.45771480203273307, 0.7640018153279446,1.058074158768218,1.3580970451490058,1.6636289628455216,1.961920729382407,2.2669263421365904])
+#y =  np.asarray([0.9535182095209478, 0.7580882071309459, 0.43701675214435326, 0.21444930153684946,  0.07282819740825795 , 0.04594872925847865, 0.012911312372689132, 0.01895828537743512])
+
+x_mas = np.asarray([0.16147798742138353, 0.46525157232704395, 0.7617924528301886,1.0583333333333331,1.362106918238994,1.6586477987421384,1.9588050314465408,2.262578616352202])
+y =  np.asarray([1.0824133522788788, 0.8314527714489289, 0.48578475070320354, 0.22338456451964553,  0.077239758523539 , 0.00979145507086018, 0.017094666840436493, 0.021441311325220903])
+y_up =  np.asarray([1.0824133522788788, 0.8314527714489289, 0.48578475070320354, 0.2635485430338834,  0.1099917981852589 , 0.04026437119529853, 0.041132301336074845, 0.03521062380461966])
+y_down = np.asarray([1.0824133522788788, 0.8314527714489289, 0.48578475070320354, 0.19705095177516463,  0.050653339307195004 , 0.0010902784377834506, 0.001532717760955783, 0.007382730909593146])
+
+
+
+from astropy.cosmology import FlatLambdaCDM
+cosmo = FlatLambdaCDM(H0=70, Om0=0.3, Tcmb0=2.725)
+
+x =    x_mas / cosmo.arcsec_per_kpc_proper(data.params_obs["redshift"]).value
+
+ax.errorbar(x, y,
+                yerr=[y-y_down, y_up-y], \
+                markerfacecolor='maroon', markeredgecolor='maroon', marker='o', \
+             linestyle='', ecolor='maroon', label="Fujimoto+20 paper")
+
+ax.legend()
+fig.tight_layout()
 plt.show()
 
