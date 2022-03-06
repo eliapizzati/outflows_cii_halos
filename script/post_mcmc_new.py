@@ -22,7 +22,7 @@ from load_data_updated import obs_data_list, names, names_CII_halo, observationa
 
 loading_from_cluster = False
 plot_logprob = False
-model = "old"
+model = "new"
 
 plot1 = True #chains
 plot2 = True #corners
