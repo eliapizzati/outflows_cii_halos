@@ -20,7 +20,7 @@ import natconst as nc
 
 from load_data_updated import obs_data_list, names, names_CII_halo, observational_data_fuji
 
-loading_from_cluster = False
+loading_from_cluster = True
 plot_logprob = False
 model = "old"
 
