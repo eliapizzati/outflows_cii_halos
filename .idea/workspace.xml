@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b432ddd8-4532-4b00-9cd0-cdee848f03a1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/script/plotter_mcmc_new.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script/mcmc_new.py" beforeDir="false" afterPath="$PROJECT_DIR$/script/mcmc_new.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script/post_mcmc_new.py" beforeDir="false" afterPath="$PROJECT_DIR$/script/post_mcmc_new.py" afterDir="false" />
@@ -44,7 +43,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.fileTypes" />
   </component>
-  <component name="RunManager" selected="Python.plotter_mcmc_new">
+  <component name="RunManager" selected="Python.post_mcmc_new">
     <configuration name="load_data_new" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="outflows_new" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -181,9 +180,9 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.post_mcmc_new" />
         <item itemvalue="Python.plotter_mcmc_new" />
         <item itemvalue="Python.plotter_mcmc" />
-        <item itemvalue="Python.post_mcmc_new" />
         <item itemvalue="Python.mcmc_new" />
         <item itemvalue="Python.temp_fuji_alpine_comparison" />
       </list>

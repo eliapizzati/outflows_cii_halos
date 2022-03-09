@@ -41,7 +41,7 @@ gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 parallel = True
 optimization = True
 display_single_step = False
-model = "new"
+model = "old"
 
 
 rmax = 30

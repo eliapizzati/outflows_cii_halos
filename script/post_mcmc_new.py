@@ -20,7 +20,7 @@ import natconst as nc
 
 from load_data_updated import obs_data_list, names, names_CII_halo, observational_data_fuji
 
-loading_from_cluster = True
+loading_from_cluster = False
 plot_logprob = False
 model = "old"
 
@@ -28,7 +28,7 @@ plot1 = True #chains
 plot2 = True #corners
 plot3 = True #emission
 
-thin = 100
+thin = 1
 discard = 1
 
 
@@ -37,7 +37,7 @@ nsteps = int(input("number of steps?"))
 
 
 
-sample_step = int(50 * (nsteps / 10000))
+sample_step = int(40 * (nsteps / 1000))
 walker_step = int(6 * (nwalkers / 48))
 
 int_data = int(input("data number?"))
@@ -254,7 +254,7 @@ if plot3:
         for theta in walker[::walker_step]:
             counter += 1
             print("computing emission for theta =", theta, "\t", "iteration number {}/{}" \
-                  .format(counter, int(nsteps * nwalkers / sample_step / walker_step)))
+                  .format(counter, int(nsteps * nwalkers / sample_step / walker_step / thin)))
 
             # if theta[0]>1.15:# and theta[1]>50.:
 
