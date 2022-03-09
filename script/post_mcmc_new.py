@@ -28,7 +28,7 @@ plot1 = True #chains
 plot2 = True #corners
 plot3 = True #emission
 
-thin = 1
+thin = 100
 discard = 1
 
 
@@ -37,7 +37,7 @@ nsteps = int(input("number of steps?"))
 
 
 
-sample_step = int(40 * (nsteps / 1000))
+sample_step = int(20 * (nsteps / 10000))
 walker_step = int(6 * (nwalkers / 48))
 
 int_data = int(input("data number?"))
