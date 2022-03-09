@@ -20,15 +20,15 @@ import natconst as nc
 
 from load_data_updated import obs_data_list, names, names_CII_halo, observational_data_fuji
 
-loading_from_cluster = False
+loading_from_cluster = True
 plot_logprob = False
-model = "new"
+model = "old"
 
 plot1 = True #chains
 plot2 = True #corners
 plot3 = True #emission
 
-thin = 1
+thin = 100
 discard = 1
 
 
@@ -37,8 +37,8 @@ nsteps = int(input("number of steps?"))
 
 
 
-sample_step = int(40 * (nsteps / 1000))
-walker_step = int(12 * (nwalkers / 96))
+sample_step = int(50 * (nsteps / 10000))
+walker_step = int(6 * (nwalkers / 48))
 
 int_data = int(input("data number?"))
 data = obs_data_list[int_data]
