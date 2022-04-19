@@ -124,7 +124,7 @@ def eta_func(T_spin, z):
     #       (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+z)*nc.CMB_temperature)) - 1.)
 
     return 1. - (np.exp(nc.hh*nc.line_CII_rest_frame / (nc.kk*(1.+z)*(T_spin))) - 1.) /\
-           (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+z)**2*nc.CMB_temperature)) - 1.)
+          (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+z)**2*nc.CMB_temperature)) - 1.)
 
 
 if __name__ == "__main__":

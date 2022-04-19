@@ -17,7 +17,7 @@ from astropy.table import Table
 import mydir
 import natconst as nc
 
-from my_utils import get_circular_velocity_profile_NFW, get_virial_radius, get_vc_from_virial_mass
+from my_utils import get_circular_velocity_profile_NFW, get_virial_radius, get_vc_from_virial_mass, mstar_behroozi
 from data_classes import obs_data
 
 from astropy.cosmology import Planck15 as cosmo
@@ -136,6 +136,7 @@ for name, name_short, SFR_IR, SFR_IR_err_down, SFR_IR_err_up in \
     log_SFR = evt_data[evt_data["name"] == name]["logSFR_SED"][0]
     log_SFR_lim_up = evt_data[evt_data["name"] == name]["logSFR_SED_higheff1sig"][0]
     log_SFR_lim_down = evt_data[evt_data["name"] == name]["logSFR_SED_loweff1sig"][0]
+
 
     SFR = 10 ** log_SFR
     SFR_lim_up = 10 ** log_SFR_lim_up
