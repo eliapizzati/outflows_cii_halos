@@ -2,7 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b432ddd8-4532-4b00-9cd0-cdee848f03a1" name="Changes" comment="">
+<<<<<<< HEAD
       <change afterPath="$PROJECT_DIR$/script/test_non_detection.py" afterDir="false" />
+=======
+<<<<<<< HEAD
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/outflows_new.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/outflows_new.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/script/gnedincooling.cpython-37m-x86_64-linux-gnu.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/script/gnedincooling.cpython-38-x86_64-linux-gnu.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/script/other_scripts/gnedincooling.cp37-win_amd64.pyd" beforeDir="false" />
+=======
+      <change afterPath="$PROJECT_DIR$/script/main_switchers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/script/trial_spectrum.py" afterDir="false" />
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plot/plot_emcee/emission_DC_396844_1000_updated_old.png" beforeDir="false" afterPath="$PROJECT_DIR$/plot/plot_emcee/emission_DC_396844_1000_updated_old.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script/load_data_updated.py" beforeDir="false" afterPath="$PROJECT_DIR$/script/load_data_updated.py" afterDir="false" />
@@ -10,8 +23,12 @@
       <change beforePath="$PROJECT_DIR$/script/main_switchers.py" beforeDir="false" afterPath="$PROJECT_DIR$/script/main_switchers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script/mcmc_new.py" beforeDir="false" afterPath="$PROJECT_DIR$/script/mcmc_new.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script/post_mcmc_new.py" beforeDir="false" afterPath="$PROJECT_DIR$/script/post_mcmc_new.py" afterDir="false" />
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/script/post_sol_modules.py" beforeDir="false" afterPath="$PROJECT_DIR$/script/post_sol_modules.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script/trial_spectrum.py" beforeDir="false" afterPath="$PROJECT_DIR$/script/trial_spectrum.py" afterDir="false" />
+=======
+>>>>>>> e582cc97fc4ccb7eba3f1d718f047104f3206e8f
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +61,7 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+<<<<<<< HEAD
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;last_opened_file_path&quot;: &quot;/home/elia/projects/outflows/outflows_new&quot;
@@ -51,6 +69,22 @@
 }</component>
   <component name="RunManager" selected="Python.main_switchers">
     <configuration name="load_data_new" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+=======
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="preferences.fileTypes" />
+  </component>
+<<<<<<< HEAD
+  <component name="RunManager" selected="Python.cooling">
+    <configuration name="cooling" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+=======
+  <component name="RunManager" selected="Python.load_data">
+    <configuration name="load_data" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+>>>>>>> e582cc97fc4ccb7eba3f1d718f047104f3206e8f
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
       <module name="outflows_new" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -62,7 +96,16 @@
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+<<<<<<< HEAD
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/load_data_new.py" />
+=======
+<<<<<<< HEAD
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/cooling.py" />
+=======
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/load_data.py" />
+>>>>>>> e582cc97fc4ccb7eba3f1d718f047104f3206e8f
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -83,7 +126,15 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+<<<<<<< HEAD
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/load_data_updated.py" />
+=======
+<<<<<<< HEAD
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+=======
+>>>>>>> e582cc97fc4ccb7eba3f1d718f047104f3206e8f
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/load_data_new.py" />
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -92,28 +143,15 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+<<<<<<< HEAD
     <configuration name="main_switchers" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="outflows_new" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/script" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/main_switchers.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+=======
+<<<<<<< HEAD
     <configuration name="mcmc_new" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+=======
+    <configuration name="main_ALPINE" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+>>>>>>> e582cc97fc4ccb7eba3f1d718f047104f3206e8f
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
       <module name="outflows_new" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -125,7 +163,16 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+<<<<<<< HEAD
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/main_switchers.py" />
+=======
+<<<<<<< HEAD
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/mcmc_new.py" />
+=======
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/main_ALPINE.py" />
+>>>>>>> e582cc97fc4ccb7eba3f1d718f047104f3206e8f
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -134,7 +181,53 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+<<<<<<< HEAD
+    <configuration name="mcmc_new" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+=======
+<<<<<<< HEAD
+    <configuration name="plotter_mcmc" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+=======
+    <configuration name="main_switchers" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+>>>>>>> e582cc97fc4ccb7eba3f1d718f047104f3206e8f
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
+      <module name="outflows_new" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/script" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+<<<<<<< HEAD
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/mcmc_new.py" />
+=======
+<<<<<<< HEAD
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/plotter_mcmc.py" />
+=======
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/main_switchers.py" />
+>>>>>>> e582cc97fc4ccb7eba3f1d718f047104f3206e8f
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+<<<<<<< HEAD
     <configuration name="post_mcmc_new" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+=======
+<<<<<<< HEAD
+    <configuration name="plotter_mcmc_new" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+=======
+    <configuration name="mcmc_new" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+>>>>>>> e582cc97fc4ccb7eba3f1d718f047104f3206e8f
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
       <module name="outflows_new" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -146,7 +239,16 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+<<<<<<< HEAD
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/post_mcmc_new.py" />
+=======
+<<<<<<< HEAD
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/plotter_mcmc_new.py" />
+=======
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/mcmc_new.py" />
+>>>>>>> e582cc97fc4ccb7eba3f1d718f047104f3206e8f
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -155,7 +257,15 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+<<<<<<< HEAD
     <configuration name="test_non_detection" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+=======
+<<<<<<< HEAD
+    <configuration name="post_mcmc_new" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+=======
+    <configuration name="plotter_mcmc_new" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+>>>>>>> e582cc97fc4ccb7eba3f1d718f047104f3206e8f
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
       <module name="outflows_new" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -167,7 +277,16 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+<<<<<<< HEAD
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/test_non_detection.py" />
+=======
+<<<<<<< HEAD
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/post_mcmc_new.py" />
+=======
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/script/plotter_mcmc_new.py" />
+>>>>>>> e582cc97fc4ccb7eba3f1d718f047104f3206e8f
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -178,14 +297,37 @@
     </configuration>
     <list>
       <item itemvalue="Python.load_data_new" />
+<<<<<<< HEAD
       <item itemvalue="Python.load_data_updated" />
       <item itemvalue="Python.post_mcmc_new" />
       <item itemvalue="Python.test_non_detection" />
       <item itemvalue="Python.mcmc_new" />
+=======
+      <item itemvalue="Python.cooling" />
+      <item itemvalue="Python.mcmc_new" />
+<<<<<<< HEAD
+      <item itemvalue="Python.plotter_mcmc" />
+      <item itemvalue="Python.plotter_mcmc_new" />
+      <item itemvalue="Python.post_mcmc_new" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.cooling" />
+        <item itemvalue="Python.post_mcmc_new" />
+=======
+      <item itemvalue="Python.plotter_mcmc_new" />
+      <item itemvalue="Python.main_ALPINE" />
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
       <item itemvalue="Python.main_switchers" />
     </list>
     <recent_temporary>
       <list>
+<<<<<<< HEAD
+=======
+        <item itemvalue="Python.load_data" />
+>>>>>>> e582cc97fc4ccb7eba3f1d718f047104f3206e8f
+        <item itemvalue="Python.plotter_mcmc_new" />
+>>>>>>> 951aedacb2f92018bb5b7e3765daa0cbc601f179
         <item itemvalue="Python.main_switchers" />
         <item itemvalue="Python.load_data_updated" />
         <item itemvalue="Python.test_non_detection" />
@@ -202,6 +344,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1636400663790</updated>
+      <workItem from="1649249039426" duration="48000" />
     </task>
     <servers />
   </component>
