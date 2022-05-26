@@ -515,6 +515,7 @@ if __name__ == "__main__":
 
     if optimization:
 
+
         # find optimal starting points for each walker
         chi2_func = lambda *args: -2 * log_probability(*args)[0]
 
@@ -531,6 +532,7 @@ if __name__ == "__main__":
 
         print(result_opt.x)
         print(result_opt.success)
+        print("chi2 max", -2 * log_likelihood(result_opt.x, *args))
 
         ndim = len(result_opt.x)
 

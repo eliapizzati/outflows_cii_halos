@@ -7,6 +7,7 @@ Created on Mon Aug  9 18:12:43 2021
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 import natconst as nc
 import os
 
@@ -35,8 +36,8 @@ matplotlib.rcParams.update({
     "ytick.labelsize": 14.,
     "xtick.major.size": 4.0,
     "ytick.major.size": 4.0,
-    "xtick.minor.size": 2.0,
-    "ytick.minor.size": 2.0,
+    "xtick.minor.size": 3.0,
+    "ytick.minor.size": 3.0,
     "legend.fontsize": 13.0,
     "legend.frameon": False
     #       "figure.dpi": 200,
@@ -46,8 +47,8 @@ matplotlib.rcParams.update({
 
 plot0 = False  # single emission chain
 plot1 = False  # emission chains
-plot2 = True  # corners
-plot3 = True  # violins
+plot2 = False  # corners
+plot3 = False  # violins
 plot4 = True  # final trends
 
 folder_data = "data_emcee"
@@ -58,8 +59,12 @@ nwalkers = 48
 nsteps = 1000
 thin = 1
 discard = 1
-sample_step = int(12 * (nsteps / 1e5))
-walker_step = int(12 * (nwalkers / 96))
+sample_step = int(8 * (nsteps / 1e3))
+walker_step = int(12 * (nwalkers / 48))
+
+data = obs_data_list[1]
+
+string = "results for""\n""DC630594"
 
 params = dict([("DM_model", "NFW"),
                ("beta", 1.0),
@@ -74,19 +79,20 @@ params = dict([("DM_model", "NFW"),
 
 if plot0:
 
+    from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
+                                   AutoMinorLocator)
 
-    fig, ax = plt.subplots(figsize=(1.3 * 8.27 / 1.6, 1.2 * 12. / 2.2))
+    fig, ax = plt.subplots(figsize=(1.3 * 8.27 / 1.6, 1.3 * 12. / 2.2))
 
     ax.set_yscale('log')
-    ax.set_ylim((0.003, 12))
+    ax.set_ylim((0.003, 6))
     ax.set_xlim((0.3, 16))
     ax.tick_params(length=4, axis="both", which="major")
     ax.tick_params(length=2, axis="both", which="minor")
 
     ax.set_xlabel("b [kpc]")
     ax.set_ylabel('flux [mJy/arcsec$^2$]')
-
-    data = obs_data_list[0]
+    ax.xaxis.set_minor_locator(MultipleLocator(1))
 
     # filename = "{}_{:.0f}_final".format(data.params_obs["name_short"], nsteps)
     filename = "{}_{:.0f}_updated_{}".format(data.params_obs["name_short"], nsteps, model)
@@ -97,6 +103,8 @@ if plot0:
 
     samples = reader.get_chain(thin=thin, discard=discard)
     samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
+
+    theta_median = np.median(samples_flat, axis=0)
 
     print("###################################################################")
 
@@ -123,11 +131,15 @@ if plot0:
     f_beam = np.fft.fft2(beam_2d)
 
     counter = 0
+
+
     for walker in samples[::sample_step]:
         for theta in walker[::walker_step]:
+
+
             counter += 1
             print("computing emission for theta =", theta, "\t", "iteration number {}/{}" \
-                  .format(counter, int(nsteps * nwalkers / sample_step / walker_step)))
+                  .format(counter, int(nsteps * nwalkers / sample_step / walker_step / thin)))
 
             # if theta[0]>1.15:# and theta[1]>50.:
             intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)
@@ -140,10 +152,13 @@ if plot0:
 
         # axs_flat[data_counter].legend(loc="lower center", ncol=8, fontsize="small")
 
+    intensity_median = get_emission_fast(theta_median, data, other_params, h, grid, f_beam)
+    ax.plot(h, intensity_median, alpha=1.0, color="navy", linestyle="--", lw=2.)
+
     plt.subplots_adjust(left=0.15,  # the left side of the subplots of the figure
-                        right=0.97,  # the right side of the subplots of the figure
-                        bottom=0.25,  # the bottom of the subplots of the figure
-                        top=0.9,  # the top of the subplots of the figure
+                        right=0.95,  # the right side of the subplots of the figure
+                        bottom=0.13,  # the bottom of the subplots of the figure
+                        top=0.95,  # the top of the subplots of the figure
                         wspace=0.05,  # the amount of width reserved for space between subplots,
                         # expressed as a fraction of the average axis width
                         hspace=0.27)  # the amount of height reserved for space between subplots,
@@ -227,10 +242,10 @@ if plot1:
 
         # axs_flat[data_counter].legend(loc="lower center", ncol=8, fontsize="small")
 
-    plt.subplots_adjust(left=0.1,  # the left side of the subplots of the figure
-                        right=0.98,  # the right side of the subplots of the figure
+    plt.subplots_adjust(left=0.05,  # the left side of the subplots of the figure
+                        right=0.97,  # the right side of the subplots of the figure
                         bottom=0.08,  # the bottom of the subplots of the figure
-                        top=0.95,  # the top of the subplots of the figure
+                        top=0.94,  # the top of the subplots of the figure
                         wspace=0.05,  # the amount of width reserved for space between subplots,
                         # expressed as a fraction of the average axis width
                         hspace=0.27)  # the amount of height reserved for space between subplots,
@@ -243,11 +258,10 @@ if plot2:
     #corners
     """
 
-    data = obs_data_list[0]
 
     ndim = 3
 
-    labels = [r"log $\eta$ ", "log SFR [M$_\odot$ yr$^{-1}$]", r"$log v_c^{\mathrm{(vir)}}$ [km s$^{-1}$]"]
+    labels = [r"log $\eta$ ", "log SFR [M$_\odot$ yr$^{-1}$]", r"log $V_{\rm c}$ [km s$^{-1}$]"]
 
     # filename = "{}_{:.0f}_final".format(data.params_obs["name_short"], nsteps)
     filename = "{}_{:.0f}_updated_{}".format(data.params_obs["name_short"], nsteps, model)
@@ -320,7 +334,7 @@ if plot2:
                 ax.axvline(true_values[xi], color=kwargs["truth_color"], linestyle='--', linewidth=1.3)
                 ax.axvspan(err_downs[xi], err_ups[xi], alpha=0.2, color='red')
                 if xi == 1:
-                    ax.set_xlim(0., 2.4)
+                    ax.set_xlim(0.8, 2.4)
                 if xi == 2:
                     ax.set_xlim(2., 2.6)
 
@@ -328,11 +342,11 @@ if plot2:
                 ax.axhline(true_values[yi], color=kwargs["truth_color"], linestyle='--', linewidth=1.3)
                 ax.axhspan(err_downs[yi], err_ups[yi], alpha=0.2, color='red')
                 if yi == 1:
-                    ax.set_ylim(0., 2.4)
+                    ax.set_ylim(0.8, 2.4)
                 if yi == 2:
                     ax.set_ylim(2., 2.6)
 
-    fig.text(0.705, 0.825, "results for""\n""VC5110377875", \
+    fig.text(0.705, 0.825, string, \
              fontsize=16, bbox={'facecolor': 'lightgray', 'alpha': 0.8, \
                                 'boxstyle': "round", 'edgecolor': 'none', 'pad': 0.5}, \
              horizontalalignment='center', verticalalignment='center')
@@ -574,7 +588,7 @@ if plot4:
 
     # beta_means = np.asarray([5.5,8.4,6.4,5.3,5.9,4.0,8.2,4.3])
 
-    fig, [ax_vc, ax_sfr] = plt.subplots(1, 2, sharey=True, figsize=(1.3 * 8.27, 1.3 * 3.2))
+    fig, [ax_vc, ax_sfr] = plt.subplots(1, 2, sharey=False,figsize=(1.5*8.27,1.4*3.7))
 
     cmap_rend_col = matplotlib.cm.get_cmap('viridis_r')
 
@@ -587,42 +601,42 @@ if plot4:
 
     ax_vc.scatter(mstars[mask], beta_means[mask], \
                   marker='o', color=cmap_rend_col((sfrs[mask] - SFR_min) / (SFR_max - SFR_min)), \
-                  s=500 * (1. / abs(likelihood_means[mask])))
+                  s=500 * (1. / abs(likelihood_means[mask])), zorder=30)
 
     ax_vc.errorbar(mstars[mask], beta_means[mask], \
                    [sigma_betas_down[mask], sigma_betas_up[mask]], \
                    [sigma_mstars_down[mask], sigma_mstars_up[mask]],
-                   ecolor="gray", linestyle="", barsabove=False, alpha=0.2)
+                   ecolor="gray", linestyle="", barsabove=False, alpha=0.4, zorder=30)
 
     from matplotlib.ticker import ScalarFormatter
 
     for axis in [ax_vc.xaxis, ax_vc.yaxis]:
         axis.set_major_formatter(ScalarFormatter())
 
-    yticks = [2., 3., 4., 6., 10., 20.]
+    yticks = [2., 3., 4., 6., 10.]
     xticks_mstar = [0.3, 0.4, 0.6, 1., 2.0]
     xticks_sfr = [10., 20., 50., 100.]
 
     # ax.set_ylim(1.3,6.0)
-    ax_vc.set_xlabel(r"M$_{\rm star}$ [10$^{10}$ M$_\odot$]")
+    ax_vc.set_xlabel(r"M$_{\star}$ [10$^{10}$ M$_\odot$]")
     ax_vc.set_ylabel("$\eta$", labelpad=-4.)
     ax_vc.set_xscale("log")
     ax_vc.set_yscale("log")
+    ax_vc.set_xlim(0.28,2.2)
+    ax_vc.set_ylim(2.2,15)
     ax_vc.set_yticks(yticks)
     ax_vc.set_yticklabels(yticks)
     ax_vc.set_xticks(xticks_mstar)
     ax_vc.set_xticklabels(xticks_mstar)
 
-    cax_vc = plt.axes([0.07, 0.17, 0.015, 0.78])
+    cax_vc = plt.axes([0.08, 0.93, 0.383, 0.03])
 
     cmap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap_rend_col)
     cmap.set_array([])
 
-    cb = fig.colorbar(cmap, cax=cax_vc, orientation='vertical')
-    cb.set_label("SFR [M$_\odot$ yr$^{-1}$]", rotation=90., labelpad=-8)
+    cb = fig.colorbar(cmap, cax=cax_vc, orientation='horizontal')
+    cb.set_label("SFR [M$_\odot$ yr$^{-1}$]", rotation=0., labelpad=2)
 
-    cax_vc.yaxis.set_ticks_position('left')
-    cax_vc.yaxis.set_label_position('left')
 
     rel_error_betas = (sigma_betas_down[mask] + sigma_betas_up[mask]) / 2 / beta_means[mask]
     rel_error_mstars = (sigma_mstars_down[mask] + sigma_mstars_up[mask]) / 2 / mstars[mask]
@@ -634,26 +648,59 @@ if plot4:
     a, b = popt
     sigma_a, sigma_b = np.sqrt(pcov.diagonal())
 
-    print("best fit for beta vs mstars: y = ({:.2f}\pm{:.2f}) * x ** ({:.2f}\pm{:.2f})".format(a, sigma_a, b, sigma_b))
+    print("best fit for beta vs mstars: y = ({:.3f}\pm{:.3f}) * x ** ({:.3f}\pm{:.3f})".format(a, sigma_a, b, sigma_b))
     xaxis = np.linspace(0.3, 2.)
 
-    fit, = ax_vc.plot(xaxis, power(xaxis, a, b), color="C0", linestyle="-")
+    fit, = ax_vc.plot(xaxis, power(xaxis, a, b), color="C0", linestyle="-", zorder=5)
 
-    i = 0
-    while i < 50:
-        a_sample = np.random.uniform(low=a - sigma_a, high=a + sigma_a)
-        b_sample = np.random.uniform(low=b - sigma_b, high=b + sigma_b)
+    nsamples = 1000
+    samples = np.zeros((len(xaxis), nsamples))
+    samples_m = np.zeros((len(xaxis), nsamples))
 
-        a_sample_m = np.random.uniform(low=3.6 - 0.2 * 3.6, high=3.6 + 0.2 * 3.6)
-        b_sample_m = np.random.uniform(low=-0.35 - 0.02, high=-0.35 + 0.02)
+    for i in range(nsamples):
+        a_sample, b_sample = np.random.multivariate_normal(popt, pcov)
 
-        ax_vc.plot(xaxis, power(xaxis, a_sample_m, b_sample_m), color="C1", alpha=0.015, linewidth=10.)
-        ax_vc.plot(xaxis, power(xaxis, a_sample, b_sample), color="C0", alpha=0.015, linewidth=5.)
-        i += 1
+        a_sample_m = np.random.normal(loc=3.6, scale=0.2 * 3.6)
+        b_sample_m = np.random.normal(loc=-0.35, scale=  0.02)
 
-    muratov, = ax_vc.plot(xaxis, muratov_fit(xaxis), color="C1", linestyle="-")
+        samples[:,i] = power(xaxis, a_sample, b_sample)
+        samples_m[:,i] = power(xaxis, a_sample_m, b_sample_m)
 
-    ax_vc.legend([fit, muratov], ["This work", "Muratov+15"], loc="lower left")  ##
+
+    power_down, power_up = np.percentile(samples, q=[16.,84.], axis=1 )
+    power_down_m, power_up_m = np.percentile(samples_m, q=[16.,84.], axis=1 )
+
+    ax_vc.fill_between(xaxis, power_down, power_up, color="C0", alpha=0.2, zorder=5)
+
+
+    muratov, = ax_vc.plot(xaxis, muratov_fit(xaxis), color="C1", linestyle="-", zorder=5)
+    ax_vc.fill_between(xaxis, power_down_m, power_up_m, color="C1",alpha=0.2,zorder=5)
+
+
+    rect = ax_vc.add_patch(Rectangle((1.0, 3.), 0.905, 3.,
+                           alpha=0.4, color="gray", zorder=10))
+
+    x_zhang = 10**np.asarray([9.44995996797438,10.058426228162016, 10.637612654225943,11.070697583707991])/1e10
+    y_zhang = np.asarray([4.254666125387688, 5.753213521674106, 8.327819371036297, 29.69797924981155])
+    y_zhang_down = np.asarray([1.5707570729414493, 2.272751265159508, 3.676983741936528, 15.834055117213666])
+    y_zhang_up = np.asarray([6.901355439378382, 8.977859294650495, 13.379491661699028, 49.58919735340449])
+
+    y_zhang_interp = np.interp(xaxis, x_zhang, y_zhang)
+    y_zhang_interp_down = np.interp(xaxis, x_zhang, y_zhang_down)
+    y_zhang_interp_up = np.interp(xaxis, x_zhang, y_zhang_up)
+
+    zhang, = ax_vc.plot(xaxis, y_zhang_interp, color = "orchid", zorder=0)
+    ax_vc.fill_between(xaxis, y_zhang_interp_down, y_zhang_interp_up, color="orchid", alpha=0.15, zorder=0)
+
+
+    ax_vc.legend([fit, muratov,  zhang, rect], ["This work", "Muratov+15",  "Zhang+21", "Herrera-Camus+21"], loc="best", ncol=2)  ##
+
+
+
+
+
+
+
 
     cmap_rend_col = matplotlib.cm.get_cmap('inferno_r')
 
@@ -672,21 +719,22 @@ if plot4:
                     ecolor="gray", linestyle="", barsabove=False, alpha=0.2)
 
     ax_sfr.set_xlabel(r"SFR [M$_\odot$ yr$^{-1}$]")
-    # ax_sfr.set_ylabel("beta")
+    ax_sfr.set_ylabel("$\eta$", labelpad=-1.)
     ax_sfr.set_xscale("log")
     ax_sfr.set_yscale("log")
+    ax_sfr.set_ylim(2.2,15.)
     ax_sfr.set_yticks(yticks)
     ax_sfr.set_yticklabels(yticks)
     ax_sfr.set_xticks(xticks_sfr)
     ax_sfr.set_xticklabels(xticks_sfr)
 
-    cax_sfr = plt.axes([0.9, 0.17, 0.015, 0.78])
+    cax_sfr = plt.axes([0.582, 0.93, 0.383, 0.03])
 
     cmap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap_rend_col)
     cmap.set_array([])
 
-    cb = fig.colorbar(cmap, cax=cax_sfr, orientation='vertical')
-    cb.set_label(r"$v_c^{\mathrm{(vir)}}$ [km s$^{-1}$]", rotation=90., labelpad=2)
+    cb = fig.colorbar(cmap, cax=cax_sfr, orientation='horizontal')
+    cb.set_label(r"$V_c$ [km s$^{-1}$]", rotation=0., labelpad=2)
 
     cmap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap_rend_col)
     cmap.set_array([])
@@ -705,32 +753,36 @@ if plot4:
     a, b = popt
     sigma_a, sigma_b = np.sqrt(pcov.diagonal())
 
-    print("best fit for beta vs sfrs: y = ({:.2f}\pm{:.2f}) * x ** ({:.2f}\pm{:.2f})".format(a, sigma_a, b, sigma_b))
+    print("best fit for beta vs sfrs: y = ({:.3f}\pm{:.3f}) * x ** ({:.3f}\pm{:.3f})".format(a, sigma_a, b, sigma_b))
     xaxis = np.linspace(10., 150.)
 
     ax_sfr.plot(xaxis, power(xaxis, a, b), color="C0", linestyle="-")
 
-    i = 0
-    while i < 100:
-        a_sample = np.random.uniform(low=a - sigma_a, high=a + sigma_a)
-        b_sample = np.random.uniform(low=b - sigma_b, high=b + sigma_b)
+    nsamples = 1000
+    samples = np.zeros((len(xaxis), nsamples))
+    samples_m = np.zeros((len(xaxis), nsamples))
 
-        a_sample_m = np.random.uniform(low=3.6 - 0.2 * 3.6, high=3.6 + 0.2 * 3.6)
-        b_sample_m = np.random.uniform(low=-0.35 - 0.02, high=-0.35 + 0.02)
+    for i in range(nsamples):
+        a_sample, b_sample = np.random.multivariate_normal(popt, pcov)
 
-        ax_sfr.plot(xaxis, power(xaxis, a_sample, b_sample), color="C0", alpha=0.015, linewidth=5.)
-        i += 1
+        samples[:,i] = power(xaxis, a_sample, b_sample)
 
-    ax_sfr.fill_between(xaxis, power(xaxis, a - sigma_a, b - sigma_b), power(xaxis, a + sigma_a, b + sigma_b),
-                        color="C0", alpha=0.1)
+    power_down, power_up = np.percentile(samples, q=[16.,84.], axis=1 )
+    power_down_m, power_up_m = np.percentile(samples_m, q=[16.,84.], axis=1 )
 
-    plt.subplots_adjust(left=0.16,  # the left side of the subplots of the figure
-                        right=0.885,  # the right side of the subplots of the figure
-                        bottom=0.17,  # the bottom of the subplots of the figure
-                        top=0.95,  # the top of the subplots of the figure
-                        wspace=0.05,  # the amount of width reserved for space between subplots,
+    ax_sfr.fill_between(xaxis, power_down, power_up,
+                        color="C0", alpha=0.2)
+
+    plt.subplots_adjust(left=0.08,  # the left side of the subplots of the figure
+                        right=0.97,  # the right side of the subplots of the figure
+                        bottom=0.15,  # the bottom of the subplots of the figure
+                        top=0.8,  # the top of the subplots of the figure
+                        wspace=0.3,  # the amount of width reserved for space between subplots,
                         # expressed as a fraction of the average axis width
                         hspace=0.1)  # the amount of height reserved for space between subplots,
     # expressed as a fraction of the average axis height
+
+
+
 
     plt.show()

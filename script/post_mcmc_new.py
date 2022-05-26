@@ -12,6 +12,7 @@ from scipy.interpolate import interp1d
 import corner
 import emcee
 import itertools
+from collections import namedtuple
 
 
 import plot_config as pltc
@@ -20,15 +21,15 @@ import natconst as nc
 
 from load_data_updated import obs_data_list, names, names_CII_halo, observational_data_fuji
 
-loading_from_cluster = True
+loading_from_cluster = False
 plot_logprob = False
 model = "old"
 
-plot1 = True #chains
+plot1 = False #chains
 plot2 = True #corners
-plot3 = True #emission
+plot3 = False #emission
 
-thin = 100
+thin = 1
 discard = 1
 
 
@@ -193,6 +194,25 @@ if plot2:
         if i == 3:
             ax.set_xlim(-500, 100)
 
+        summary = namedtuple('summary', ['median', 'lower', 'upper', 'string'])
+        quantiles = kwargs['quantiles']
+        quants_to_compute = np.array([quantiles[0], 0.5, quantiles[2]])
+        quants = np.percentile(samples_flat.T[i], quants_to_compute * 100)
+        summary.median = quants[1]
+        summary.plus = quants[2]
+        summary.minus = quants[0]
+
+        if i == 0:
+            ax.set_title(r"$ %.2f_{-%.2f}^{+%.2f} $ " % (10**summary.median, 10**summary.median-10**summary.minus, 10**summary.plus-10**summary.median))
+
+        if i == 1:
+            ax.set_title(r"$ %.2f_{-%.2f}^{+%.2f}" %  (10**summary.median, 10**summary.median-10**summary.minus, 10**summary.plus-10**summary.median))
+
+
+        if i == 2:
+            ax.set_title(
+                r"$ %.2f_{-%.2f}^{+%.2f} " % (10**summary.median, 10**summary.median-10**summary.minus, 10**summary.plus-10**summary.median))
+
     # Loop over the histograms
     for yi in range(naxes):
         for xi in range(yi):
@@ -218,8 +238,8 @@ if plot2:
                 if yi == 2:
                     ax.set_ylim(2., 2.6)
 
-    fig.suptitle("{0:}, v_c = {1:.1f} km/s, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"],
-                                                                  data.params_obs["SFR"]))
+    #fig.suptitle("{0:}, v_c = {1:.1f} km/s, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"],
+    #                                                              data.params_obs["SFR"]))
 
     plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "corner_{}.png".format(filename)))
 
@@ -265,6 +285,7 @@ if plot3:
     alpine = ax_int_conv.errorbar(data.x / (1000 * nc.pc), data.data, yerr=data.err, \
                                   markerfacecolor='maroon', markeredgecolor='maroon', marker='o', \
                                   linestyle='', ecolor='maroon')
+
 
     fig_int_conv.suptitle(
         "{0:}, v_c = {1:.1f} km/s, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"],

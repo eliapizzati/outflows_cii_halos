@@ -10,6 +10,7 @@ import numpy as np
 from astropy.io import fits
 from astropy.table import Table
 import matplotlib.pyplot as plt
+import plot_config
 
 from astropy.io import fits
 from astropy.table import Table
@@ -33,7 +34,7 @@ ALPINE
 #define the input file
 
 
-names = ["DEIMOS_COSMOS_351640", "DEIMOS_COSMOS_396844", "DEIMOS_COSMOS_416105", "DEIMOS_COSMOS_488399",\
+names = ["DEIMOS_COSMOS_351640", "DEIMOS_COSMOS_396844", "DEIMOS_COSMOS_416105", #"DEIMOS_COSMOS_488399",\
          "DEIMOS_COSMOS_494057", "DEIMOS_COSMOS_494763", "DEIMOS_COSMOS_539609", "DEIMOS_COSMOS_630594",\
          "DEIMOS_COSMOS_683613", "DEIMOS_COSMOS_709575", "DEIMOS_COSMOS_733857", "DEIMOS_COSMOS_834764",#"DEIMOS_COSMOS_848185",\
          "DEIMOS_COSMOS_880016", "DEIMOS_COSMOS_881725", #"vuds_cosmos_510596653",\
@@ -42,7 +43,7 @@ names = ["DEIMOS_COSMOS_351640", "DEIMOS_COSMOS_396844", "DEIMOS_COSMOS_416105",
          "vuds_cosmos_5110377875", "vuds_efdcs_530029038"]
 
 
-names_CII_halo = ["DEIMOS_COSMOS_396844", "DEIMOS_COSMOS_494057", "DEIMOS_COSMOS_630594", "DEIMOS_COSMOS_683613",\
+names_CII_halo = ["DEIMOS_COSMOS_396844","DEIMOS_COSMOS_494057", "DEIMOS_COSMOS_630594", "DEIMOS_COSMOS_683613",\
                   "DEIMOS_COSMOS_880016", "DEIMOS_COSMOS_881725",  #"DEIMOS_COSMOS_488399"
                   "vuds_cosmos_5100537582", "vuds_cosmos_5110377875"]
 
@@ -53,7 +54,7 @@ names_other = ["DEIMOS_COSMOS_494057", "DEIMOS_COSMOS_494763", "DEIMOS_COSMOS_83
                "vuds_cosmos_5100969402", "vuds_cosmos_5100994794", "vuds_efdcs_530029038"]
 
 
-names_short = ["DC_351640", "DC_396844", "DC_416105", "DC_488399",\
+names_short = ["DC_351640", "DC_396844", "DC_416105", #"DC_488399",\
          "DC_494057", "DC_494763", "DC_539609", "DC_630594",\
          "DC_683613", "DC_709575", "DC_733857", "DC_834764",#"DC_848185",\
          "DC_880016", "DC_881725", #"vc_510596653",\
@@ -91,7 +92,7 @@ if __name__ == "__main__":
     ax_tot.set_ylim(1e-7,1e1)
     ax_tot.set_yscale("log")
     
-    plt_star, ax_star = plt.subplots()
+    fig_star, ax_star = plt.subplots()
 
 
 
@@ -129,7 +130,7 @@ halo_masses_lim_down_fine = np.interp(stellar_masses_fine, stellar_masses, halo_
 if __name__ == "__main__":
     if latex == True:
         print("\hline")
-        print("Name  ", "&", "redshift   ", "&",  "\mathrm{SFR} [$\msun\,\mathrm{yr}^{-1}$]  ", "&", "$M_\mathrm{star}$ [$10^{10}\,\msun$])   ",\
+        print("Name  ", "&", "redshift   ", "&",  "\mathrm{SFR} [$\msun\,\mathrm{yr}^{-1}$]  ", "&", "$M_\mathrm{star}$ [$10^{9}\,\msun$])   ",\
              "&", "M_{vir} [$10^{11}\,\msun$]    ","&", "$v_c$ [$\kms$]  ")
         print("\hline")
         print("\hline")
@@ -250,9 +251,13 @@ for name, name_short in zip(names_CII_halo, names_CII_halo_short):
         #observational_data.plot()
         observational_data.plot(ax=ax_tot)
         #observational_data.print_values()
+        if name in names_CII_halo:
+            ax_star.scatter(log_M_star-10, log_SFR, color = "C0")
+        elif name in names_wo_CII_halo:
+            ax_star.scatter(log_M_star-10, log_SFR, color = "C1")
+        elif name in names_other:
+            ax_star.scatter(log_M_star-10, log_SFR, color = "C2")
 
-        ax_star.scatter(log_M_star, log_SFR)
-        
         if latex == True:
             print("{0:}    &    {1:.2f} \pm{14:}   &    {2:.0f}^+{3:.0f}_{4:.0f}    &   {5:.1f}^+{6:.1f}_{7:.1f}   &   {8:.1f}^+{9:.1f}_{10:.1f}    &   {11:.0f}^+{12:.0f}_{13:.0f}".\
                   format(name_short, redshift, 10**log_SFR,10**log_SFR_lim_up-10**log_SFR, 10**log_SFR-10**log_SFR_lim_down,\
@@ -264,8 +269,37 @@ for name, name_short in zip(names_CII_halo, names_CII_halo_short):
               "\t", round(10**log_M_star/1e10, 3),"\t", round(M_halo/1e11,3), "\p", round(M_halo_lim_up/1e11,3), "\m", round(M_halo_lim_down/1e11,3),\
               "\t", round(redshift,2), "\t", round(v_c/1e5,1), "\p", round(v_c_lim_up/1e5), "\m",  round(v_c_lim_down/1e5), halo_class)
 
-        
-plt.show()
+if __name__ == "__main__":
+    ax_star.set_ylabel("log SFR")
+    ax_star.set_xlabel("log M_star / 1e10")
+    ax_star.set_ylim(0.2,2.6)
+    ax_mstar = np.linspace(-1.5,1,100)
+
+    alpha_sfr = -0.263
+    alpha_mstar = -0.360
+    beta_sfr = 14.241
+    beta_mstar = 4.881
+
+
+    # alpha_sfr = -0.298
+    # alpha_mstar = -0.394
+    # beta_sfr = 19.64
+    # beta_mstar = 5.718
+
+    alpha = alpha_mstar/alpha_sfr
+    beta =  (-1./alpha_sfr)*np.log10(beta_sfr/beta_mstar)
+    ax_star.plot(ax_mstar, alpha*ax_mstar + beta  , color="gray")
+    ax_star.fill_between(ax_mstar, (alpha-0.7)*ax_mstar + beta - 1., (alpha+0.7)*ax_mstar + beta + 1., alpha=0.2,color="gray")
+    for i, eta in enumerate([2.,3.,4.,5.,6.,7.,8.,10.,12.,15.]):
+
+        M = (1./alpha_mstar) * (np.log10(eta) - np.log10(beta_mstar))
+        sfr = (1./alpha_sfr) * (np.log10(eta) - np.log10(beta_sfr))
+
+        ax_star.scatter(M, sfr, color = "gray")
+        ax_star.annotate(eta, (M+0.05, sfr), color = "gray")
+
+    fig_star.tight_layout()
+    plt.show()
 
 #
 

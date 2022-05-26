@@ -319,4 +319,5 @@ def get_vc_from_virial_mass(M_vir, z):
     return np.sqrt(nc.gg*M_vir*nc.ms/R_vir)
 
 
-
+#print(mstar_behroozi(6.8e11, z=4.55)/1e10)
+#print(get_vc_from_virial_mass(6.8e11, z=4.55)/1e5)
