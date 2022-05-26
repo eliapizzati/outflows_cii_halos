@@ -117,7 +117,7 @@ def get_ionization_states(profiles, params):
             
 
 
-def get_surface_density(profiles, ionization_states, params, add_CMB_suppression=False, h_resol = 1000, rmax=15.):
+def get_surface_density(profiles, ionization_states, params, add_CMB_suppression=False, h_resol = 500, rmax=30.):
     """
     computes the surface density predicted by the model; 
     

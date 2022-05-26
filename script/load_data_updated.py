@@ -43,6 +43,11 @@ names_CII_halo = ["DEIMOS_COSMOS_396844", #"DEIMOS_COSMOS_494057",
                   "DEIMOS_COSMOS_880016", "DEIMOS_COSMOS_881725",  # "DEIMOS_COSMOS_488399"
                   "vuds_cosmos_5100537582", "vuds_cosmos_5110377875"]
 
+
+names_wo_CII_halo = ["DEIMOS_COSMOS_351640", "DEIMOS_COSMOS_416105", "DEIMOS_COSMOS_539609", \
+                     "DEIMOS_COSMOS_709575", "DEIMOS_COSMOS_733857"]#"vuds_cosmos_510596653",
+
+
 names_short = ["DC_351640", "DC_396844", "DC_416105", "DC_488399", \
                "DC_494057", "DC_494763", "DC_539609", "DC_630594", \
                "DC_683613", "DC_709575", "DC_733857", "DC_834764",  # "DC_848185",\
@@ -57,13 +62,14 @@ names_CII_halo_short = ["DC_396844", #"DC_494057",
 
 
 
-SFRs_IR = np.asarray([40., 0., 102., 0., 91., 0., 0.])
+names_wo_CII_halo_short = ["DC_351640", "DC_416105", "DC_539609", \
+                     "DC_709575", "DC_733857"]#"vc_510596653",
 
-SFRs_IR_err_up = np.asarray([73., 0., 206., 0., 172., 0., 0.])
-
-SFRs_IR_err_down = np.asarray([21., 0., 68., 0., 72., 0., 0.])
 
 obs_data_list = []
+
+obs_data_list_non_det = []
+
 
 latex = True
 
@@ -122,11 +128,11 @@ if __name__ == "__main__":
         print("name", "\t", "SFR", "\t", "Mstar(1e10)", "\t", "Mhalo(1e11)", "\t", "redshift", "\t", "v_c(1e5)")
         print("######################################################")
 
-for name, name_short, SFR_IR, SFR_IR_err_down, SFR_IR_err_up in \
-        zip(names_CII_halo, names_CII_halo_short, SFRs_IR, SFRs_IR_err_down, SFRs_IR_err_up):
+for name, name_short in \
+        zip(names, names_short):
 
     L_CII = evt_data[evt_data["name"] == name]["LCII"][0]
-    print(L_CII / 1e8)
+    L_CII_err = evt_data[evt_data["name"] == name]["unc_LCII"][0]
     redshift = evt_data[evt_data["name"] == name]["zCII"][0]
     sigma_redshift = evt_data[evt_data["name"] == name]["unc_zCII"][0]
     CII_FWHM = evt_data[evt_data["name"] == name]["CII_FWHM"][0]
@@ -191,14 +197,18 @@ for name, name_short, SFR_IR, SFR_IR_err_down, SFR_IR_err_up in \
 
     if name in names_CII_halo:
         halo_class = "CII_halo"
+    elif name in names_wo_CII_halo:
+        halo_class = "wo_CII_halo"
     else:
-        print(name)
-        raise ValueError("No correct halo class")
+        halo_class = "other"
 
     params_obs = dict([("name", name),
                        ("name_short", name_short),
                        ("halo_class", halo_class),
                        ("redshift", redshift),
+                       ("luminosity_CII", L_CII),
+                       ("luminosity_CII_err_up", L_CII_err),
+                       ("luminosity_CII_err_down", L_CII_err),
                        ("line_FWHM", CII_FWHM * nc.km),
                        ("M_star", 10 ** log_M_star),
                        ("M_star_err_up", 10 ** log_M_star_lim_up - 10 ** log_M_star),
@@ -229,7 +239,10 @@ for name, name_short, SFR_IR, SFR_IR_err_down, SFR_IR_err_up in \
     observational_data = obs_data(x_data=fuji_x, y_data=fuji_y, x_beam=beam_x, y_beam=beam_y, err=err,
                                   params_obs=params_obs)
 
-    obs_data_list.append(observational_data)
+    if name in names_CII_halo:
+        obs_data_list.append(observational_data)
+    elif name in names_wo_CII_halo:
+        obs_data_list_non_det.append(observational_data)
 
     if __name__ == "__main__":
         # observational_data.plot()

@@ -42,6 +42,7 @@ Zeta = 1
 
 epsilon = 7.9e-20 * n ** 2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII * np.exp(-92. / T) / 92. ** 0.5
 print(epsilon)
+
 cos_thetas = np.linspace(-1.,1., 1000)
 delta_cos_theta = cos_thetas[1] - cos_thetas[0]
 

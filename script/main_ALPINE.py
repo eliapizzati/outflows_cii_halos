@@ -80,19 +80,19 @@ for data in datas:
         print("#####################")
         print(data.params_obs["name"], "(number {})".format(data_counter) )
         print("#####################")
-    
         params = dict([("DM_model", "NFW+disk"),
-                   ("beta", 1.0), 
+                   ("beta", 1.0),
                    ("SFR", data.params_obs["SFR"]),
-                   ("f_esc_ion", f_esc_ion), 
-                   ("f_esc_FUV", f_esc_FUV), 
+                   ("f_esc_ion", f_esc_ion),
+                   ("f_esc_FUV", f_esc_FUV),
                    ("v_c", data.params_obs["v_c"]),
                    #("M_vir", data.params_obs["M_vir"]),
                    ("redshift", data.params_obs["redshift"]),
                    ("Zeta", 1.0),
                    ("alfa", 1.0),
-                   ("R_in", 0.3)])    
-        
+                   ("R_in", 0.3)])
+
+
         time_start = time.perf_counter()
     
         if plot_hydro:

@@ -26,8 +26,9 @@ plot_logprob = False
 model = "old"
 
 plot1 = False #chains
-plot2 = True #corners
+plot2 = False #corners
 plot3 = False #emission
+plot4 = True #luminodity
 
 thin = 1
 discard = 1
@@ -38,8 +39,8 @@ nsteps = int(input("number of steps?"))
 
 
 
-sample_step = int(20 * (nsteps / 10000))
-walker_step = int(6 * (nwalkers / 48))
+sample_step = int(100 * (nsteps / 1000))
+walker_step = int(20 * (nwalkers / 48))
 
 int_data = int(input("data number?"))
 data = obs_data_list[int_data]
@@ -295,6 +296,71 @@ if plot3:
 
     plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "emission_{}.png".format(filename)))
 
+
+
+if plot4:
+    """
+    PLOT3 - luminodity
+    """
+
+    from mcmc_new import get_emission_fast, get_other_params
+    from mcmc_new import h, grid
+
+    other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"])
+
+    beam_interp = np.interp(h, data.x_beam / 1e3 / nc.pc, data.beam, right=0.)
+
+    beam_interp[beam_interp < 0.] = 0.
+
+    beam_func = interp1d(h, beam_interp, \
+                         fill_value=(beam_interp[0], 0.), bounds_error=False)
+
+    beam_2d = beam_func(np.sqrt(grid[0] ** 2 + grid[1] ** 2))
+    f_beam = np.fft.fft2(beam_2d)
+
+    fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=15)
+
+    ax_int_conv.set_ylim((1e-3, 1e2))
+
+    luminosities = []
+
+    counter = 0
+    for walker in samples[::sample_step]:
+        for theta in walker[::walker_step]:
+            counter += 1
+            print("computing emission for theta =", theta, "\t", "iteration number {}/{}" \
+                  .format(counter, int(nsteps * nwalkers / sample_step / walker_step / thin)))
+
+            # if theta[0]>1.15:# and theta[1]>50.:
+
+            intensity, sigma = get_emission_fast(theta, data, other_params, h, grid, f_beam, return_sigma=True)
+
+            h_ext = np.linspace(0, np.max(h), 100)
+            sigma_ext = np.interp(h_ext, h, sigma)
+            luminosity_cii = np.trapz(sigma_ext * 2 * np.pi * h_ext * nc.pc * 1e3, h_ext * nc.pc * 1e3)
+
+            ax_int_conv.plot(h, intensity, alpha=0.1, color="gray")
+
+            luminosities.append(luminosity_cii/nc.ls)
+
+    luminosities = np.asarray(luminosities)
+
+    alpine = ax_int_conv.errorbar(data.x / (1000 * nc.pc), data.data, yerr=data.err, \
+                                  markerfacecolor='maroon', markeredgecolor='maroon', marker='o', \
+                                  linestyle='', ecolor='maroon')
+
+    fig_int_conv.suptitle(
+        "{0:}, v_c = {1:.1f} km/s, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"],
+                                                         data.params_obs["SFR"]))
+
+    fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
+
+    plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "emission_{}.png".format(filename)))
+
+    print(luminosities)
+    print("model lum",np.percentile(luminosities/1e9, [18,50,84])[1], np.percentile(luminosities/1e9, [18,50,84])[1]-np.percentile(luminosities/1e9, [18,50,84])[0],
+          np.percentile(luminosities/1e9, [18,50,84])[2]-np.percentile(luminosities/1e9, [18,50,84])[1])
+    print("data lum", data.params_obs["luminosity_CII"]/1e9,  data.params_obs["luminosity_CII_err_up"]/1e9, data.params_obs["luminosity_CII_err_down"]/1e9)
 
 if not loading_from_cluster:
     plt.show()

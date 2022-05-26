@@ -136,7 +136,7 @@ theta : log_beta, SFR, v_c
 """
 
 
-def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp=False, print_time_total=False):
+def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp=False, print_time_total=False, return_sigma=False):
     if print_time_total:
         t_total = time.perf_counter()
 
@@ -154,6 +154,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     R_in_pure = 0.3
     alfa = 1.
     mus = 0.61
+    pc = 3.08572e18
 
     Plw = other_params["Plw"]
     Ph1 = other_params["Ph1"]
@@ -238,6 +239,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     n = n_cm3  # in cm-3
     T = T_K  # in K
 
+
     # print("profiles nans =", np.isnan(np.sum(v+n+T)))
 
     # ionization part
@@ -278,12 +280,13 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
 
     # emission part
 
-    if model == "old":
-        epsilon = 7.9e-20 *  n**2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII * np.exp(-92./T) /  92.**0.5
-    elif model == "new":
-        epsilon = 7.9e-20 * n ** 2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII * T ** (-0.5) * np.exp(-92. / T)
-    else:
-        raise ValueError("no correct input model")
+    epsilon = 7.9e-20 * n ** 2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII * np.exp(-92. / T) / 92. ** 0.5
+
+    #if model == "old":
+    #elif model == "new":
+    #    epsilon = 7.9e-20 * n ** 2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII * T ** (-0.5) * np.exp(-92. / T)
+    #else:
+    #    raise ValueError("no correct input model")
 
     C_ul_e = 8.63e-6 / 2. / np.sqrt(T) * 1.60
     C_ul_H = 20. * 1e-10 / 1.3
@@ -299,12 +302,12 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
 
     T_spin = nc.T_star / np.log(num / den)
 
-    if model == "old":
-        eta = 1. - (np.exp(nc.hh*nc.line_CII_rest_frame / (nc.kk*(1.+redshift)*T_spin)) - 1.) /\
+    #if model == "old":
+    eta = 1. - (np.exp(nc.hh*nc.line_CII_rest_frame / (nc.kk*(1.+redshift)*T_spin)) - 1.) /\
                (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+redshift)**2*nc.CMB_temperature)) - 1.)
-    elif model == "new":
-        eta = 1. - (np.exp(nc.hh * nc.line_CII_rest_frame / (nc.kk * (T_spin))) - 1.) / \
-              (np.exp((nc.hh * nc.line_CII_rest_frame) / (nc.kk * (1. + redshift) * nc.CMB_temperature)) - 1.)
+ #   elif model == "new":
+ #       eta = 1. - (np.exp(nc.hh * nc.line_CII_rest_frame / (nc.kk * (T_spin))) - 1.) / \
+ #             (np.exp((nc.hh * nc.line_CII_rest_frame) / (nc.kk * (1. + redshift) * nc.CMB_temperature)) - 1.)
 
     epsilon *= eta
 
@@ -317,6 +320,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
             epsilon[r_kpc > el_h] * nc.pc * 1e3 * r_kpc[r_kpc > el_h] / np.sqrt((r_kpc[r_kpc > el_h]) ** 2 - el_h ** 2),
             r_kpc[r_kpc > el_h])
         sigma_CII[i_h] = 2. * integral
+
 
     # transforming sigma to the intensity
 
@@ -336,7 +340,6 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
                            fill_value=(intensity_raw[0], 0.), bounds_error=False)
 
     profile_2d = intraw_func(np.sqrt(grid[0] ** 2 + grid[1] ** 2))
-    f_imag = np.fft.fft2(profile_2d)
 
     # makes the 2dfft
 
@@ -361,8 +364,11 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
         time_total = (time.perf_counter() - t_total)
         logging.info("total time (s)={}".format(time_total))
 
-    return intensity_convolved
+    if return_sigma:
+        return intensity_convolved, sigma_CII, n, r_kpc
 
+    else:
+        return intensity_convolved
 
 def log_likelihood(theta, data, other_params, h, grid, f_beam):
     intensity_convolved = get_emission_fast(theta, data, other_params, h, grid, f_beam)
