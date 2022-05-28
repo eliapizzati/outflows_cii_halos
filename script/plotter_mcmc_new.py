@@ -26,6 +26,10 @@ from load_data_updated import obs_data_list
 from mcmc_new import get_emission_fast, get_other_params
 from mcmc_new import h, grid
 
+
+for data in obs_data_list:
+    print(data.params_obs["name"])
+
 matplotlib.rcParams.update({
     "font.size": 16.0,
     "font.family": 'sans-serif',
@@ -59,12 +63,12 @@ nwalkers = 48
 nsteps = 1000
 thin = 1
 discard = 1
-sample_step = int(8 * (nsteps / 1e3))
+sample_step = int(800 * (nsteps / 1e3))
 walker_step = int(12 * (nwalkers / 48))
 
-data = obs_data_list[1]
+data = obs_data_list[6]
 
-string = "results for""\n""DC630594"
+string = "results for""\n""VC5110377875"
 
 params = dict([("DM_model", "NFW"),
                ("beta", 1.0),
@@ -265,7 +269,7 @@ if plot2:
 
     # filename = "{}_{:.0f}_final".format(data.params_obs["name_short"], nsteps)
     filename = "{}_{:.0f}_updated_{}".format(data.params_obs["name_short"], nsteps, model)
-
+    print(filename)
     path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
 
     reader = emcee.backends.HDFBackend(path)
@@ -289,7 +293,7 @@ if plot2:
         bins=50, smooth=0.9, labels=labels, label_kwargs=dict(labelpad=0),
         # title_kwargs=dict(fontsize=14),
         color='#0072C1',
-        truth_color='C3', quantiles=[0.16, 0.5, 0.84],
+        truth_color='C3', quantiles=[0.5],
         levels=(1 - np.exp(-0.5), 1 - np.exp(-2), 1 - np.exp(-9 / 2.)),
         plot_density=False, plot_datapoints=True, fill_contours=True,
         max_n_ticks=3)
@@ -310,10 +314,17 @@ if plot2:
                  data.params_obs["log_v_c"] - data.params_obs["log_v_c_err_down"], None]
 
 
+
     # Loop over the diagonal
     for i in range(naxes):
 
+        quants_to_compute = np.array([0.16, 0.5, 0.84])
+        quants = np.percentile(samples_flat.T[i], quants_to_compute * 100)
+        print(samples_flat.T[i])
         ax = axes[i, i]
+
+        ax.axvspan(quants[0], quants[2], alpha=0.2, color='C0')
+
         if i == 1 or i == 2:
             ax.axvline(true_values[i], color=kwargs["truth_color"], linestyle='--', linewidth=1.3)
             ax.axvspan(err_downs[i], err_ups[i], alpha=0.2, color='red')
@@ -349,7 +360,7 @@ if plot2:
     fig.text(0.705, 0.825, string, \
              fontsize=16, bbox={'facecolor': 'lightgray', 'alpha': 0.8, \
                                 'boxstyle': "round", 'edgecolor': 'none', 'pad': 0.5}, \
-             horizontalalignment='center', verticalalignment='center')
+             horizontalalignment='center', verticalalignment='center', linespacing=1.6)
 
     # fig.text(0.71, 0.77, "{}".format(data.params_obs["name_short"]), ha='center', size=19)
 
@@ -503,9 +514,10 @@ if plot4:
     datas = []
     names_plot = []
 
-    for data in obs_data_list:
+    for data in obs_data_list[::]:
         datas.append(data)
         names_plot.append(data.params_obs["name_short"])
+        print(data.params_obs["name"])
 
 
     log_betas = []
@@ -618,7 +630,7 @@ if plot4:
     xticks_sfr = [10., 20., 50., 100.]
 
     # ax.set_ylim(1.3,6.0)
-    ax_vc.set_xlabel(r"M$_{\star}$ [10$^{10}$ M$_\odot$]")
+    ax_vc.set_xlabel(r"M$_*$ [10$^{10}$ M$_\odot$]")
     ax_vc.set_ylabel("$\eta$", labelpad=-4.)
     ax_vc.set_xscale("log")
     ax_vc.set_yscale("log")
@@ -685,22 +697,15 @@ if plot4:
     y_zhang_down = np.asarray([1.5707570729414493, 2.272751265159508, 3.676983741936528, 15.834055117213666])
     y_zhang_up = np.asarray([6.901355439378382, 8.977859294650495, 13.379491661699028, 49.58919735340449])
 
-    y_zhang_interp = np.interp(xaxis, x_zhang, y_zhang)
-    y_zhang_interp_down = np.interp(xaxis, x_zhang, y_zhang_down)
-    y_zhang_interp_up = np.interp(xaxis, x_zhang, y_zhang_up)
+    #y_zhang_interp = np.interp(xaxis, x_zhang, y_zhang)
+    #y_zhang_interp_down = np.interp(xaxis, x_zhang, y_zhang_down)
+    #y_zhang_interp_up = np.interp(xaxis, x_zhang, y_zhang_up)
 
-    zhang, = ax_vc.plot(xaxis, y_zhang_interp, color = "orchid", zorder=0)
-    ax_vc.fill_between(xaxis, y_zhang_interp_down, y_zhang_interp_up, color="orchid", alpha=0.15, zorder=0)
-
-
-    ax_vc.legend([fit, muratov,  zhang, rect], ["This work", "Muratov+15",  "Zhang+21", "Herrera-Camus+21"], loc="best", ncol=2)  ##
+    #zhang, = ax_vc.plot(xaxis, y_zhang_interp, color = "orchid", zorder=0)
+    #ax_vc.fill_between(xaxis, y_zhang_interp_down, y_zhang_interp_up, color="orchid", alpha=0.15, zorder=0)
 
 
-
-
-
-
-
+    ax_vc.legend([fit, muratov, rect], ["This work", "Muratov+15", "Herrera-Camus+21"], loc="best", ncol=2)  ##
 
     cmap_rend_col = matplotlib.cm.get_cmap('inferno_r')
 

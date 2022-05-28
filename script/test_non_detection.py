@@ -8,7 +8,6 @@ import itertools
 from scipy.interpolate import interp1d
 from collections import namedtuple
 
-
 import plot_config as pltc
 import mydir
 import natconst as nc

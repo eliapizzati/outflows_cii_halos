@@ -136,7 +136,7 @@ theta : log_beta, SFR, v_c
 """
 
 
-def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp=False, print_time_total=False, return_sigma=False):
+def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp=False, print_time_total=False, return_quantities=None):
     if print_time_total:
         t_total = time.perf_counter()
 
@@ -302,9 +302,9 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
 
     T_spin = nc.T_star / np.log(num / den)
 
-    #if model == "old":
     eta = 1. - (np.exp(nc.hh*nc.line_CII_rest_frame / (nc.kk*(1.+redshift)*T_spin)) - 1.) /\
                (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+redshift)**2*nc.CMB_temperature)) - 1.)
+ #if model == "old":
  #   elif model == "new":
  #       eta = 1. - (np.exp(nc.hh * nc.line_CII_rest_frame / (nc.kk * (T_spin))) - 1.) / \
  #             (np.exp((nc.hh * nc.line_CII_rest_frame) / (nc.kk * (1. + redshift) * nc.CMB_temperature)) - 1.)
@@ -364,11 +364,14 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
         time_total = (time.perf_counter() - t_total)
         logging.info("total time (s)={}".format(time_total))
 
-    if return_sigma:
-        return intensity_convolved, sigma_CII, n, r_kpc
-
-    else:
+    if return_quantities == "all":
+        return intensity_convolved, sigma_CII, r_kpc, n, v, T
+    elif return_quantities == "emission":
+        return intensity_convolved, sigma_CII
+    elif return_quantities == "mcmc_int" or return_quantities == None:
         return intensity_convolved
+    else:
+        raise ValueError("no correct return quantities")
 
 def log_likelihood(theta, data, other_params, h, grid, f_beam):
     intensity_convolved = get_emission_fast(theta, data, other_params, h, grid, f_beam)

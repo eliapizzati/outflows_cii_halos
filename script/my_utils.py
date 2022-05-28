@@ -13,6 +13,8 @@ import natconst as nc
 
 import mydir
 
+from scipy import optimize
+
 from astropy.cosmology import Planck15 as cosmo
 
 input_filename_behroozi = os.path.join(mydir.script_dir, "input_data", "behroozi_z_5.dat")
@@ -67,6 +69,16 @@ def mstar_behroozi(M_vir, z=5.0):
                                                                                                            delta=delta)
 
     return 10**out
+
+
+def mvir_behroozi(M_star, z=5.0):
+
+    def zero_me(x, M_star):
+        return M_star - mstar_behroozi(x, z=5.)
+
+    mvir = optimize.newton(zero_me, x0=15 * M_star, args=(M_star,), maxiter=500, tol=1.)
+
+    return mvir
 
 
 def sersic(r, r_e, sersic_index, central):
@@ -319,5 +331,33 @@ def get_vc_from_virial_mass(M_vir, z):
     return np.sqrt(nc.gg*M_vir*nc.ms/R_vir)
 
 
-#print(mstar_behroozi(6.8e11, z=4.55)/1e10)
-#print(get_vc_from_virial_mass(6.8e11, z=4.55)/1e5)
+def from_xfitted_to_eta(x, a_fit, b_fit):
+    """
+
+    Parameters
+    ----------
+    x:
+    a_fit
+    b_fit
+
+    Returns
+    -------
+
+    """
+    return 10**(b_fit*np.log10(x) + np.log10(a_fit))
+
+
+def from_eta_to_xfitted(eta, a_fit, b_fit):
+    """
+
+    Parameters
+    ----------
+    eta:
+    a_fit
+    b_fit
+
+    Returns
+    -------
+
+    """
+    return 10 ** ((np.log10(eta) - np.log10(a_fit))/ b_fit)
