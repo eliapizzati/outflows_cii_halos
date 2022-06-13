@@ -37,8 +37,9 @@ matplotlib.rcParams.update({
 })
 
 
-plot1 = False #single dependence
-plot2 = True #multiple dependencies
+plot1 = True #single dependence
+plot2 = False #multiple dependencies
+plot3 = False #multiple dependencies w alpha
 
 
 int_data = 0#int(input("data number?"))
@@ -128,6 +129,7 @@ ax_T.set_xscale('log')
 ax_T.set_yscale('log')
 
 # INIT PHASE
+alfa0 = 1.
 
 mstar0 = 1e10
 
@@ -145,7 +147,7 @@ params0 = np.asarray([np.log10(eta0), np.log10(sfr0), np.log10(vc0)])
 print(eta0, sfr0, vc0)
 
 intensity0, sigma0, r0, n0, v0, T0 = get_emission_fast(params0, data, other_params, h, grid, f_beam,
-                                                       return_quantities="all")
+                                                       return_quantities="all", alfa=alfa0)
 
 qsigma, = ax_sigma.plot(h, sigma0, lw=2, color='C0', linestyle="-")
 qsigma0 = ax_sigma.plot(h, sigma0, lw=2, color='gray', linestyle="--")
@@ -266,6 +268,60 @@ if plot2:
     s_eta.on_changed(update)
     s_sfr.on_changed(update)
     #s_vc.on_changed(update)
+    s_mstar.on_changed(update)
+
+    plt.show()
+
+
+if plot3:
+    "multiple deps w alpha"
+
+    # SLIDERS
+
+    axcolor = 'lightgoldenrodyellow'
+
+    #
+    #
+    axalpha = plt.axes([0.12, 0.0625, 0.45, 0.01], facecolor=axcolor)
+    axeta = plt.axes([0.12, 0.045, 0.45, 0.01], facecolor=axcolor)
+    axsfr = plt.axes([0.12, 0.0275, 0.45, 0.01], facecolor=axcolor)
+    axmstar = plt.axes([0.12, 0.01, 0.45, 0.01], facecolor=axcolor)
+
+
+    bounds = [(0.1, 10.), (10., 150.), (100., 300.)]
+
+    s_alpha = Slider(axalpha, 'alpha', 0.05, 2., valinit=alfa0, valstep=0.05)
+    s_eta = Slider(axeta, r"eta", bounds[0][0], bounds[0][1], valinit=eta0, valstep=0.1)
+    s_sfr = Slider(axsfr, 'SFR', bounds[1][0], bounds[1][1], valinit=sfr0, valstep=5.)
+    s_mstar = Slider(axmstar, 'log mstar', 8., 12., valinit=np.log10(mstar0), valstep=0.01)
+
+
+    def update(val):
+        mstar = 10 ** (s_mstar.val)
+        alfa = s_alpha.val
+        eta = s_eta.val
+        sfr = s_sfr.val
+        mvir = my_utils.mvir_behroozi(mstar, z=5.)
+        vc = my_utils.get_vc_from_virial_mass(mvir, z=5.) / 1e5
+
+        params = np.asarray([np.log10(eta), np.log10(sfr), np.log10(vc)])
+
+        intensity, sigma, r, n, v, T = get_emission_fast(params, data, other_params, h, grid, f_beam,
+                                                         return_quantities="all", alfa=alfa)
+
+        qsigma.set_ydata(sigma)
+        qint.set_ydata(intensity)
+        qn.set_ydata(np.interp(r_axis, r, n, left=0., right=0.))
+        qv.set_ydata(np.interp(r_axis, r, v / 1e8, left=0., right=0.))
+        qT.set_ydata(np.interp(r_axis, r, T, left=0., right=0.))
+
+        text.set_text(f'eta ={eta:.2f}   SFR = {sfr:.0f}Msun/yr   vc = {vc:.0f}kms')
+
+        print(eta, sfr, vc)
+
+    s_alpha.on_changed(update)
+    s_eta.on_changed(update)
+    s_sfr.on_changed(update)
     s_mstar.on_changed(update)
 
     plt.show()

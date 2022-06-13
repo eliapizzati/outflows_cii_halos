@@ -40,6 +40,8 @@ matplotlib.rcParams.update({
 })
 
 
+data_saving = True
+
 plot1 = True  # dependencies
 
 
@@ -118,6 +120,21 @@ if plot1:
         qsigma, = ax_sigma.plot(h, sigma0, lw=2, color=color, linestyle="-", label=r'$\eta$={:.1f}, SFR={:.0f}M$_\odot$yr$^{{-1}}$, v$_c$={:.0f}kms$^{{-1}}$'.format(eta0,sfr0,vc0))
 
         qint, = ax_flux.plot(h, intensity0, lw=2, color=color, linestyle="-")
+
+        if data_saving:
+
+            folder = "final_dependencies"
+
+            path = os.path.join(mydir.data_dir, folder)
+
+            if not os.path.exists(path):
+                os.mkdir(path)
+
+        print(np.log10(mstar0))
+        print(r0)
+        print(sigma0)
+
+        np.savetxt(os.path.join(path, f"final_dep_m{np.log10(mstar0):.1f}.dat"), (h, sigma0, intensity0))
 
 
     alpine = ax_flux.errorbar(data.x / (1000 * nc.pc), data.data, yerr=data.err, \

@@ -136,7 +136,7 @@ theta : log_beta, SFR, v_c
 """
 
 
-def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp=False, print_time_total=False, return_quantities=None):
+def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp=False, print_time_total=False, return_quantities=None, alfa=1.):
     if print_time_total:
         t_total = time.perf_counter()
 
@@ -152,7 +152,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     f_esc_FUV = 0.
     Zeta = 1.
     R_in_pure = 0.3
-    alfa = 1.
+    alfa = alfa
     mus = 0.61
     pc = 3.08572e18
 
