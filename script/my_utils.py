@@ -361,3 +361,4 @@ def from_eta_to_xfitted(eta, a_fit, b_fit):
 
     """
     return 10 ** ((np.log10(eta) - np.log10(a_fit))/ b_fit)
+

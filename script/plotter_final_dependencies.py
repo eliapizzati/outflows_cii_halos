@@ -4,8 +4,6 @@ import os
 import matplotlib.pyplot as plt
 
 
-from mcmc_new import get_emission_fast, get_other_params
-from mcmc_new import h, grid
 from load_data_updated import obs_data_list, names, names_CII_halo, observational_data_fuji
 from scipy.interpolate import interp1d
 
@@ -40,28 +38,39 @@ matplotlib.rcParams.update({
 })
 
 
-data_saving = True
+data_saving = False
+data_loading = True
+
 
 plot1 = True  # dependencies
 
+folder = "final_dependencies"
+
+path = os.path.join(mydir.data_dir, folder)
+
+if not os.path.exists(path):
+    os.mkdir(path)
 
 int_data = 0#int(input("data number?"))
 data = obs_data_list[int_data]
 
 redshift = 4.54
 
+if not data_loading:
+    from mcmc_new import get_emission_fast, get_other_params
+    from mcmc_new import h, grid
 
-other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"])
+    other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"])
 
-beam_interp = np.interp(h, data.x_beam / 1e3 / nc.pc, data.beam, right=0.)
+    beam_interp = np.interp(h, data.x_beam / 1e3 / nc.pc, data.beam, right=0.)
 
-beam_interp[beam_interp < 0.] = 0.
+    beam_interp[beam_interp < 0.] = 0.
 
-beam_func = interp1d(h, beam_interp, \
-                     fill_value=(beam_interp[0], 0.), bounds_error=False)
+    beam_func = interp1d(h, beam_interp, \
+                         fill_value=(beam_interp[0], 0.), bounds_error=False)
 
-beam_2d = beam_func(np.sqrt(grid[0] ** 2 + grid[1] ** 2))
-f_beam = np.fft.fft2(beam_2d)
+    beam_2d = beam_func(np.sqrt(grid[0] ** 2 + grid[1] ** 2))
+    f_beam = np.fft.fft2(beam_2d)
 
 
 
@@ -69,16 +78,16 @@ if plot1:
     """
     # dependencies
     """
-    fig, [ax_sigma, ax_flux] = plt.subplots(1,2,figsize=(1.5*8.27,1.4*3.2))
+    fig, [ax_sigma, ax_flux] = plt.subplots(2,1,figsize=(1.4*4.2,1.4*5.7), sharex=True)
 
     # ax_sigma.set_xscale('log')
     ax_sigma.set_yscale('log')
-    ax_sigma.set_ylim((1e-6, 1e1))
+    ax_sigma.set_ylim((1e-6, 5e-2))
     ax_sigma.set_xlim((0.3, 12))
     ax_sigma.tick_params(length=4, axis="both", which="major")
     ax_sigma.tick_params(length=2, axis="both", which="minor")
 
-    ax_sigma.set_xlabel("b [kpc]")
+    # ax_sigma.set_xlabel("b [kpc]")
     ax_sigma.set_ylabel(r"log ($\Sigma_{\rm CII}$ [erg cm$^{-2}$ s$^{-1}$])")
     # ax.xaxis.set_minor_locator(MultipleLocator(1))
 
@@ -95,10 +104,11 @@ if plot1:
 
     # INIT PHASE
 
-    mstars = [1e9,1e10,1e11]
-    colors = ["C1", "limegreen", "teal"]
+    mstars = [1e9,1e10]
+    colors = ["limegreen", "teal"]
+    lws = [2.5,3]
 
-    for mstar0, color in zip(mstars, colors):
+    for mstar0, color, lw in zip(mstars, colors,lws):
         eta0 = my_utils.from_xfitted_to_eta(mstar0 / 1e10, 4.9, -0.36)
         sfr0 = my_utils.from_eta_to_xfitted(eta0, 14.2, -0.26)
 
@@ -114,27 +124,21 @@ if plot1:
         print(eta0, sfr0, vc0)
         print("\n")
 
-        intensity0, sigma0, r0, n0, v0, T0 = get_emission_fast(params0, data, other_params, h, grid, f_beam,
-                                                           return_quantities="all")
+        if data_loading:
+            h, sigma0, intensity0 = np.loadtxt(os.path.join(path, f"final_dep_m{np.log10(mstar0):.1f}.dat"))
 
-        qsigma, = ax_sigma.plot(h, sigma0, lw=2, color=color, linestyle="-", label=r'$\eta$={:.1f}, SFR={:.0f}M$_\odot$yr$^{{-1}}$, v$_c$={:.0f}kms$^{{-1}}$'.format(eta0,sfr0,vc0))
+        else:
+            intensity0, sigma0, r0, n0, v0, T0 = get_emission_fast(params0, data, other_params, h, grid, f_beam,
+                                                               return_quantities="all")
 
-        qint, = ax_flux.plot(h, intensity0, lw=2, color=color, linestyle="-")
+        qsigma, = ax_sigma.plot(h, sigma0, lw=lw, color=color, linestyle="-", label=r'$\eta$={:.1f}, SFR={:.0f}M$_\odot$yr$^{{-1}}$, v$_c$={:.0f}kms$^{{-1}}$'.format(eta0,sfr0,vc0))
+
+        qint, = ax_flux.plot(h, intensity0, lw=lw, color=color, linestyle="-")
 
         if data_saving:
 
-            folder = "final_dependencies"
 
-            path = os.path.join(mydir.data_dir, folder)
-
-            if not os.path.exists(path):
-                os.mkdir(path)
-
-        print(np.log10(mstar0))
-        print(r0)
-        print(sigma0)
-
-        np.savetxt(os.path.join(path, f"final_dep_m{np.log10(mstar0):.1f}.dat"), (h, sigma0, intensity0))
+            np.savetxt(os.path.join(path, f"final_dep_m{np.log10(mstar0):.1f}.dat"), (h, sigma0, intensity0))
 
 
     alpine = ax_flux.errorbar(data.x / (1000 * nc.pc), data.data, yerr=data.err, \
@@ -143,18 +147,28 @@ if plot1:
 
     factor_data = data.data[0] / data.beam[0]
 
-    ax_flux.plot(data.x_beam / 1e3 / nc.pc, data.beam * factor_data, linestyle="-.", color="gray")
+    ax_flux.plot(data.x_beam / 1e3 / nc.pc, data.beam * factor_data, linestyle="-.", color="gray",lw=2)
 
-    ax_sigma.legend()
+    #ax_sigma.legend()
 
-    rect = ax_flux.add_patch(Rectangle((0.3, 1e-4), 12.-0.3, 1e-2,
-                           alpha=0.3, color="gray"))
+    unc_down = np.full(h.shape, 1e-4)
+    F0 = 0.110
+    r0 = 3.
+    unc_up = np.full(h.shape, F0)
+    h_up_data = np.asarray([3.,6.,9.,12.])
+    unc_up_data = np.asarray([0.110, 0.110*0.725, 0.110*0.43, 0.110*0.32])
+    index_beam = np.searchsorted(h, r0)
+    unc_up[index_beam::] = np.interp(h[index_beam::], h_up_data, unc_up_data)
+    # unc_up[index_beam+1::] = F0 * (1./(np.pi*h[index_beam+1::]**2 - np.pi*h[index_beam]**2))**0.5
+    # ax_flux.scatter(h_up_data, unc_up_data)
+    ax_flux.fill_between(h, unc_down, unc_up,
+                           alpha=0.15, color="gray")
 
-    plt.subplots_adjust(left=0.08,  # the left side of the subplots of the figure
-                        right=0.97,  # the right side of the subplots of the figure
-                        bottom=0.15,  # the bottom of the subplots of the figure
-                        top=0.93,  # the top of the subplots of the figure
-                        wspace=0.3,  # the amount of width reserved for space between subplots,
+    plt.subplots_adjust(left=0.17,  # the left side of the subplots of the figure
+                        right=0.95,  # the right side of the subplots of the figure
+                        bottom=0.11,  # the bottom of the subplots of the figure
+                        top=0.96,  # the top of the subplots of the figure
+                        wspace=0.05,  # the amount of width reserved for space between subplots,
                         # expressed as a fraction of the average axis width
                         hspace=0.1)  # the amount of height reserved for space between subplots,
     # expressed as a fraction of the average axis height

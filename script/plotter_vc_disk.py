@@ -40,7 +40,7 @@ matplotlib.rcParams.update({
 #        "text.usetex": True
 })
 
-plot1 = True  # gravity
+plot1 = False  # gravity
 plot2 = True      # exp profile
 
 if plot1:
@@ -233,9 +233,9 @@ if plot2:
     ax_vc.set_ylabel(r"v_c [km/s]")
 
     ax_vc.plot(r / 1e3 / nc.pc, np.sqrt(nc.gg * get_mass_profile_disk(r, M_star=M_star) * nc.ms / r) / 1e5,\
-               label="disk")
+               label="bulge")
     ax_vc.plot(r / 1e3 / nc.pc, get_circular_velocity_profile_NFW_and_disk(r, M_vir=M_vir, z=5)/ 1e5,
-               label="disk + NFW")
+               label="bulge + NFW")
     ax_vc.plot(r / 1e3 / nc.pc, get_circular_velocity_profile_NFW(r, M_vir=M_vir, z=5)/ 1e5,
                label="NFW")
     ax_vc.axhline(get_vc_from_virial_mass(M_vir=M_vir, z=5) / 1e5,
