@@ -88,7 +88,7 @@ if plot1:
     ax_sigma.tick_params(length=2, axis="both", which="minor")
 
     # ax_sigma.set_xlabel("b [kpc]")
-    ax_sigma.set_ylabel(r"log ($\Sigma_{\rm CII}$ [erg cm$^{-2}$ s$^{-1}$])")
+    ax_sigma.set_ylabel(r"$\Sigma_{\rm CII}$ [erg cm$^{-2}$ s$^{-1}$]")
     # ax.xaxis.set_minor_locator(MultipleLocator(1))
 
     # ax_flux.set_xscale('log')
