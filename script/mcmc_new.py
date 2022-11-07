@@ -518,7 +518,9 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.join(mydir.data_dir, folder)):
         os.mkdir(os.path.join(mydir.data_dir, folder))
 
+
     path = os.path.join(mydir.data_dir, folder, "{}.h5".format(filename))
+    path_machine = os.path.join("/data2/pizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
 
     log_likelihood.counter = 0
 
@@ -566,7 +568,7 @@ if __name__ == "__main__":
         pos[pos < 0.] = 1e-3
 
 
-    backend = emcee.backends.HDFBackend(path)
+    backend = emcee.backends.HDFBackend(path_machine)
     backend.reset(nwalkers, ndim)
 
     if parallel:
