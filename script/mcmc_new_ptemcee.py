@@ -570,12 +570,13 @@ if __name__ == "__main__":
 
 
     ntemps = 20
+    temps = ptemcee.sampler.make_ladder(ndim, ntemps, 250.)
 
     if parallel:
 
         with Pool() as pool:
 
-            sampler = ptemcee.Sampler(betas=ntemps, nwalkers=nwalkers, ndim=ndim, logl=log_likelihood,
+            sampler = ptemcee.Sampler(betas=temps, nwalkers=nwalkers, ndim=ndim, logl=log_likelihood,
                                       logp=log_prior_gaussian, pool=pool)
             sampler.sample(pos, iterations=nsteps)
 
