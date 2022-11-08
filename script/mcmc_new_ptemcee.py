@@ -582,7 +582,7 @@ if __name__ == "__main__":
 
     else:
 
-        sampler = ptemcee.Sampler(betas=ntemps, nwalkers=nwalkers, ndim=ndim, logl=log_likelihood,
+        sampler = ptemcee.Sampler(betas=temps, nwalkers=nwalkers, ndim=ndim, logl=log_likelihood,
                                       logp=log_prior_gaussian)
         sampler.sample(pos, iterations=nsteps)
 
