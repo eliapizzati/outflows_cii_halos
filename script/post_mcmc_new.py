@@ -25,13 +25,13 @@ loading_from_cluster = False
 plot_logprob = False
 model = "old"
 
-plot1 = False #chains
-plot2 = False #corners
+plot1 = True #chains
+plot2 = True #corners
 plot3 = False #emission
-plot4 = True #luminodity
+plot4 = False #luminodity
 
-thin = 1
-discard = 1
+thin = 3
+discard = 2000
 
 
 nwalkers = 48
@@ -69,8 +69,9 @@ if not os.path.exists(os.path.join(mydir.plot_dir, folder_plot)):
 
 
 path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
+path_machine = os.path.join("/Users/eliapizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
 
-reader = emcee.backends.HDFBackend(path)
+reader = emcee.backends.HDFBackend(path_machine)
 
 samples = reader.get_chain(thin=thin, discard=discard)
 samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)

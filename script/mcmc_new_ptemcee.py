@@ -11,13 +11,15 @@ import scipy.integrate as si
 import scipy
 import logging
 
+import ptemcee
+
+
 from multiprocessing import Pool
 
 # from numba import jit
 
 import time
 
-import emcee
 
 import natconst as nc
 
@@ -38,7 +40,7 @@ gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
 
 
 parallel = True
-optimization = True
+optimization = False
 display_single_step = False
 model = "old"
 
@@ -135,7 +137,7 @@ theta : log_beta, SFR, v_c
 """
 
 
-def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp=False, print_time_total=False, return_quantities=None, alfa=1.):
+def get_emission_fast(theta, other_params, h, grid, f_beam, print_time_ivp=False, print_time_total=False, return_quantities=None, alfa=1.):
     if print_time_total:
         t_total = time.perf_counter()
 
@@ -372,7 +374,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam, print_time_ivp
     else:
         raise ValueError("no correct return quantities")
 
-def log_likelihood(theta, data, other_params, h, grid, f_beam):
+def log_likelihood(theta):
     intensity_convolved = get_emission_fast(theta, data, other_params, h, grid, f_beam)
 
     emission_predicted = np.interp(data.x / 1e3 / nc.pc, h, intensity_convolved)
@@ -392,7 +394,7 @@ def log_likelihood(theta, data, other_params, h, grid, f_beam):
     return - chi2 / 2.
 
 
-def log_prior_uniform(theta, data):
+def log_prior_uniform(theta):
     """
     defines the priors for the set of parameters theta
 
@@ -443,7 +445,7 @@ def log_prior_gaussian(theta, data):
         return -np.inf
 
 
-def log_prior_SFR_gaussian(theta, data):
+def log_prior_SFR_gaussian(theta):
     """
     defines the priors for the set of parameters theta
 
@@ -470,7 +472,7 @@ def log_prior_SFR_gaussian(theta, data):
         return -np.inf
 
 
-def log_probability(theta, data, other_params, h, grid, f_beam):
+def log_probability(theta):
     """
     defines the probability as a combination of priors and likelihood
 
@@ -567,31 +569,32 @@ if __name__ == "__main__":
         pos[pos < 0.] = 1e-3
 
 
-    backend = emcee.backends.HDFBackend(path_machine)
-    backend.reset(nwalkers, ndim)
-
+    ntemps = 20
 
     if parallel:
 
         with Pool() as pool:
 
-            sampler = emcee.EnsembleSampler(nwalkers=nwalkers, ndim=ndim, log_prob_fn=log_probability, \
-                                            args=(data, other_params, h, grid, f_beam), backend=backend, pool=pool)
-            sampler.run_mcmc(pos, nsteps, progress=True);
+            sampler = ptemcee.Sampler(ntemps=ntemps, nwalkers=nwalkers, ndim=ndim, lnlike=log_likelihood,
+                                      lnprior = log_prior_gaussian, pool=pool)
+            sampler.sample(pos, iterations=nsteps)
 
     else:
 
-        sampler = emcee.EnsembleSampler(nwalkers=nwalkers, ndim=ndim, log_prob_fn=log_probability, \
-                                        args=(data, other_params, h, grid, f_beam), backend=backend)
-        sampler.run_mcmc(pos, nsteps, progress=True)
+        sampler = ptemcee.Sampler(ntemps=ntemps, nwalkers=nwalkers, ndim=ndim, lnlike=log_likelihood,
+                                      lnprior = log_prior_gaussian)
+        sampler.sample(pos, iterations=nsteps)
 
-    samples = sampler.get_chain()
+
+    samples = sampler.chain()
+    print(samples)
 
     print("Mean acceptance fraction: {0:.3f}".format(np.mean(sampler.acceptance_fraction)))
 
     print(
         "Mean autocorrelation time: {0:.3f} steps".format(
             np.mean(sampler.get_autocorr_time())))
+
 
 
 

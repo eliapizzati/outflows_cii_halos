@@ -23,8 +23,6 @@ from collections import namedtuple
 
 from load_data_updated import obs_data_list
 
-from mcmc_new import get_emission_fast, get_other_params
-from mcmc_new import h, grid
 
 
 for data in obs_data_list:
@@ -51,9 +49,9 @@ matplotlib.rcParams.update({
 
 plot0 = False  # single emission chain
 plot1 = False  # emission chains
-plot2 = False  # corners
+plot2 = True  # corners
 plot3 = False  # violins
-plot4 = True  # final trends
+plot4 = False  # final trends
 
 folder_data = "data_emcee"
 folder_plot = "plot_emcee"
@@ -66,7 +64,7 @@ discard = 1
 sample_step = int(800 * (nsteps / 1e3))
 walker_step = int(12 * (nwalkers / 48))
 
-data = obs_data_list[6]
+data = obs_data_list[1]
 
 string = "results for""\n""VC5110377875"
 
@@ -82,6 +80,9 @@ params = dict([("DM_model", "NFW"),
                ("R_in", 0.3)])
 
 if plot0:
+
+    from mcmc_new import get_emission_fast, get_other_params
+    from mcmc_new import h, grid
 
     from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                    AutoMinorLocator)
@@ -175,6 +176,8 @@ if plot1:
     # emission chains
     """
 
+    from mcmc_new import get_emission_fast, get_other_params
+    from mcmc_new import h, grid
 
     fig, axs = plt.subplots(4, 2, sharey=True, sharex=True, figsize=(1.3 * 8.27, 1.3 * 12.))
 
@@ -271,8 +274,9 @@ if plot2:
     filename = "{}_{:.0f}_updated_{}".format(data.params_obs["name_short"], nsteps, model)
     print(filename)
     path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
+    path_machine = os.path.join("/Users/eliapizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
 
-    reader = emcee.backends.HDFBackend(path)
+    reader = emcee.backends.HDFBackend(path_machine)
 
     samples = reader.get_chain(thin=thin, discard=discard)
     samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
