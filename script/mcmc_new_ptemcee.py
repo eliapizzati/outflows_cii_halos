@@ -584,7 +584,7 @@ if __name__ == "__main__":
 
         sampler = ptemcee.Sampler(betas=temps, nwalkers=nwalkers, ndim=ndim, logl=log_likelihood,
                                       logp=log_prior_gaussian)
-        sampler.sample(pos, iterations=nsteps)
+        sampler.sample(pos, nsteps)
 
 
     samples = sampler.chain()
