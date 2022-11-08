@@ -575,13 +575,14 @@ if __name__ == "__main__":
 
         with Pool() as pool:
 
-            sampler = ptemcee.Sampler(ntemps, nwalkers, ndim, log_likelihood,
-                                      log_prior_gaussian, pool)
+            sampler = ptemcee.Sampler(betas=ntemps, nwalkers=nwalkers, ndim=ndim, logl=log_likelihood,
+                                      logp=log_prior_gaussian, pool=pool)
             sampler.sample(pos, iterations=nsteps)
 
     else:
 
-        sampler = ptemcee.Sampler(ntemps, nwalkers, ndim, log_likelihood, log_prior_gaussian)
+        sampler = ptemcee.Sampler(betas=ntemps, nwalkers=nwalkers, ndim=ndim, logl=log_likelihood,
+                                      logp=log_prior_gaussian)
         sampler.sample(pos, iterations=nsteps)
 
 
