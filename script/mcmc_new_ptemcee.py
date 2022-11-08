@@ -578,7 +578,7 @@ if __name__ == "__main__":
 
             sampler = ptemcee.Sampler(betas=temps, nwalkers=nwalkers, ndim=ndim, logl=log_likelihood,
                                       logp=log_prior_gaussian, pool=pool)
-            sampler.sample(pos, iterations=nsteps)
+            sampler.sample(pos, nsteps)
 
     else:
 
@@ -587,7 +587,7 @@ if __name__ == "__main__":
         sampler.sample(pos, nsteps)
 
 
-    samples = sampler.chain()
+    samples = sampler.chain(nsteps)
     print(samples)
 
     print("Mean acceptance fraction: {0:.3f}".format(np.mean(sampler.acceptance_fraction)))
