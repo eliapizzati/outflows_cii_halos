@@ -103,7 +103,8 @@ if plot0:
     filename = "{}_{:.0f}_updated_{}".format(data.params_obs["name_short"], nsteps, model)
 
     path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
-    path_machine = os.path.join("/Users/eliapizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
+    path_here = os.path.join("/Users/eliapizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
+    path_machine = os.path.join("/data2/pizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
 
     reader = emcee.backends.HDFBackend(path_machine)
 
