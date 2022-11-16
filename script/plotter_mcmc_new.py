@@ -47,9 +47,9 @@ matplotlib.rcParams.update({
     #        "text.usetex": True
 })
 
-plot0 = True  # single emission chain
+plot0 = False  # single emission chain
 plot1 = False  # emission chains
-plot2 = False  # corners
+plot2 = True  # corners
 plot3 = False  # violins
 plot4 = False  # final trends
 
@@ -111,8 +111,8 @@ if plot0:
     samples = reader.get_chain(thin=thin, discard=discard)
     samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
 
-    theta_median = np.median(samples_flat, axis=0)
-
+    theta_median = np.asarray([0.7, 1.745, 2.3])#np.median(samples_flat, axis=0)
+    theta_subpeak = np.asarray([0.738, 1.890, 2.115])#np.median(samples_flat, axis=0)
     print("###################################################################")
 
     print("postprocessing an MCMC with the following params:")
@@ -120,6 +120,7 @@ if plot0:
     print("n walkers = {}".format(nwalkers))
     print("data object = {}".format(data.params_obs["name_short"]))
     print("filename = {}".format(filename))
+    print("theta median", theta_median)
 
     print("###################################################################")
 
@@ -138,14 +139,15 @@ if plot0:
     f_beam = np.fft.fft2(beam_2d)
 
     counter = 0
+    number_lines = 5
 
-    intx = np.random.randint(len(samples_flat), size=500)
+    intx = np.random.randint(len(samples_flat), size=number_lines)
 
     for theta in samples_flat[intx]:
 
         counter += 1
         print("computing emission for theta =", theta, "\t", "iteration number {}/{}" \
-              .format(counter, int(nsteps * nwalkers / sample_step / walker_step / thin)))
+              .format(counter, number_lines))
 
         # if theta[0]>1.15:# and theta[1]>50.:
         intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)
@@ -161,6 +163,9 @@ if plot0:
     intensity_median = get_emission_fast(theta_median, data, other_params, h, grid, f_beam)
     ax.plot(h, intensity_median, alpha=1.0, color="navy", linestyle="--", lw=2.)
 
+    intensity_subpeak = get_emission_fast(theta_subpeak, data, other_params, h, grid, f_beam)
+    ax.plot(h, intensity_subpeak, alpha=1.0, color="navy", linestyle="--", lw=2.)
+
     plt.subplots_adjust(left=0.15,  # the left side of the subplots of the figure
                         right=0.95,  # the right side of the subplots of the figure
                         bottom=0.13,  # the bottom of the subplots of the figure
@@ -175,6 +180,12 @@ if plot0:
     path = os.path.join(mydir.plot_dir, name)
 
     plt.savefig(path)
+
+
+
+
+
+
 
 if plot1:
     """
@@ -206,8 +217,10 @@ if plot1:
         filename = "{}_{:.0f}_updated_{}".format(data.params_obs["name_short"], nsteps, model)
 
         path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
+        path_here = os.path.join("/Users/eliapizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
+        path_machine = os.path.join("/data2/pizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
 
-        reader = emcee.backends.HDFBackend(path)
+        reader = emcee.backends.HDFBackend(path_machine)
 
         samples = reader.get_chain(thin=thin, discard=discard)
         samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
@@ -237,16 +250,18 @@ if plot1:
         f_beam = np.fft.fft2(beam_2d)
 
         counter = 0
-        for walker in samples[::sample_step]:
-            for theta in walker[::walker_step]:
-                counter += 1
-                print("computing emission for theta =", theta, "\t", "iteration number {}/{}" \
-                      .format(counter, int(nsteps * nwalkers / sample_step / walker_step)))
+        number_lines = 100
+        intx = np.random.randint(len(samples_flat), size=number_lines)
 
-                # if theta[0]>1.15:# and theta[1]>50.:
-                intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)
+        for theta in samples_flat[intx]:
+            counter += 1
+            print("computing emission for theta =", theta, "\t", "iteration number {}/{}" \
+                  .format(counter, number_lines))
 
-                axs_flat[data_counter].plot(h, intensity, alpha=0.1, color="gray")
+            # if theta[0]>1.15:# and theta[1]>50.:
+            intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)
+
+            axs_flat[data_counter].plot(h, intensity, alpha=0.1, color="gray")
 
         alpine = axs_flat[data_counter].errorbar(data.x / (1000 * nc.pc), data.data, yerr=data.err, \
                                                  markerfacecolor='maroon', markeredgecolor='maroon', marker='o', \
@@ -263,7 +278,17 @@ if plot1:
                         hspace=0.27)  # the amount of height reserved for space between subplots,
     # expressed as a fraction of the average axis height
 
-    plt.show()
+    # plt.show()
+    name = "emission_chain_mcmc_global"
+    path = os.path.join(mydir.plot_dir, name)
+
+    plt.savefig(path)
+
+
+
+
+
+
 
 if plot2:
     """
@@ -338,8 +363,10 @@ if plot2:
             ax.axvline(true_values[i], color=kwargs["truth_color"], linestyle='--', linewidth=1.3)
             ax.axvspan(err_downs[i], err_ups[i], alpha=0.2, color='red')
 
-        if i == 3:
-            ax.set_xlim(-500, 100)
+            if i == 1:
+                ax.set_xlim(0.8, 2.4)
+            if i == 2:
+                ax.set_xlim(2., 2.6)
 
     # Loop over the histograms
     for yi in range(naxes):
@@ -347,8 +374,6 @@ if plot2:
 
             ax = axes[yi, xi]
 
-            if yi == 3:
-                ax.set_ylim(-500, 200)
 
             if xi == 1 or xi == 2:
                 ax.axvline(true_values[xi], color=kwargs["truth_color"], linestyle='--', linewidth=1.3)
