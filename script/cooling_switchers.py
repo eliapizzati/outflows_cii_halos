@@ -1,4 +1,11 @@
 
+
+"""
+This script is used to plot the cooling and heating curves for a given set of parameters.
+It creates a slider to change the parameters and see the effect on the curves.
+It is self-contained and does not require any other script (apart from the cooling.py and the gnedincooling scripts).
+"""
+
 import numpy as np
 import os
 import matplotlib.pyplot as plt

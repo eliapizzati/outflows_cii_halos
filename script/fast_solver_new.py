@@ -39,18 +39,39 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     differential system for the Euler equations
 
     Parameters
-    ==========
-    r: float
-        temperature
-    y: array
+    ----------
+    r      : float
+        radius
+    y   : array
         array of the variables (v, n, T)
-    params: dict
-        parameters to be passed to all functions
+    SFR_pure   : float
+        star formation rate
+    redshift    : float
+        redshift
+    M_vir_pure  : float
+        virial mass
+    f_esc_ion   : float
+        ionizing escape fraction
+    f_esc_FUV  : float
+        FUV escape fraction
+    Plw  : float
+        Lyman-Werner photon field
+    Ph1     : float
+        H I photon field
+    Pg1    : float
+        HeI photon field
+    Zeta   : float
+        metallicity
+    A_NFW   : float
+        NFW parameter
+    r_s  : float
+        scale radius
+    cut : float
+        stopping condition
 
     Returns
-    =======
+    -------
     output from the differential system: array
-
     """
 
     # loading constants
@@ -354,3 +375,4 @@ if __name__ == "__main__":
     if show_profile:
         fig_sol.legend(loc="lower center", ncol=8, fontsize="small")
         plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles_4.png"))
+

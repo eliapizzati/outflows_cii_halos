@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue May 11 11:04:50 2021
 
-@author: anna
+"""
+This script is used to solve the differential system of equations for the Euler equations
 """
 
 import os

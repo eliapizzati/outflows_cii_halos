@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Mar  8 15:01:16 2021
-
-@author: anna
+This script defines the class for the observational
 """
 
 import numpy as np
@@ -10,7 +8,7 @@ import matplotlib.pyplot as plt
 import natconst as nc
 
 class obs_data():
-    
+
     def __init__(self, x_data, y_data, err, x_beam, y_beam, params_obs):
         
         self.x = x_data
@@ -40,7 +38,18 @@ class obs_data():
 
         
     def plot(self, ax=None, size=14):
-        
+        """
+        Plot the data
+
+        Parameters
+        ----------
+        ax: matplotlib axis
+        size: int
+
+        Returns
+        -------
+        None.
+        """
         
         if ax is None:
             
@@ -74,7 +83,13 @@ class obs_data():
         return
     
     def print_values(self):
-        
+        """
+        Print the values of the data
+        Returns
+        -------
+        None.
+        """
+
         print(self.params_obs)
         
         return

@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 """
-Created on Mon May  3 10:50:09 2021
-
-@author: anna
+This script is used to check that the cooling and heating functions works properly.
+It creates a plot of the cooling and heating functions for a given set of parameters.
+It is self-contained and does not require any other script (apart from the gnedincooling script).
 """
 
 import itertools
@@ -36,6 +35,9 @@ if __name__ == "__main__":
     pg1 = float(input("Pg1 value [default to zero] : ") or "0.")
     pc6 = float(input("Pc6 value [default to zero] : ") or "0.")
 
+    values = np.asarray([n, plw, ph1, pg1, pc6])
+
+    ## paramters used by Gnedin&Hollon
     # r1 = plw
     # r2 = (ph1/plw)**0.353 * (pg1/plw)**0.923 * (pc6/plw)**0.263
     # r3 = (ph1/plw)**-0.103 * (pg1/plw)**-0.375 * (pc6/plw)**0.976
@@ -46,10 +48,8 @@ if __name__ == "__main__":
     # print("r3 =", r3)
     # print("#############################")
 
-    values = np.asarray([n, plw, ph1, pg1, pc6])
 
 temperatures = np.logspace(3, 8, 1000)
-
 densities = np.logspace(-5, 3, 9)
 
 plws = np.logspace(-15, -5, 11)

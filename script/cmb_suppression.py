@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Mar 19 15:48:30 2021
+This script is used to calculate the CMB suppression.
 
-@author: anna
 """
 
 

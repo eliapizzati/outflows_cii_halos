@@ -819,6 +819,4 @@ if plot4:
     # expressed as a fraction of the average axis height
 
 
-
-
     plt.show()
