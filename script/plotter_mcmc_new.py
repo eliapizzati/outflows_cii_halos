@@ -21,7 +21,7 @@ import matplotlib
 
 from collections import namedtuple
 
-from load_data_updated import obs_data_list
+from load_data_new import obs_data_list
 
 
 
@@ -47,9 +47,9 @@ matplotlib.rcParams.update({
     #        "text.usetex": True
 })
 
-plot0 = False  # single emission chain
+plot0 = True  # single emission chain
 plot1 = False  # emission chains
-plot2 = True  # corners
+plot2 = False  # corners
 plot3 = False  # violins
 plot4 = False  # final trends
 
@@ -58,13 +58,13 @@ folder_plot = "plot_emcee"
 
 model = "old"
 nwalkers = 48
-nsteps = 1000
-thin = 1
-discard = 1
+nsteps = 100000
+thin = 100
+discard = 2000
 sample_step = int(800 * (nsteps / 1e3))
 walker_step = int(12 * (nwalkers / 48))
 
-data = obs_data_list[1]
+data = obs_data_list[0]
 
 string = "results for""\n""VC5110377875"
 
@@ -103,8 +103,9 @@ if plot0:
     filename = "{}_{:.0f}_updated_{}".format(data.params_obs["name_short"], nsteps, model)
 
     path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
+    path_machine = os.path.join("/Users/eliapizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
 
-    reader = emcee.backends.HDFBackend(path)
+    reader = emcee.backends.HDFBackend(path_machine)
 
     samples = reader.get_chain(thin=thin, discard=discard)
     samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
@@ -137,25 +138,24 @@ if plot0:
 
     counter = 0
 
+    intx = np.random.randint(len(samples_flat), size=500)
 
-    for walker in samples[::sample_step]:
-        for theta in walker[::walker_step]:
+    for theta in samples_flat[intx]:
 
+        counter += 1
+        print("computing emission for theta =", theta, "\t", "iteration number {}/{}" \
+              .format(counter, int(nsteps * nwalkers / sample_step / walker_step / thin)))
 
-            counter += 1
-            print("computing emission for theta =", theta, "\t", "iteration number {}/{}" \
-                  .format(counter, int(nsteps * nwalkers / sample_step / walker_step / thin)))
+        # if theta[0]>1.15:# and theta[1]>50.:
+        intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)
 
-            # if theta[0]>1.15:# and theta[1]>50.:
-            intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)
+        ax.plot(h, intensity, alpha=0.1, color="gray")
 
-            ax.plot(h, intensity, alpha=0.1, color="gray")
+    alpine = ax.errorbar(data.x / (1000 * nc.pc), data.data, yerr=data.err, \
+                         markerfacecolor='maroon', markeredgecolor='maroon', marker='o', \
+                         linestyle='', ecolor='maroon')
 
-        alpine = ax.errorbar(data.x / (1000 * nc.pc), data.data, yerr=data.err, \
-                             markerfacecolor='maroon', markeredgecolor='maroon', marker='o', \
-                             linestyle='', ecolor='maroon')
-
-        # axs_flat[data_counter].legend(loc="lower center", ncol=8, fontsize="small")
+    # axs_flat[data_counter].legend(loc="lower center", ncol=8, fontsize="small")
 
     intensity_median = get_emission_fast(theta_median, data, other_params, h, grid, f_beam)
     ax.plot(h, intensity_median, alpha=1.0, color="navy", linestyle="--", lw=2.)
@@ -169,7 +169,11 @@ if plot0:
                         hspace=0.27)  # the amount of height reserved for space between subplots,
     # expressed as a fraction of the average axis height
 
-    plt.show()
+    # plt.show()
+    name = "emission_chain_mcmc_single"
+    path = os.path.join(mydir.plot_dir, name)
+
+    plt.savefig(path)
 
 if plot1:
     """
@@ -281,7 +285,7 @@ if plot2:
     samples = reader.get_chain(thin=thin, discard=discard)
     samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
 
-    # tau = reader.get_autocorr_time(thin=thin, discard=discard)
+    tau = reader.get_autocorr_time(thin=1, discard=discard)
 
     print("###################################################################")
 
@@ -290,7 +294,7 @@ if plot2:
     print("n walkers = {}".format(nwalkers))
     print("data object = {}".format(data.params_obs["name_short"]))
     print("filename = {}".format(filename))
-
+    print("tau = {}".format(tau))
     print("###################################################################")
 
     kwargs = dict(
@@ -412,8 +416,9 @@ if plot3:
         print("###################################################################")
 
         path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
+        path_machine = os.path.join("/Users/eliapizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
 
-        reader = emcee.backends.HDFBackend(path)
+        reader = emcee.backends.HDFBackend(path_machine)
 
         samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
 
@@ -544,8 +549,9 @@ if plot4:
         print("###################################################################")
 
         path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
+        path_machine = os.path.join("/Users/eliapizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
 
-        reader = emcee.backends.HDFBackend(path)
+        reader = emcee.backends.HDFBackend(path_machine)
 
         samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
 

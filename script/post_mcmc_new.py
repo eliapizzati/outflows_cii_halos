@@ -19,7 +19,7 @@ import plot_config as pltc
 import mydir
 import natconst as nc
 
-from load_data_updated import obs_data_list, names, names_CII_halo, observational_data_fuji
+from load_data_new import obs_data_list, names, names_CII_halo, observational_data_fuji
 
 loading_from_cluster = False
 plot_logprob = False
@@ -30,12 +30,12 @@ plot2 = True #corners
 plot3 = False #emission
 plot4 = False #luminodity
 
-thin = 3
-discard = 2000
+thin = 200
+discard = 1000
 
 
 nwalkers = 48
-nsteps = int(input("number of steps?"))
+nsteps = 100000#int(input("number of steps?"))
 
 
 
@@ -80,7 +80,8 @@ log_prob_samples = reader.get_log_prob(flat=True, thin=thin, discard=discard)
 log_prior_samples = reader.get_blobs(flat=True, thin=thin, discard=discard)
 
 print("flat log prob shape: {0}".format(log_prob_samples.shape))
-# print(reader.get_autocorr_time())
+# print("tau = ", reader.get_autocorr_time(thin=1, discard=30000))
+print("N/100 = ", reader.get_chain(thin=1, discard=10000).shape[0]/100)
 
 all_samples = np.concatenate(
     (samples_flat, log_prob_samples[:, None]),

@@ -22,7 +22,7 @@ import emcee
 import natconst as nc
 
 import mydir
-from load_data_updated import obs_data_list, names, names_CII_halo, observational_data_fuji
+from load_data_new import obs_data_list, names, names_CII_halo, observational_data_fuji
 
 from scipy.interpolate import interp1d
 from fast_solver_new import diff_system_fast, stopping_condition
