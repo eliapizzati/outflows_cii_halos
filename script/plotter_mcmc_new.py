@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Aug  9 18:12:43 2021
 
-@author: anna
-"""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -47,11 +42,11 @@ matplotlib.rcParams.update({
     #        "text.usetex": True
 })
 
-plot0 = False  # single emission chain
+plot0 = True  # single emission chain
 plot1 = False  # emission chains
 plot2 = False  # corners
 plot3 = False  # violins
-plot4 = True  # final trends
+plot4 = False  # final trends
 
 folder_data = "data_emcee"
 folder_plot = "plot_emcee"
@@ -139,7 +134,7 @@ if plot0:
     f_beam = np.fft.fft2(beam_2d)
 
     counter = 0
-    number_lines = 5
+    number_lines = 500
 
     intx = np.random.randint(len(samples_flat), size=number_lines)
 
