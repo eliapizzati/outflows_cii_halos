@@ -59,7 +59,7 @@ if plot1:
     from sol_modules import get_profiles
     from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved
 
-    from load_data import obs_data_list
+    from script.OLD.load_data import obs_data_list
 
     betas = np.arange(4.4,7.6,0.4)
 
@@ -142,9 +142,7 @@ if plot2:
     from sol_modules import get_profiles
     from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved
 
-    from load_data import obs_data_list
-
-    from my_utils import get_vc_from_virial_mass
+    from script.OLD.load_data import obs_data_list
 
     betas = np.arange(4.4,7.6,0.4)
 

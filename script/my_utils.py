@@ -1,8 +1,17 @@
-# -*- coding: utf-8 -*-
 """
-Created on Mon Mar  8 14:50:57 2021
+This script contains the following functions:
+    mstar_behroozi_from_file: M_star from Behroozi+13, from file; it uses z=5 as default and it can't do any other redshift
+    mstar_behroozi: M_star from Behroozi+13 direclty from fit
+    mvir_behroozi: inverse of mstar_behroozi, directly from fit
+    sersic: Sersic profile in 2D
+    halo:
+    twod_making
+    to_habing_flux
+    from_habing_flux
+    plw_from_habing_flux
+    from_xfitted_to_eta
+    from_eta_to_xfitted
 
-@author: anna
 """
 
 
@@ -17,10 +26,22 @@ from scipy import optimize
 
 from astropy.cosmology import Planck15 as cosmo
 
-input_filename_behroozi = os.path.join(mydir.script_dir, "input_data", "behroozi_z_5.dat")
 
 
 def mstar_behroozi_from_file(M_vir):
+    """
+    M_star from Behroozi+13, from file; it uses z=5 as default and it can't do any other redshift
+    Parameters
+    ----------
+    M_vir:
+        halo mass in solar masses
+
+    Returns
+    -------
+    float
+        galaxy stellar mass in solar masses
+    """
+    input_filename_behroozi = os.path.join(mydir.script_dir, "input_data", "behroozi_z_5.dat")
 
     # First, you can open the file and check the information in it
 
@@ -42,8 +63,22 @@ def mstar_behroozi_from_file(M_vir):
 
 
 def mstar_behroozi(M_vir, z=5.0):
-    # Behroozi+13
+    """
+    M_star from Behroozi+13 direclty from fit
     # https://arxiv.org/pdf/1207.6105.pdf
+
+    Parameters
+    ----------
+    M_vir: float
+        halo mass in solar masses
+    z: float
+        redshift
+
+    Returns
+    -------
+    float
+        galaxy stellar mass in solar masses
+    """
 
     aexp = 1.0 / (1.0 + z)
 
@@ -72,7 +107,20 @@ def mstar_behroozi(M_vir, z=5.0):
 
 
 def mvir_behroozi(M_star, z=5.0):
+    """
+    inverse of mstar_behroozi, directly from fit
+    Parameters
+    ----------
+    M_star:     float
+        galaxy stellar mass in solar masses
+    z:        float
+        redshift
 
+    Returns
+    -------
+    float
+        halo mass in solar masses
+    """
     def zero_me(x, M_star):
         return M_star - mstar_behroozi(x, z=5.)
 
@@ -81,24 +129,21 @@ def mvir_behroozi(M_star, z=5.0):
     return mvir
 
 
-def sersic(r, r_e, sersic_index, central):
-        
-    b = 2 * sersic_index - 1/3
-    
-    I_e = central * np.exp(b*((1/r_e)**(1/sersic_index)-1))
-    
-    return I_e*np.exp(-b*((r/r_e)**(1/sersic_index)-1.))
-
-
-def halo(r, r_n, central):
-        
-    C = central * np.exp(1/r_n)
-    
-    return C*np.exp(-r/r_n)
-
 
 def twod_making(profile, x_axis, nimage=1000):
+    """
+    makes a 2D image from a 1D profile; the image will be used to be transformed for the convolution
 
+    Parameters
+    ----------
+    profile:
+    x_axis
+    nimage
+
+    Returns
+    -------
+
+    """
     x_ext = np.linspace(-x_axis.max(), x_axis.max(), nimage)
     
     xy, yx = np.meshgrid(x_ext,x_ext)

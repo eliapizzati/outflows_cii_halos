@@ -16,7 +16,7 @@ import matplotlib
 
 from collections import namedtuple
 
-from load_data_new import obs_data_list
+from load_data import obs_data_list
 
 
 

@@ -11,13 +11,9 @@ import os
 
 import natconst as nc
 import mydir
-from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo, names_other, \
-                      observational_data_fuji
+from script.OLD.load_data import obs_data_list
 
-from my_utils import get_concentration, get_virial_radius, get_mass_profile_NFW, \
-                     get_circular_velocity_profile_NFW, get_virial_mass_from_vc
-
-from astropy.cosmology import Planck13 as cosmo
+from my_utils import get_concentration, get_virial_radius, get_circular_velocity_profile_NFW
 
 input_filename_SFR =  os.path.join(mydir.script_dir, "input_data", "sfr_release.dat")
 
@@ -40,7 +36,7 @@ if __name__ == "__main__":
 r = np.linspace(0.1*nc.pc*1e3, 50*nc.pc*1e3, 1000)
 
 import matplotlib.pyplot as plt
-from matplotlib import ticker, cm, colors
+from matplotlib import cm, colors
 
 fig_rel, ax_rel = plt.subplots(figsize=(8.27,5.))
 
@@ -114,6 +110,7 @@ cb.set_label(r'M_vir [1e11 msun]', rotation=90.)
 fig_abs.tight_layout()
 fig_rel.tight_layout()
 
+plt.show()
  
     
 

@@ -19,7 +19,7 @@ import plot_config as pltc
 import mydir
 import natconst as nc
 
-from load_data_new import obs_data_list, names, names_CII_halo, observational_data_fuji
+from load_data import obs_data_list, names, names_CII_halo, observational_data_fuji
 
 loading_from_cluster = False
 plot_logprob = False

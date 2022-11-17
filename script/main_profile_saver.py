@@ -31,16 +31,12 @@ PARAMETER DESCRIPTION
 
 """
 
-import numpy as np
-
-import natconst as nc
-
 from sol_modules import get_profiles
 
 from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, \
     get_intensity_convolved, get_chi2
 
-from load_data import observational_data_fuji
+from script.OLD.load_data import observational_data_fuji
 
 import time
 
@@ -69,8 +65,6 @@ print(params)
 print("##################################")
 
 # getting the profiles using the integrator in sol_modules.py (this is the step that needs to be optimized)
-
-import matplotlib.pyplot as plt
 
 plotting = False
 

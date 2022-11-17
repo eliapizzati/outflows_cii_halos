@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plt
 
 
-from load_data_new import obs_data_list, names, names_CII_halo, observational_data_fuji
+from load_data import obs_data_list, names, names_CII_halo, observational_data_fuji
 from scipy.interpolate import interp1d
 
 

@@ -16,8 +16,7 @@ import plot_config as pltc
 import mydir
 import natconst as nc
 
-from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
-                      names_other,  observational_data_fuji
+from script.OLD.load_data import obs_data_list
 
 """
 1:  DC396844

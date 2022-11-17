@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-Created on Fri Mar  5 15:21:19 2021
-
-@author: anna
+This script defines the standrd folder structure
 """
 
 import os

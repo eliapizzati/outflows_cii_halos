@@ -7,7 +7,6 @@ Created on Tue May 11 16:49:20 2021
 
 import os
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 import scipy.integrate as si
 
@@ -25,8 +24,7 @@ import emcee
 import natconst as nc
 
 import mydir
-from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
-                      names_other,  observational_data_fuji
+from script.OLD.load_data import obs_data_list
 
 from fast_solver import diff_system_fast, stopping_condition
 

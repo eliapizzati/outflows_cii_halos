@@ -71,7 +71,7 @@ if plot0:
     from mcmc import get_emission_fast, get_other_params
     from mcmc import h, grid
 
-    from load_data import obs_data_list
+    from script.OLD.load_data import obs_data_list
 
     folder_data = "data_emcee"
 
@@ -170,7 +170,7 @@ if plot1:
     from mcmc import get_emission_fast, get_other_params
     from mcmc import h, grid
     
-    from load_data import obs_data_list
+    from script.OLD.load_data import obs_data_list
 
     folder_data = "data_emcee"
     
@@ -278,7 +278,7 @@ if plot2:
     """
     #corners
     """
-    from load_data import obs_data_list
+    from script.OLD.load_data import obs_data_list
     
     data = obs_data_list[7]
     
@@ -420,7 +420,7 @@ if plot3:
     """
     # violins
     """
-    from load_data import obs_data_list
+    from script.OLD.load_data import obs_data_list
 
     datas = []
     names_plot = []
@@ -539,7 +539,7 @@ if plot4:
     """
     # final trends
     """    
-    from load_data import obs_data_list
+    from script.OLD.load_data import obs_data_list
 
     
     def power(x, a,b):

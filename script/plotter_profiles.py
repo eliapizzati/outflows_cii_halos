@@ -372,7 +372,7 @@ if plot4:
     from sol_modules import get_profiles
     from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved, get_luminosity_CII, get_halo_mass
 
-    from load_data import observational_data_fuji
+    from script.OLD.load_data import observational_data_fuji
 
     betas = np.arange(1.0,9.0,0.8)
 

@@ -12,7 +12,7 @@ import plot_config as pltc
 import mydir
 import natconst as nc
 
-from load_data_new import obs_data_list_non_det, obs_data_list, names, names_wo_CII_halo, names_wo_CII_halo_short
+from load_data import obs_data_list_non_det, obs_data_list, names, names_wo_CII_halo, names_wo_CII_halo_short
 
 data0 = obs_data_list_non_det[0]
 data1 = obs_data_list[1]

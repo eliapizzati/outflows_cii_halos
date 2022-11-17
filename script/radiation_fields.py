@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-Created on Sun Mar  7 14:02:23 2021
-
-@author: anna
+This script contains the function UVB_rates to compute the radiation fields and makes a few sanity check prints
 """
 
 
@@ -23,6 +20,7 @@ def UVB_rates(redshift, quantity):
     Parameters
     ==========
     redshift: float
+        redshift
     
     quantity: string
         quantities can be "UV intensity", "H rate", "He rate", "CII rate", "CI rate"
@@ -30,7 +28,8 @@ def UVB_rates(redshift, quantity):
     
     Returns
     =======
-    UVB rate selected
+    output: float
+        UVB rate selected by the quantity parameter
 
     """  
 

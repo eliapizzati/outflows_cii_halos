@@ -7,7 +7,7 @@ from scipy.interpolate import interp1d
 
 from mcmc_new import get_emission_fast, get_other_params
 from mcmc_new import h, grid
-from load_data_new import obs_data_list, names, names_CII_halo, observational_data_fuji
+from load_data import obs_data_list, names, names_CII_halo, observational_data_fuji
 
 
 import plot_config as pltc

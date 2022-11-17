@@ -12,15 +12,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import emcee
 
-from matplotlib import ticker, cm, colors
+from matplotlib import cm, colors
 from scipy.optimize import curve_fit
 
-import plot_config as pltc
 import mydir
-import natconst as nc
 
-from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
-                      names_other,  observational_data_fuji, names_CII_halo_short
+from script.OLD.load_data import obs_data_list, names_CII_halo_short
 
 
 violin = False

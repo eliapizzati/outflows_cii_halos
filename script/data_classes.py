@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-This script defines the class for the observational
+This script defines the class for the observational data
 """
 
 import numpy as np

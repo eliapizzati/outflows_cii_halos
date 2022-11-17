@@ -1,19 +1,11 @@
-
-
-
-import os
 import numpy as np
-import mydir
 import natconst as nc
 
 
 import matplotlib.pyplot as plt
 import matplotlib
 
-
-from model_classes import load_from_file
-from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo,\
-                      names_other,  observational_data_fuji
+from script.OLD.load_data import obs_data_list, observational_data_fuji
 
 
 

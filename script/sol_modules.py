@@ -1,7 +1,5 @@
 """
-Created on Fri Mar  5 16:12:54 2021
-
-@author: anna
+This script contains the functions to solve the differential equations and find the n, v, T profiles
 """
 
 import os
@@ -104,6 +102,12 @@ def diff_system(r, y, params, Plw, Ph1, Pg1):
         array of the variables (v, n, T)
     params: dict
         parameters to be passed to all functions
+    Plw: float
+        Lyman-Werner background
+    Ph1: float
+        H I background
+    Pg1: float
+        He I background
 
     Returns
     =======
@@ -183,12 +187,15 @@ def diff_system(r, y, params, Plw, Ph1, Pg1):
     
     return output
 
+
 def stopping_condition(t, y,params, Plw, Ph1, Pg1): 
     return y[0] - 41. * 1e5 # in cm/s
 
 stopping_condition.terminal = True
 stopping_condition.direction = -1
 
+
+# SOLVING THE SYSTEM
 def get_profiles(params, resol=1000, print_time=False, integrator="RK45"):
     """
     computes the profiles for v, n, T as a function of r
@@ -199,6 +206,10 @@ def get_profiles(params, resol=1000, print_time=False, integrator="RK45"):
         parameters to be passed to all functions
     resol: int, optional
         number of r-steps
+    print_time: bool, optional
+        if True, prints the time needed for the computation
+    integrator: str, optional
+        integrator to be used for the computation of the profiles
     
     Returns
     =======

@@ -12,7 +12,7 @@ import numpy as np
 import logging
 
 
-from load_data import obs_data_list, names, names_CII_halo, names_wo_CII_halo, names_other,  observational_data_fuji
+from script.OLD.load_data import obs_data_list
 from sol_modules import get_profiles
 from my_utils import get_vc_from_virial_mass
 import mydir

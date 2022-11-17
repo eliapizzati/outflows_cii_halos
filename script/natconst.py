@@ -42,7 +42,26 @@ hour    Hour [s]
 day     Day  [s]
 ====    =============
 (MY STUFF AT THE END)
-
+gamma   Adiabatic index
+mus      Mean molecular weight
+knorm   Normalization constant for temperature
+A_C     Carbon abundance
+A_H     Hydrogen abundance
+Gamma_H_1000  H ionization rate at 1 kpc
+Gamma_He_1000 He ionization rate at 1 kpc
+Gamma_LW_1000 LW ionization rate at 1 kpc
+Gamma_CI_1000 CI ionization rate at 1 kpc
+Gamma_CI_EUV_1000 CI ionization rate (ionizing) at 1 kpc
+Gamma_CI_FUV_1000 CI ionization rate (non ionizing) at 1 kpc
+Gamma_CII_1000 CII ionization rate at 1 kpc
+intensity_UV_1000  Intensity of the UV at 1 kpc
+line_CII_rest_frame Rest frame wavelength of the CII line
+line_UV_mixing_rest_frame Rest frame wavelength of the UV mixing line
+CMB_temp  CMB temperature
+T_star   CII line temperature
+A_coeff_ul CII line upper level Einstein coefficient
+A_coeff_ku CII line upper level Einstein coefficient for mixing
+A_coeff_kl CII line lower level Einstein coefficient for mixing
 """
 gg = 6.672e-8   # Gravitational constant
 mp = 1.6726e-24  # Mass of proton [g]

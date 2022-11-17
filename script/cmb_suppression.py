@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
 This script is used to calculate the CMB suppression.
 
@@ -20,7 +20,16 @@ from radiation_fields import UVB_rates
 #functions
 
 def gamma_ul(T):
-    
+    """
+    This function returns the upper level collisional de-excitation rate for CII.
+    Parameters
+    ----------
+    T: float
+
+    Returns
+    -------
+    gamma_ul: float
+    """
     if T < 1.5e2:
         return 1.58
     
@@ -31,7 +40,16 @@ def gamma_ul(T):
         return 2.11
 
 def gamma_ul_vec(T_vec):
-    
+    """
+    This function returns the upper level collisional de-excitation rate for CII in a vectorized fashion
+    Parameters
+    ----------
+    T_vec: array
+
+    Returns
+    -------
+    gamma_ul: array
+    """
     gamma_vec = []
     
     for T in T_vec:
@@ -40,7 +58,16 @@ def gamma_ul_vec(T_vec):
     return np.asarray(gamma_vec)
 
 def gamma_H_ul(T):
-    
+    """
+    This function returns the upper level collisional de-excitation rate for HI.
+    Parameters
+    ----------
+    T: float
+
+    Returns
+    -------
+    gamma_ul: float
+    """
     if T < 1.5e2:
         return 10.
     
@@ -52,7 +79,16 @@ def gamma_H_ul(T):
     
 
 def gamma_H_ul_vec(T_vec):
-    
+    """
+    This function returns the upper level collisional de-excitation rate for HI in a vectorized fashion.
+    Parameters
+    ----------
+    T_vec:  array
+
+    Returns
+    -------
+    gamma_ul: array
+    """
     gamma_vec = []
     
     for T in T_vec:
@@ -62,8 +98,21 @@ def gamma_H_ul_vec(T_vec):
 
 
 def T_spin_func(n, T, I_UV, x_e, z, T_UV = 3.61e4):
-    
-    
+    """
+    This function returns the spin temperature of CII.
+    Parameters
+    ----------
+    n: float
+    T: float
+    I_UV:  float
+    x_e: float
+    z: float
+    T_UV: float
+
+    Returns
+    -------
+    T_spin: float
+    """
     
     I_CMB = (2*nc.hh*nc.line_CII_rest_frame**3) /  \
             (nc.cc**2 * (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+z)*nc.CMB_temperature)) - 1.))
@@ -91,8 +140,21 @@ def T_spin_func(n, T, I_UV, x_e, z, T_UV = 3.61e4):
 
     
 def T_spin_func_vec(n_vec, T_vec, I_UV_vec, x_e_vec, z, T_UV = 3.61e4):
-    
-     
+    """
+    This function returns the spin temperature of CII in a vectorized fashion.
+    Parameters
+    ----------
+    n_vec: float or array
+    T_vec: float or array
+    I_UV_vec: float or array
+    x_e_vec: float or array
+    z: float
+    T_UV: float
+
+    Returns
+    -------
+    T_spin_vec: array
+    """
     
     I_CMB = (2*nc.hh*nc.line_CII_rest_frame**3) /  \
             (nc.cc**2 * (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+z)*nc.CMB_temperature)) - 1.))
@@ -118,7 +180,17 @@ def T_spin_func_vec(n_vec, T_vec, I_UV_vec, x_e_vec, z, T_UV = 3.61e4):
 
 
 def eta_func(T_spin, z):
-       
+    """
+    This function returns the eta parameter for the CMB suppression.
+    Parameters
+    ----------
+    T_spin: float pr array
+    z:  float
+
+    Returns
+    -------
+    eta: float or array
+    """
     #return 1. - (np.exp(nc.hh*nc.line_CII_rest_frame / (nc.kk*(T_spin))) - 1.) /\
     #       (np.exp((nc.hh*nc.line_CII_rest_frame) / (nc.kk*(1.+z)*nc.CMB_temperature)) - 1.)
 
@@ -128,7 +200,10 @@ def eta_func(T_spin, z):
 
 if __name__ == "__main__":
 
-    
+    """
+    Just making a few plots to check the functions.
+    """
+
 #    params = dict([("SFR", 20.),
 #                   ("beta", 1.0), 
 #                   ("redshift", 5.),
@@ -445,7 +520,7 @@ if __name__ == "__main__":
 
     fig.tight_layout()
     
-
+    plt.show()
 
 
 

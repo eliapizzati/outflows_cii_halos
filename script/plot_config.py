@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Mar 12 15:39:03 2021
-
-@author: anna
+This script defines a few standards plots and defines the matplotlib rcParams
 """
 
 import numpy as np

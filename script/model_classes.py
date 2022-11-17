@@ -18,7 +18,16 @@ import natconst as nc
 # general functions (to generate filenames&folders, and to load files)
 
 def get_name_core(params):
-    
+    """
+    returns the name core of the file
+    Parameters
+    ----------
+    params: dictionary
+
+    Returns
+    -------
+    name_core: string
+    """
     name_base = "_beta{:.2f}_SFR{:.1f}".format(params["beta"], params["SFR"])
     
     name_specs = "_vc{:.1f}".format(params["v_c"])
@@ -40,6 +49,15 @@ def get_name_core(params):
 def get_data_folder(params, class_type):
     """
     class_type can be profiles, ionization, emission
+    Parameters
+    ----------
+    params: dictionary
+    class_type: string
+        can be profiles, ionization, emission
+
+    Returns
+    -------
+    folder: string
     """
         
     folder = 'data_{}'.format(class_type)

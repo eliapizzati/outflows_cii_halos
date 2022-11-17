@@ -1,3 +1,9 @@
+
+"""
+This script tries to generate the CII line spectrum
+"""
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -70,4 +76,5 @@ for v_index, v in enumerate(velocities):
 plt.plot(velocities, flux_v)
 
 print(flux_v)
+
 plt.show()
