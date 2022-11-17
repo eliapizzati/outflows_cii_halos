@@ -44,9 +44,10 @@ print("##################################")
 
 # getting the profiles using the integrator in sol_modules.py (this is the step that needs to be optimized)
 
+resol = 1000
 
 time_profile = time.perf_counter()
-profiles = get_profiles(params, resol=10000, print_time=False, integrator="RK45")
+profiles = get_profiles(params, resol=resol, print_time=False, integrator="RK45")
 time_profile = (time.perf_counter() - time_profile)
 print("total profile time (s)=", time_profile)
 
@@ -57,7 +58,7 @@ else:
     string_nans = "Integration successful"
 print(string_nans)
 
-profiles.to_file(attributes_in_name="DC630594_per_laura")
+profiles.to_file(attributes_in_name=f"DC630594_{resol}_per_laura")
 
 if post_profiles:
     # getting the ionization states, the sigma CII and the convolved intensity for the CII
