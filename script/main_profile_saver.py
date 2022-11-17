@@ -18,7 +18,7 @@ from load_data import obs_data_list, observational_data_fuji
 import time
 
 post_profiles = False  # switcher for the steps after the profiles integration (i.e. ionization states, sigma, emission)
-plotting = False
+plotting = True
 
 # Creating a dictionary for the parameters
 
@@ -46,7 +46,7 @@ print("##################################")
 
 
 time_profile = time.perf_counter()
-profiles = get_profiles(params, resol=1000, print_time=False, integrator="RK45")
+profiles = get_profiles(params, resol=10000, print_time=False, integrator="RK45")
 time_profile = (time.perf_counter() - time_profile)
 print("total profile time (s)=", time_profile)
 
@@ -82,8 +82,11 @@ if post_profiles:
 
 if plotting:
     profiles.plot()
-    ionization_state.plot()
-    intensity_conv.plot()
+    if post_profiles:
+        ionization_state.plot()
+        sigma_CII.plot()
+        intensity_conv.plot()
+        intensity_raw.plot()
 
 time_elapsed = (time.perf_counter() - time_start)
 print("total time elapsed (s)=", time_elapsed)

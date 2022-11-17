@@ -45,7 +45,7 @@ def get_name_core(params, attributes_in_name = None):
 
     if attributes_in_name is not None:
 
-        name_specs += attributes_in_name
+        name_specs += "_{}".format(attributes_in_name)
         
     return str(name_base + name_specs)
 
