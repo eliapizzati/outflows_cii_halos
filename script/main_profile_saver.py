@@ -83,10 +83,10 @@ if post_profiles:
 if plotting:
     profiles.plot()
     if post_profiles:
-        ionization_state.plot()
-        sigma_CII.plot()
-        intensity_conv.plot()
-        intensity_raw.plot()
+        ionization_state.plot(savefig=True)
+        sigma_CII.plot(savefig=True)
+        intensity_conv.plot(savefig=True)
+        intensity_raw.plot(savefig=True)
 
 time_elapsed = (time.perf_counter() - time_start)
 print("total time elapsed (s)=", time_elapsed)
