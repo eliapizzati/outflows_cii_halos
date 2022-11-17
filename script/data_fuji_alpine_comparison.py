@@ -5,7 +5,7 @@ import natconst as nc
 import matplotlib.pyplot as plt
 import matplotlib
 
-from script.OLD.load_data import obs_data_list, observational_data_fuji
+from load_data import obs_data_list, observational_data_fuji
 
 
 

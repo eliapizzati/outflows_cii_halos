@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 This script defines a few standards plots and defines the matplotlib rcParams
 """

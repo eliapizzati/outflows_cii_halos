@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Apr 17 17:01:47 2021
 
-@author: anna
-"""
 
 """
 PARAMETER DESCRIPTION

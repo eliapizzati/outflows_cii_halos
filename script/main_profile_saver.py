@@ -1,56 +1,34 @@
 """
-PARAMETER DESCRIPTION
-
- - PARAMS
-
-     - DM_model: dark matter profile (choose between "NFW" and "iso_shpere"; if None, "iso_sphere" is considered as default)
-
-     - beta: beta parameter
-
-     - SFR: star formation rate in Msun/yr
-
-     - f_esc_ion: escape fraction of ionizing photons
-
-     - f_esc_FUV: escape fraction of non-ionizing photons
-
-     - v_c: circular velocity in km/s (if the DM profile is NFW then this represents the maximum velocity,
-                                       since the circular velocity profile becomes radius-dependent)
-
-     - M_vir: virial mass in solar masses (if the DM profile is "iso_sphere" this is not used; if it is "NFW", then at least
-                                           one parameter between v_c and M_vir must be given)
-
-     - redshift: redshift
-
-     - Zeta: metallicity (solar units)
-
-     - alfa: alpha parameter
-
-     - R_in: inner radius in kpc
-
-
-
+This script generates some profiles (and post processes too for emission etc)
+and stores data in files (no plots so that it can be run in machines too)
 """
+
+import os
+import numpy as np
+
+import mydir
 
 from sol_modules import get_profiles
 
 from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, \
     get_intensity_convolved, get_chi2
 
-from script.OLD.load_data import observational_data_fuji
+from load_data import obs_data_list, observational_data_fuji
 
 import time
 
-post_profiles = True  # switcher for the steps after the profiles integration (i.e. ionization states, sigma, emission)
+post_profiles = False  # switcher for the steps after the profiles integration (i.e. ionization states, sigma, emission)
+plotting = False
 
 # Creating a dictionary for the parameters
 
 
-params = dict([("DM_model", "NFW"),
-               ("beta", 3.0),
-               ("SFR", 500.),
+params = dict([("DM_model", "NFW+disk"),
+               ("beta", 7.1),
+               ("SFR", 30.),
                ("f_esc_ion", 0.0),
                ("f_esc_FUV", 0.0),
-               ("v_c", 250.),
+               ("v_c", 204.),
                ("redshift", 5.0),
                ("Zeta", 1.0),
                ("alfa", 1.0),
@@ -66,24 +44,24 @@ print("##################################")
 
 # getting the profiles using the integrator in sol_modules.py (this is the step that needs to be optimized)
 
-plotting = False
 
 time_profile = time.perf_counter()
 profiles = get_profiles(params, resol=1000, print_time=False, integrator="RK45")
 time_profile = (time.perf_counter() - time_profile)
+print("total profile time (s)=", time_profile)
 
 
 if profiles.check_nans() == True:
     string_nans = "Integration error: presence of nans"
 else:
     string_nans = "Integration successful"
-
 print(string_nans)
-print("total profile time (s)=", time_profile)
 
-# getting the ionization states, the sigma CII and the convolved intensity for the CII
+profiles.to_file()
 
 if post_profiles:
+    # getting the ionization states, the sigma CII and the convolved intensity for the CII
+
     ionization_state = get_ionization_states(profiles, params)
 
     sigma_CII = get_surface_density(profiles, ionization_state, params, rmax=30, h_resol=500, add_CMB_suppression=True)
@@ -98,6 +76,8 @@ if post_profiles:
                                              add_central_contribution=False)
 
     chi2 = get_chi2(intensity_conv, data)
+    intensity_conv.to_file()
+    intensity_raw.to_file()
 
 
 if plotting:
@@ -106,10 +86,7 @@ if plotting:
     intensity_conv.plot()
 
 time_elapsed = (time.perf_counter() - time_start)
-
 print("total time elapsed (s)=", time_elapsed)
 
-intensity_conv.to_file()
-intensity_raw.to_file()
 
 

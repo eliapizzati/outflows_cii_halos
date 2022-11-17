@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 """
-Created on Thu Mar 11 15:10:15 2021
-
-@author: anna
+This script contains the functions to compute the ionization state of the gas,
+the surface density of the CII line, the surface brightness of the CII line (raw and convolved) and
+the total CII luminosity.
 """
 
 import os
@@ -117,27 +116,25 @@ def get_ionization_states(profiles, params):
             
 
 
-def get_surface_density(profiles, ionization_states, params, add_CMB_suppression=False, h_resol = 500, rmax=30.):
+def get_surface_density(profiles, ionization_states, params, add_CMB_suppression=True, h_resol = 500, rmax=30.):
     """
     computes the surface density predicted by the model; 
-    
-    possibility to add the central contribution from the galaxy
-    
+
     Parameters
     ==========    
     profiles: sol_profiles class
     
     ionization_states: ion_profiles class
-    
+
     params: dict
         parameters to be passed to all functions
         
     add_CMB_suppression: Boolean, optional
-    
+        if True, the CMB suppression in accounted for
     h_resol: int, optional
-    
+        number of points for the surface density profile
     rmax: int, optional
-    
+        maximum radius for the surface density profile
     Returns
     =======
     sigma_CII: lum_profile class element
@@ -279,23 +276,17 @@ def get_intensity_raw(sigma_CII, params, params_obs):
 
 def get_intensity_convolved(intensity_raw, params, params_obs, obs_data, add_central_contribution=False):
     """
-    computes the ionization state for hydrogen (x_HI) and Carbon (x_CII)
-    
+    computes convolved intensity from the raw intensity
+
     Parameters
     ==========
-    r: array
-        
-    intensity_raw: array
-    
+    intensity_raw: lum_profile class element
     params: dict
-    
     params_obs: dict
-        parameters from observations
-        
     obs_data: obs_data class element
-    
-    add_CMB_suppression: Boolean, optional
-    
+    add_central_contribution: bool
+        if True, adds the central contribution of the galaxy to the intensity
+
     Returns
     =======
     intensity_convolved: lum_profile class element
@@ -366,22 +357,12 @@ def get_chi2(intensity_convolved, obs_data):
     
     Parameters
     ==========
-    r: array
-        
-    intensity_raw: array
-    
-    params: dict
-    
-    params_obs: dict
-        parameters from observations
-        
+    intensity_convolved: lum_profile class element
     obs_data: obs_data class element
-    
-    add_CMB_suppression: Boolean, optional
-    
+
     Returns
     =======
-    intensity_convolved: lum_profile class element
+    chi2: float
 
     """    
     

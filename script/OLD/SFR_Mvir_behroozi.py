@@ -1,23 +1,19 @@
-# -*- coding: utf-8 -*-
 """
-Created on Fri Apr 16 17:42:04 2021
-
-@author: anna
+This script studies the dependences of the star
 """
-
 
 import numpy as np
 import os
 
 import natconst as nc
 import mydir
-from script.OLD.load_data import obs_data_list
+from load_data import obs_data_list
 
 from my_utils import get_concentration, get_virial_radius, get_circular_velocity_profile_NFW
 
-input_filename_SFR =  os.path.join(mydir.script_dir, "input_data", "sfr_release.dat")
+input_filename_SFR =  os.path.join(mydir.script_dir, "../input_data", "sfr_release.dat")
 
-input_filename_behroozi =  os.path.join(mydir.script_dir, "input_data", "behroozi_z_5.dat")
+input_filename_behroozi =  os.path.join(mydir.script_dir, "../input_data", "behroozi_z_5.dat")
 
 
 halo_masses, halo_mass_ratio = np.loadtxt(input_filename_behroozi, unpack=True, usecols=(0,1))  

@@ -35,7 +35,15 @@ The first workflow is based on the following scripts:
             the abundances and the final emission in CII (everything after the
             solution of the differential equations)
 
- - 
+ - _main_pipeline_for_ALPINE.py_: contains the main function to run the pipeline. It is the main script
+               to run the pipeline for ALPINE data
+
+ - _main_profile_saver.py_: similar to main_pipeline_for_ALPINE but just for saving data files
+
+
+The second workflow is based on the following scripts (all starting with _mcmc_):
+
+ - _fast_solver.py_ (requires gnedincooling): 
 
 Other scritps that are doing other useful stuff:
 
@@ -52,9 +60,9 @@ Other scritps that are doing other useful stuff:
 
 Other scritps that I created and that are not part of the workflow are:
 
- - _Cooling.py_ and _cooling_switchers.py_ study the cooling function to check 
+ - _Cooling.py_ and _cooling_switchers.py_ (requires gnedincooling):  study the cooling function to check 
 that everything is behaving well. The cooling function is defined in gnedincooling
 
- - _trial_spectrum.py_: tries to study the spectral shape of the CII line
+ - _trial_spectrum.py_ (requires gnedincooling): tries to study the spectral shape of the CII line
 
  - _temp_fuji_alpine_comparison.py_: compares the two sets of data

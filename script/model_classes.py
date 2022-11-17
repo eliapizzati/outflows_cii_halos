@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-Created on Mon Mar  8 15:20:36 2021
-
-@author: anna
+This script contains the classes for the profiles
 """
 
 
@@ -17,13 +14,15 @@ import natconst as nc
 
 # general functions (to generate filenames&folders, and to load files)
 
-def get_name_core(params):
+def get_name_core(params, attributes_in_name = None):
     """
     returns the name core of the file
     Parameters
     ----------
     params: dictionary
 
+    attributes_in_name: string, optional
+        if given, the attributes in the name are added in the filename
     Returns
     -------
     name_core: string
@@ -43,8 +42,13 @@ def get_name_core(params):
     if params["DM_model"] is not None:
         
         name_specs += "_{}".format(params["DM_model"])
+
+    if attributes_in_name is not None:
+
+        name_specs += attributes_in_name
         
     return str(name_base + name_specs)
+
 
 def get_data_folder(params, class_type):
     """
@@ -208,11 +212,11 @@ class sol_profiles():
         
         self.name_prefix = "profiles"
 
-    def to_file(self, filename = None, extension = ".dat", verbose = True):
+    def to_file(self, filename = None, extension = ".dat", verbose = True, attributes_in_name = None):
         
         if filename is None:
                             
-            name_core = get_name_core(self.params)
+            name_core = get_name_core(self.params, attributes_in_name)
             
             folder = get_data_folder(self.params, self.name_prefix)
             

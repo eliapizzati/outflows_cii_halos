@@ -3,14 +3,20 @@ This script contains the following functions:
     mstar_behroozi_from_file: M_star from Behroozi+13, from file; it uses z=5 as default and it can't do any other redshift
     mstar_behroozi: M_star from Behroozi+13 direclty from fit
     mvir_behroozi: inverse of mstar_behroozi, directly from fit
-    sersic: Sersic profile in 2D
-    halo:
-    twod_making
-    to_habing_flux
-    from_habing_flux
-    plw_from_habing_flux
-    from_xfitted_to_eta
-    from_eta_to_xfitted
+    twod_making: makes a 2D image from a 1D profile; the image will be used to be transformed for the convolution
+    to_habing_flux: converts from UV flux to Habing flux
+    from_habing_flux: converts from Habing flux to UV flux
+    plw_from_habing_flux:  converts from Habing flux to PLW flux
+    get_concentration: returns the concentration of a halo
+    get_virial_radius: returns the virial radius given the virial mass
+    get_mass_profile_NFW: returns the mass profile of a NFW halo
+    get_mass_profile_disk: returns the mass profile of a disk
+    get_circular_velocity_profile_NFW: returns the circular velocity inside a radius r using a NFW profile
+    get_circular_velocity_profile_NFW_and_disk: returns the circular vvelocity inside a radius r using a NFW profile + the central disk
+    get_virial_mass_from_vc: gets the virial mass from the parameter v_c (maximun circular velocity)
+    get_vc_from_virial_mass: gets the parameter v_c (maximun circular velocity) from the virial mass
+    from_xfitted_to_eta: converts from the fitted x parameter to the eta parameter
+    from_eta_to_xfitted: converts from the eta parameter to the fitted x parameter
 
 """
 
@@ -136,13 +142,16 @@ def twod_making(profile, x_axis, nimage=1000):
 
     Parameters
     ----------
-    profile:
-    x_axis
-    nimage
+    profile:    array
+        1D profile
+    x_axis:   array
+    nimage:     int
+        number of pixels of the image
 
     Returns
     -------
-
+    array, array
+        extended x_axis, 2D image
     """
     x_ext = np.linspace(-x_axis.max(), x_axis.max(), nimage)
     
@@ -157,17 +166,52 @@ def twod_making(profile, x_axis, nimage=1000):
 
 
 def to_habing_flux(I_UV):
-    
+    """
+    converts from UV flux to Habing flux
+    Parameters
+    ----------
+    I_UV: float
+        UV flux in erg/s/cm^2/Hz
+
+    Returns
+    -------
+    float
+        Habing flux in MW value
+    """
     return  4*np.pi*I_UV*(13.6-6.)*nc.ev/nc.hh/nc.cc/5.29e-14
 
 
 def from_habing_flux(I_g0):
+    """
+    converts from Habing flux to UV flux
+    Parameters
+    ----------
+    I_g0: float
+        Habing flux in MW value
+
+    Returns
+    -------
+    float
+        UV flux in erg/s/cm^2/Hz
+    """
     return I_g0 * nc.hh * nc.cc * 5.29e-14 / 4 / np.pi / (13.6 - 6.) / nc.ev
 
+
 def plw_from_habing_flux(I_g0):
+    """
+    converts from Habing flux to UV flux
+    Parameters
+    ----------
+    I_g0
+
+    Returns
+    -------
+
+    """
     I_UV = I_g0 * nc.hh * nc.cc * 5.29e-14 / 4 / np.pi / (13.6 - 6.) / nc.ev #erg/s/Hz/sr/cm2
     plw = 1.38e9 * I_UV #s^-1
     return plw
+
 
 def get_concentration(M_vir, z):
     """
@@ -195,6 +239,7 @@ def get_concentration(M_vir, z):
     
     return 10**logc
 
+
 def get_virial_radius(M_vir, z, overdensity=200.):
     """
     gets the virial radius given the virial mass 
@@ -207,7 +252,7 @@ def get_virial_radius(M_vir, z, overdensity=200.):
     z: float
         redshift
     
-    overdensity: float
+    overdensity: float, optional
         overdensity used for the halo definition (default definition is 200)
 
     
@@ -253,7 +298,25 @@ def get_mass_profile_NFW(r,M_vir,z):
 
     
 def get_mass_profile_disk(r, M_star, model="exp", R_pure = 0.3):
+    """
+    gets the mass inside a radius r using a disk profile (exponential or uniform)
 
+    Parameters
+    ----------
+    r: float
+        radius of interest in cm
+    M_star: float
+        stellar mass in solar masses
+    model: str, optional
+        disk model (default is "exp")
+    R_pure: float, optional
+        scale radius of the exponential disk in kpc unit (default is 0.3 )
+
+    Returns
+    -------
+    float
+        mass inside r in solar masses
+    """
     if model == "exp":
 
         R = R_pure * 1e3 * nc.pc
@@ -272,8 +335,7 @@ def get_mass_profile_disk(r, M_star, model="exp", R_pure = 0.3):
 
 def get_circular_velocity_profile_NFW(r,M_vir,z):
     """
-    gets the mass inside a radius r using a NFW profile
-    
+    returns the circular velocity inside a radius r using a NFW profile
     Parameters
     ==========    
     r: float
@@ -299,7 +361,7 @@ def get_circular_velocity_profile_NFW(r,M_vir,z):
 
 def get_circular_velocity_profile_NFW_and_disk(r, M_vir, z):
     """
-    gets the mass inside a radius r using a NFW profile
+    returns the circular velocity inside a radius r using a NFW profile + disk
 
     Parameters
     ==========
@@ -348,7 +410,6 @@ def get_virial_mass_from_vc(v_c, z, overdensity=200.):
     =======
     float
         virial mass in solar masses
-
     """
     return v_c**3 / nc.gg**1.5 * (4*np.pi*overdensity*cosmo.critical_density(z).value/3)**(-0.5) / nc.ms
 
@@ -369,7 +430,6 @@ def get_vc_from_virial_mass(M_vir, z):
     =======
     float
         v_c in cm/s
-
     """
     R_vir = get_virial_radius(M_vir, z)
     
@@ -378,32 +438,46 @@ def get_vc_from_virial_mass(M_vir, z):
 
 def from_xfitted_to_eta(x, a_fit, b_fit):
     """
+    gives the eta parameter from the fitted x parameter (which can be either SFR or Mstar), using the
+     relation between eta and SFR/Mstar in the paper (log eta = a_fit + b_fit * log SFR/1msun/yr or
+    log eta = a_fit + b_fit * log Mstar/1e10msun)
 
     Parameters
     ----------
-    x:
-    a_fit
-    b_fit
+    x: float
+        SFR or Mstar in solar masses per year or solar masses
+    a_fit : float
+        a_fit parameter from the fit
+    b_fit : float
+        b_fit parameter from the fit
 
     Returns
     -------
-
+    float
+        eta parameter
     """
     return 10**(b_fit*np.log10(x) + np.log10(a_fit))
 
 
 def from_eta_to_xfitted(eta, a_fit, b_fit):
     """
+    gives the x parameter (which can be either SFR or Mstar) from the eta paramter, using the relation
+    between eta and SFR/Mstar in the paper (log eta = a_fit + b_fit * log SFR/1msun/yr or
+    log eta = a_fit + b_fit * log Mstar/1e10msun)
 
     Parameters
     ----------
-    eta:
-    a_fit
-    b_fit
+    eta: float
+        eta parameter
+    a_fit: float
+        a_fit parameter from the fit
+    b_fit: float
+        b_fit parameter from the fit
 
     Returns
     -------
-
+    float
+        SFR or Mstar in solar masses per year or solar masses
     """
     return 10 ** ((np.log10(eta) - np.log10(a_fit))/ b_fit)
 

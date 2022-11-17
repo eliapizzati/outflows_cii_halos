@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 This script loads the data into the class obs_data and makes a few sanity check plots
 """

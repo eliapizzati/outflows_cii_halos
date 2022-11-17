@@ -1,7 +1,6 @@
 """
-Created on Sun Mar  7 17:16:03 2021
-
-@author: anna
+This script runs the entire pipeline for (selected) ALPINE systems and show some plots/saves data in files depending on
+the switches
 """
 
 
@@ -16,7 +15,7 @@ from post_sol_modules import get_ionization_states, get_surface_density, get_int
                       get_intensity_convolved, get_chi2
 
 from model_classes import load_from_file
-from script.OLD.load_data import obs_data_list, observational_data_fuji
+from load_data import obs_data_list, observational_data_fuji
 import plot_config as pltc
 from my_utils import get_vc_from_virial_mass
 
