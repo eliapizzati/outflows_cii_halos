@@ -81,7 +81,7 @@ if post_profiles:
 
 
 if plotting:
-    profiles.plot()
+    profiles.plot(savefig=True)
     if post_profiles:
         ionization_state.plot(savefig=True)
         sigma_CII.plot(savefig=True)
