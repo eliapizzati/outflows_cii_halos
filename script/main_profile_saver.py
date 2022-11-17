@@ -25,7 +25,7 @@ plotting = True
 
 params = dict([("DM_model", "NFW+disk"),
                ("beta", 4.4),
-               ("SFR", 88.),
+               ("SFR", 101.),
                ("f_esc_ion", 0.0),
                ("f_esc_FUV", 0.0),
                ("v_c", 217.),
