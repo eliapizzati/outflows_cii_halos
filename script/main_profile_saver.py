@@ -57,7 +57,7 @@ else:
     string_nans = "Integration successful"
 print(string_nans)
 
-profiles.to_file()
+profiles.to_file(attributes_in_name="DC630594_per_laura")
 
 if post_profiles:
     # getting the ionization states, the sigma CII and the convolved intensity for the CII
