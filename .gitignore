@@ -1,6 +1,4 @@
-data/*
-!data/data_profiles/*
-#plot/*
+data/data_emcee/*
 !script/input_data/*
 *.pdf
 *.aux
