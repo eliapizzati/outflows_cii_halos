@@ -24,11 +24,11 @@ plotting = True
 
 
 params = dict([("DM_model", "NFW+disk"),
-               ("beta", 7.1),
-               ("SFR", 30.),
+               ("beta", 5.4),
+               ("SFR", 32.),
                ("f_esc_ion", 0.0),
                ("f_esc_FUV", 0.0),
-               ("v_c", 204.),
+               ("v_c", 197.),
                ("redshift", 5.0),
                ("Zeta", 1.0),
                ("alfa", 1.0),
@@ -58,7 +58,7 @@ else:
     string_nans = "Integration successful"
 print(string_nans)
 
-profiles.to_file(attributes_in_name=f"DC630594_{resol}_per_laura")
+profiles.to_file(attributes_in_name=f"DC8800016_{resol}_per_laura")
 
 if post_profiles:
     # getting the ionization states, the sigma CII and the convolved intensity for the CII
