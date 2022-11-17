@@ -1,4 +1,5 @@
 data/*
+!data/data_profiles/*
 #plot/*
 !script/input_data/*
 *.pdf
