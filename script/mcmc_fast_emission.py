@@ -3,6 +3,7 @@ import numpy as np
 import natconst as nc
 
 from scipy.interpolate import interp1d
+import scipy.integrate as si
 
 from mcmc_fast_solver import diff_system_fast, stopping_condition
 from radiation_fields import UVB_rates
