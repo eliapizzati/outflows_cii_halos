@@ -30,12 +30,12 @@ plot2 = True #corners
 plot3 = False #emission
 plot4 = False #luminodity
 
-thin = 200
-discard = 1000
+thin = 1
+discard = 0
 
 
 nwalkers = 48
-nsteps = 100000#int(input("number of steps?"))
+nsteps = 100#int(input("number of steps?"))
 
 
 
@@ -59,16 +59,16 @@ print("###################################################################")
 
 folder_data = "data_emcee"
 
-if not os.path.exists(os.path.join(mydir.data_dir, folder_data)):
-    os.mkdir(os.path.join(mydir.data_dir, folder_data))
+if not os.path.exists(os.path.join(my_dir.data_dir, folder_data)):
+    os.mkdir(os.path.join(my_dir.data_dir, folder_data))
 
 folder_plot = "plot_emcee"
 
-if not os.path.exists(os.path.join(mydir.plot_dir, folder_plot)):
-    os.mkdir(os.path.join(mydir.plot_dir, folder_plot))
+if not os.path.exists(os.path.join(my_dir.plot_dir, folder_plot)):
+    os.mkdir(os.path.join(my_dir.plot_dir, folder_plot))
 
 
-path = os.path.join(mydir.data_dir, folder_data, "{}.h5".format(filename))
+path = os.path.join(my_dir.data_dir, folder_data, "{}.h5".format(filename))
 path_machine = os.path.join("/Users/eliapizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
 
 reader = emcee.backends.HDFBackend(path_machine)
@@ -132,7 +132,7 @@ if plot1:
     fig.suptitle("{0:}, v_c = {1:.1f} km/s, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"],
                                                                   data.params_obs["SFR"]))
 
-    plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "chain_{}.png".format(filename)))
+    plt.savefig(os.path.join(my_dir.plot_dir, folder_plot, "chain_{}.png".format(filename)))
 
 
 if plot2:
@@ -244,7 +244,7 @@ if plot2:
     #fig.suptitle("{0:}, v_c = {1:.1f} km/s, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"],
     #                                                              data.params_obs["SFR"]))
 
-    plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "corner_{}.png".format(filename)))
+    plt.savefig(os.path.join(my_dir.plot_dir, folder_plot, "corner_{}.png".format(filename)))
 
 
 
@@ -296,7 +296,7 @@ if plot3:
 
     fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
 
-    plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "emission_{}.png".format(filename)))
+    plt.savefig(os.path.join(my_dir.plot_dir, folder_plot, "emission_{}.png".format(filename)))
 
 
 
@@ -357,7 +357,7 @@ if plot4:
 
     fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
 
-    plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "emission_{}.png".format(filename)))
+    plt.savefig(os.path.join(my_dir.plot_dir, folder_plot, "emission_{}.png".format(filename)))
 
     print(luminosities)
     print("model lum",np.percentile(luminosities/1e9, [18,50,84])[1], np.percentile(luminosities/1e9, [18,50,84])[1]-np.percentile(luminosities/1e9, [18,50,84])[0],

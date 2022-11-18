@@ -30,10 +30,35 @@ gc.frtinitcf(0, os.path.join(my_dir.script_dir, "input_data", "cf_table.I2.dat")
 
 # preliminar parameters (TO CHECK EVERY TIME)
 
-
+store_data_loc = "quasar" # can be either quasar (the machine is quasar in leiden) or local (mac laptop) or github (for github)
 parallel = True
-optimization = True
+optimization = False
 model = "old"
+
+# selecting the object to fit
+
+data_counter = int(input("which data object?"))
+data = obs_data_list[data_counter]
+
+nwalkers = 48
+nsteps = int(input("number of steps?"))
+
+
+filename = "{}_{:.0f}_updated_{}".format(data.params_obs["name_short"], nsteps, model)
+
+folder = "data_emcee"
+if not os.path.exists(os.path.join(my_dir.data_dir, folder)):
+    os.mkdir(os.path.join(my_dir.data_dir, folder))
+
+if store_data_loc == "quasar":
+    path = os.path.join("/data2/pizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
+elif store_data_loc == "local":
+    path = os.path.join("/Users/eliapizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
+else:
+    path = os.path.join(my_dir.data_dir, folder, "{}.h5".format(filename))
+
+
+# parameters for the integration part
 
 rmax = 30
 h_resol = 500
@@ -45,18 +70,6 @@ integrator = "RK45"
 h = np.linspace(0.3, rmax, h_resol)
 h_ext = np.linspace(-rmax, rmax, 2 * h_resol)
 grid = np.meshgrid(h_ext, h_ext)
-
-data_counter = int(input("which data object?"))
-data = obs_data_list[data_counter]
-
-nwalkers = 48
-nsteps = int(input("number of steps?"))
-
-beta_best_fits = [5.5, 7.5, 6.4, 5.3, 5.9, 4.0, 8.2, 4.3]
-
-data.params_obs.update(beta_best_fit=beta_best_fits[data_counter])
-
-filename = "{}_{:.0f}_updated_{}".format(data.params_obs["name_short"], nsteps, model)
 
 redshift = data.params_obs["redshift"]
 
@@ -71,6 +84,10 @@ beam_func = interp1d(h, beam_interp, \
 
 beam_2d = beam_func(np.sqrt(grid[0] ** 2 + grid[1] ** 2))
 f_beam = np.fft.fft2(beam_2d)
+
+if not optimization:
+    beta_best_fits = [5.5, 7.5, 6.4, 5.3, 5.9, 4.0, 8.2, 4.3]
+    data.params_obs.update(beta_best_fit=beta_best_fits[data_counter])
 
 other_params = get_other_params(redshift, FWHM_vel, r_resol, cut, integrator)
 
@@ -92,14 +109,6 @@ logging.info("filename = {}".format(filename))
 
 logging.info("###################################################################")
 
-folder = "data_emcee"
-
-if not os.path.exists(os.path.join(my_dir.data_dir, folder)):
-    os.mkdir(os.path.join(my_dir.data_dir, folder))
-
-
-path = os.path.join(my_dir.data_dir, folder, "{}.h5".format(filename))
-path_machine = os.path.join("/data2/pizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
 
 log_likelihood.counter = 0
 
@@ -132,23 +141,24 @@ if optimization:
          for i in range(ndim)] for i in range(nwalkers)]
 
     print(pos)
+
 else:
 
-    theta_input = [np.log10(data.params_obs["beta_best_fit"]), data.params_obs["log_SFR"], data.params_obs["log_v_c"]]
+    # theta_input = [np.log10(data.params_obs["beta_best_fit"]), data.params_obs["log_SFR"], data.params_obs["log_v_c"]]
+    #
+    # ndim = len(theta_input)
+    #
+    # pos = theta_input + np.asarray([0.2, 0.2, 0.2]) * np.random.randn(nwalkers, ndim)
+    #
+    # # pos += np.asarray([0.5, 0., 0.]) * np.random.rand(nwalkers, ndim)
+    #
+    # pos[2][pos[2] < 1.] = 1. + np.abs(pos[2][pos[2] < 1.])
+    #
+    # pos[pos < 0.] = 1e-3
+    pos = None
 
-    ndim = len(theta_input)
-
-    pos = theta_input + np.asarray([0.2, 0.2, 0.2]) * np.random.randn(nwalkers, ndim)
-
-    # pos += np.asarray([0.5, 0., 0.]) * np.random.rand(nwalkers, ndim)
-
-    pos[2][pos[2] < 1.] = 1. + np.abs(pos[2][pos[2] < 1.])
-
-    pos[pos < 0.] = 1e-3
-
-
-backend = emcee.backends.HDFBackend(path_machine)
-backend.reset(nwalkers, ndim)
+backend = emcee.backends.HDFBackend(path)
+# backend.reset(nwalkers, ndim)
 
 
 if parallel:
