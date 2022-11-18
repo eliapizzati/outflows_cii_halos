@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 from astropy.table import Table
 
-import mydir
+import my_dir
 import natconst as nc
 
 from my_utils import get_circular_velocity_profile_NFW, get_virial_radius, get_vc_from_virial_mass, mstar_behroozi
@@ -82,9 +82,9 @@ if __name__ == "__main__":
 
     plt_star, ax_star = plt.subplots()
 
-input_filename_general = os.path.join(mydir.script_dir, "input_data", "ALPINE_merged_catalogs.fits")
+input_filename_general = os.path.join(my_dir.script_dir, "input_data", "ALPINE_merged_catalogs.fits")
 
-input_filename_behroozi = os.path.join(mydir.script_dir, "input_data", "behroozi_z_5.dat")
+input_filename_behroozi = os.path.join(my_dir.script_dir, "input_data", "behroozi_z_5.dat")
 
 # First, you can open the file and check the information in it
 fits_table_hdu = fits.open(input_filename_general)
@@ -168,8 +168,8 @@ for name, name_short in  zip(names, names_short):
     v_c_lim_up = np.sqrt(nc.gg * M_halo_lim_up * nc.ms / R_vir_lim_down)
     v_c_lim_down = np.sqrt(nc.gg * M_halo_lim_down * nc.ms / R_vir_lim_up)
 
-    input_filename_CII = os.path.join(mydir.script_dir, "input_data", "{}.dat".format(name))
-    input_filename_psf = os.path.join(mydir.script_dir, "input_data", "{}_psf.dat".format(name))
+    input_filename_CII = os.path.join(my_dir.script_dir, "input_data", "{}.dat".format(name))
+    input_filename_psf = os.path.join(my_dir.script_dir, "input_data", "{}_psf.dat".format(name))
 
     data = np.loadtxt(input_filename_CII, unpack=True)
 
@@ -288,7 +288,7 @@ if __name__ == "__main__":
 OLD --> FUJIMOTO+19
 """
 
-input_filename = os.path.join(mydir.script_dir, "input_data", "radial_cii_ALMA-ALL.dat")
+input_filename = os.path.join(my_dir.script_dir, "input_data", "radial_cii_ALMA-ALL.dat")
 
 data = np.loadtxt(input_filename, unpack=True)
 
@@ -300,7 +300,7 @@ fuji_y *= 1e3  # from Jy to mJy
 err_up *= 1e3  # from Jy to mJy
 err_down *= 1e3  # from Jy to mJy
 
-input_filename_beam = os.path.join(mydir.script_dir, "input_data", "radial_psf_ALMA-ALL.dat")
+input_filename_beam = os.path.join(my_dir.script_dir, "input_data", "radial_psf_ALMA-ALL.dat")
 
 data_beam = np.loadtxt(input_filename_beam, unpack=True)
 

@@ -5,13 +5,13 @@ from matplotlib.widgets import Slider
 from scipy.interpolate import interp1d
 
 
-from mcmc_new import get_emission_fast, get_other_params
-from mcmc_new import h, grid
+from mcmc_fast_emission import get_emission_fast, get_other_params
+from mcmc_main import h, grid
 from load_data import obs_data_list, names, names_CII_halo, observational_data_fuji
 
 
 import plot_config as pltc
-import mydir
+import my_dir
 import my_utils
 import natconst as nc
 

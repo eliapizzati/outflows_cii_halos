@@ -13,7 +13,7 @@ import corner
 import emcee
 
 import plot_config as pltc
-import mydir
+import my_dir
 import natconst as nc
 
 from script.OLD.load_data import obs_data_list
@@ -196,8 +196,8 @@ plt.savefig(os.path.join(mydir.plot_dir, folder_plot, "corner_{}.png".format(fil
 # emission
 
 if emission:
-    from mcmc_new import get_emission_fast, get_other_params
-    from mcmc_new import h, grid
+    from mcmc_main import get_emission_fast, get_other_params
+    from mcmc_main import h, grid
         
     
     other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"])

@@ -6,7 +6,7 @@ from matplotlib.patches import Rectangle
 import natconst as nc
 import os
 
-import mydir
+import my_dir
 import emcee
 import corner
 
@@ -76,8 +76,8 @@ params = dict([("DM_model", "NFW"),
 
 if plot0:
 
-    from mcmc_new import get_emission_fast, get_other_params
-    from mcmc_new import h, grid
+    from mcmc_main import get_emission_fast, get_other_params
+    from mcmc_main import h, grid
 
     from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                    AutoMinorLocator)
@@ -187,8 +187,8 @@ if plot1:
     # emission chains
     """
 
-    from mcmc_new import get_emission_fast, get_other_params
-    from mcmc_new import h, grid
+    from mcmc_main import get_emission_fast, get_other_params
+    from mcmc_main import h, grid
 
     fig, axs = plt.subplots(4, 2, sharey=True, sharex=True, figsize=(1.3 * 8.27, 1.3 * 12.))
 

@@ -15,7 +15,7 @@ import emcee
 from matplotlib import cm, colors
 from scipy.optimize import curve_fit
 
-import mydir
+import my_dir
 
 from script.OLD.load_data import obs_data_list, names_CII_halo_short
 

@@ -23,17 +23,16 @@ import emcee
 
 import natconst as nc
 
-import mydir
 from script.OLD.load_data import obs_data_list
 
-from fast_solver import diff_system_fast, stopping_condition
+from script.OLD.fast_solver import diff_system_fast, stopping_condition
 
 from radiation_fields import UVB_rates
 
 
 import gnedincooling as gc
 
-gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))        
+gc.frtinitcf(0, os.path.join(mydir.script_dir, "../input_data", "cf_table.I2.dat"))
 
 
 

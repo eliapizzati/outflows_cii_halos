@@ -11,13 +11,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import cm, colors
 
-import mydir
+import my_dir
 
 import plot_config
 
 import gnedincooling as gc
 
-gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
+gc.frtinitcf(0, os.path.join(my_dir.script_dir, "input_data", "cf_table.I2.dat"))
 
 
 save_to_file = False
@@ -131,13 +131,13 @@ def heating_vectorized(T_vec, n, Plw, Ph1, Pg1, Pc6):
 def to_file(name_base, var_vec, T_vec, n, Plw, Ph1, Pg1, Pc6):
     folder = 'data_cooling'
 
-    if not os.path.exists(os.path.join(mydir.data_dir, folder)):
-        os.mkdir(os.path.join(mydir.data_dir, folder))
+    if not os.path.exists(os.path.join(my_dir.data_dir, folder)):
+        os.mkdir(os.path.join(my_dir.data_dir, folder))
 
     name = "{}_n{:.1e}_plw{:.1e}_ph{:.1e}_pg{:.1e}_pc{:.1e}.dat" \
         .format(name_base, n, Plw, Ph1, Pg1, Pc6)
 
-    path = os.path.join(mydir.data_dir, folder, name)
+    path = os.path.join(my_dir.data_dir, folder, name)
 
     np.savetxt(path, (T_vec, var_vec))
 
@@ -151,7 +151,7 @@ def from_file(name_base, n, Plw, Ph1, Pg1, Pc6):
     name = "{}_n{:.1e}_plw{:.1e}_ph{:.1e}_pg{:.1e}_pc{:.1e}.dat" \
         .format(name_base, n, Plw, Ph1, Pg1, Pc6)
 
-    path = os.path.join(mydir.data_dir, folder, name)
+    path = os.path.join(my_dir.data_dir, folder, name)
 
     T_vec, var_vec = np.loadtxt(path)
 
@@ -274,10 +274,10 @@ def plot_quantity(quantity, quantity_array, values):
     if save_plot:
         folder = 'plot_cooling'
 
-        if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
-            os.mkdir(os.path.join(mydir.plot_dir, folder))
+        if not os.path.exists(os.path.join(my_dir.plot_dir, folder)):
+            os.mkdir(os.path.join(my_dir.plot_dir, folder))
 
-        path = os.path.join(mydir.plot_dir, folder, name)
+        path = os.path.join(my_dir.plot_dir, folder, name)
 
         plt.savefig(path)
 
@@ -288,7 +288,7 @@ if save_to_file == True:
 
     import gnedincooling as gc
 
-    gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
+    gc.frtinitcf(0, os.path.join(my_dir.script_dir, "input_data", "cf_table.I2.dat"))
 
     print("###############################################")
     print("STARTING ITERATIONS")
@@ -311,7 +311,7 @@ if plotting:
     if load_from_file == False:
         import gnedincooling as gc
 
-        gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
+        gc.frtinitcf(0, os.path.join(my_dir.script_dir, "input_data", "cf_table.I2.dat"))
 
     if quantity == "n":
         quantity_array = densities

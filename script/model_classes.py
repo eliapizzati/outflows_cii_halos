@@ -6,7 +6,7 @@ This script contains the classes for the profiles
 
 import os
 import numpy as np
-import mydir
+import my_dir
 
 import matplotlib.pyplot as plt
 
@@ -66,8 +66,8 @@ def get_data_folder(params, class_type):
         
     folder = 'data_{}'.format(class_type)
 
-    if not os.path.exists(os.path.join(mydir.data_dir, folder)):
-        os.mkdir(os.path.join(mydir.data_dir, folder))
+    if not os.path.exists(os.path.join(my_dir.data_dir, folder)):
+        os.mkdir(os.path.join(my_dir.data_dir, folder))
 
     return folder
 
@@ -79,8 +79,8 @@ def get_plot_folder(params, class_type):
         
     folder = 'plot_{}'.format(class_type)
 
-    if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
-        os.mkdir(os.path.join(mydir.plot_dir, folder))
+    if not os.path.exists(os.path.join(my_dir.plot_dir, folder)):
+        os.mkdir(os.path.join(my_dir.plot_dir, folder))
 
     return folder
 
@@ -99,7 +99,7 @@ def load_from_file(params, filename = None, class_type = "profiles", extension =
 
             folder = get_data_folder(params, class_type)
             
-            path = os.path.join(mydir.data_dir, folder, name_prefix + name_core + extension)
+            path = os.path.join(my_dir.data_dir, folder, name_prefix + name_core + extension)
             
             data = np.loadtxt(path)     
                 
@@ -127,7 +127,7 @@ def load_from_file(params, filename = None, class_type = "profiles", extension =
 
             folder = get_data_folder(params, class_type)
             
-            path = os.path.join(mydir.data_dir, folder, name_prefix + name_core + extension)
+            path = os.path.join(my_dir.data_dir, folder, name_prefix + name_core + extension)
             
             data = np.loadtxt(path)     
                 
@@ -167,7 +167,7 @@ def load_from_file(params, filename = None, class_type = "profiles", extension =
 
             folder = get_data_folder(params, class_type)
             
-            path = os.path.join(mydir.data_dir, folder, name_prefix + name_core + extension)
+            path = os.path.join(my_dir.data_dir, folder, name_prefix + name_core + extension)
             
             data = np.loadtxt(path)     
                 
@@ -220,7 +220,7 @@ class sol_profiles():
             
             folder = get_data_folder(self.params, self.name_prefix)
             
-            path = os.path.join(mydir.data_dir, folder, self.name_prefix + name_core + extension)
+            path = os.path.join(my_dir.data_dir, folder, self.name_prefix + name_core + extension)
             
             np.savetxt(path, (self.r,self.v,self.n,self.T))
             
@@ -253,8 +253,7 @@ class sol_profiles():
             ax_v.set_xlabel("log (r [kpc])", size=size)
             ax_v.set_ylabel("v [1000 km/s] ", size=size)
             ax_v.tick_params(labelsize=size)
-            ax_v.set_xlim((np.log10(0.3),np.log10(30)))
-    
+
             ax_n.set_xlabel("log (r [kpc])", size=size)
             ax_n.set_ylabel("log (n [cm$^{-3}$]) ", size=size)
             ax_n.tick_params(labelsize=size)
@@ -277,7 +276,7 @@ class sol_profiles():
             
                 folder = get_plot_folder(self.params, self.name_prefix)
 
-                plt.savefig(os.path.join(mydir.plot_dir, folder,self.name_prefix + name_core + extension))
+                plt.savefig(os.path.join(my_dir.plot_dir, folder,self.name_prefix + name_core + extension))
                 
                 
         elif ax is not None:
@@ -321,7 +320,7 @@ class ion_profiles():
             
             folder = get_data_folder(self.params, self.name_prefix)
             
-            path = os.path.join(mydir.data_dir, folder, self.name_prefix + name_core + extension)
+            path = os.path.join(my_dir.data_dir, folder, self.name_prefix + name_core + extension)
             
             np.savetxt(path, (self.r,self.x_e,self.x_CII))
             
@@ -373,7 +372,7 @@ class ion_profiles():
         
                 folder = get_plot_folder(self.params, self.name_prefix)
                 
-                plt.savefig(os.path.join(mydir.plot_dir, folder,self.name_prefix + name_core + extension))
+                plt.savefig(os.path.join(my_dir.plot_dir, folder,self.name_prefix + name_core + extension))
                 
                 
         elif ax is not None:
@@ -428,7 +427,7 @@ class lum_profile():
             
             folder = get_data_folder(self.params, self.name_prefix)
             
-            path = os.path.join(mydir.data_dir, folder, self.name_prefix + name_core + extension)
+            path = os.path.join(my_dir.data_dir, folder, self.name_prefix + name_core + extension)
             
             np.savetxt(path, (self.h,self.var))
             
@@ -487,7 +486,7 @@ class lum_profile():
         
                 folder = get_plot_folder(self.params, self.name_prefix)
                 
-                plt.savefig(os.path.join(mydir.plot_dir, folder,self.name_prefix + name_core + extension))
+                plt.savefig(os.path.join(my_dir.plot_dir, folder,self.name_prefix + name_core + extension))
                 
         elif ax is not None:
             

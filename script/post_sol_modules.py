@@ -6,7 +6,7 @@ the total CII luminosity.
 
 import os
 import natconst as nc
-import mydir 
+import my_dir
 
 
 import numpy as np

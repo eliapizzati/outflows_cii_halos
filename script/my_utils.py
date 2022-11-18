@@ -26,7 +26,7 @@ import os
 import scipy.interpolate
 import natconst as nc
 
-import mydir
+import my_dir
 
 from scipy import optimize
 
@@ -47,7 +47,7 @@ def mstar_behroozi_from_file(M_vir):
     float
         galaxy stellar mass in solar masses
     """
-    input_filename_behroozi = os.path.join(mydir.script_dir, "input_data", "behroozi_z_5.dat")
+    input_filename_behroozi = os.path.join(my_dir.script_dir, "input_data", "behroozi_z_5.dat")
 
     # First, you can open the file and check the information in it
 

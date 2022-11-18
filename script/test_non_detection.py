@@ -9,7 +9,7 @@ from scipy.interpolate import interp1d
 from collections import namedtuple
 
 import plot_config as pltc
-import mydir
+import my_dir
 import natconst as nc
 
 from load_data import obs_data_list_non_det, obs_data_list, names, names_wo_CII_halo, names_wo_CII_halo_short
@@ -21,13 +21,14 @@ data1 = obs_data_list[1]
 datas = obs_data_list_non_det# [data0, data1]
 colors = ["maroon", "navy", "olive", "magenta", "purple"]
 print(datas)
+
 """
 PLOT1
 """
 
 
-from mcmc_new import get_emission_fast, get_other_params
-from mcmc_new import h, grid
+from mcmc_main import get_emission_fast, get_other_params
+from mcmc_main import h, grid
 
 fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=15)
 

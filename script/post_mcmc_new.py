@@ -16,7 +16,7 @@ from collections import namedtuple
 
 
 import plot_config as pltc
-import mydir
+import my_dir
 import natconst as nc
 
 from load_data import obs_data_list, names, names_CII_halo, observational_data_fuji
@@ -253,8 +253,8 @@ if plot3:
     PLOT3 - qlf
     """
 
-    from mcmc_new import get_emission_fast, get_other_params
-    from mcmc_new import h, grid
+    from mcmc_main import get_emission_fast, get_other_params
+    from mcmc_main import h, grid
 
     other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"])
 
@@ -305,8 +305,8 @@ if plot4:
     PLOT3 - luminodity
     """
 
-    from mcmc_new import get_emission_fast, get_other_params
-    from mcmc_new import h, grid
+    from mcmc_main import get_emission_fast, get_other_params
+    from mcmc_main import h, grid
 
     other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"])
 

@@ -11,7 +11,7 @@ import time
 
 import matplotlib.pyplot as plt
 
-import mydir
+import my_dir
 import natconst as nc
 import plot_config as pltc
 from mcmc import data, other_params, get_emission_fast, h, f_beam, grid
@@ -31,8 +31,8 @@ ax_int_conv.set_ylim((1e-3,1e2))
 folder = "plot_fast_emission"
     
 
-if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
-    os.mkdir(os.path.join(mydir.plot_dir, folder))
+if not os.path.exists(os.path.join(my_dir.plot_dir, folder)):
+    os.mkdir(os.path.join(my_dir.plot_dir, folder))
 
 for  beta, SFR, v_c in itertools.product(betas, SFRs, v_cs):
 
@@ -81,7 +81,7 @@ alpine = ax_int_conv.errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \
 
    
 fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
-plt.savefig(os.path.join(mydir.plot_dir, folder, "emission_mus.png"))
+plt.savefig(os.path.join(my_dir.plot_dir, folder, "emission_mus.png"))
     
 plt.show()
         

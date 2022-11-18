@@ -6,7 +6,7 @@ and stores data in files (no plots so that it can be run in machines too)
 import os
 import numpy as np
 
-import mydir
+import my_dir
 
 from sol_modules import get_profiles
 
@@ -47,7 +47,7 @@ print("##################################")
 resol = 10000
 
 time_profile = time.perf_counter()
-profiles = get_profiles(params, resol=resol, print_time=False, integrator="RK45")
+profiles = get_profiles(params, resol=resol, Rmax = 10, log_grid=True, print_time=False, integrator="RK45")
 time_profile = (time.perf_counter() - time_profile)
 print("total profile time (s)=", time_profile)
 
@@ -58,7 +58,7 @@ else:
     string_nans = "Integration successful"
 print(string_nans)
 
-profiles.to_file(attributes_in_name=f"VC5100537582_{resol}_per_laura")
+profiles.to_file(attributes_in_name=f"VC5100537582_{resol}_per_laura_log_grid")
 
 if post_profiles:
     # getting the ionization states, the sigma CII and the convolved intensity for the CII

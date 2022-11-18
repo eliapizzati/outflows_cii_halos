@@ -43,7 +43,9 @@ The first workflow is based on the following scripts:
 
 The second workflow is based on the following scripts (all starting with _mcmc_):
 
- - _fast_solver.py_ (requires gnedincooling): 
+ - _mcmc_fast_solver.py_ (requires gnedincooling): defines the system of differential equations
+                   
+ - _mcmc_likelihood_and_priors.py_: contains the functions used to compute the likelihood and the priors
 
 Other scritps that are doing other useful stuff:
 
@@ -51,7 +53,7 @@ Other scritps that are doing other useful stuff:
 
  - _info.py_: contains the information about the parameters
  
- - _mydir.py_: contains the paths to the data folders
+ - _my_dir.py_: contains the paths to the data folders
 
  - _natconst.py_: contains the natural constants
 

@@ -4,7 +4,7 @@ This script contains the functions to solve the differential equations and find 
 
 import os
 import natconst as nc
-import mydir 
+import my_dir
 import time
 
 
@@ -24,7 +24,7 @@ from my_utils import get_circular_velocity_profile_NFW_and_disk, get_circular_ve
 
 import gnedincooling as gc
 
-gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
+gc.frtinitcf(0, os.path.join(my_dir.script_dir, "input_data", "cf_table.I2.dat"))
 
 def lamda(T, n, r, params, Plw, Ph1, Pg1):
     """
@@ -90,7 +90,7 @@ def lamda(T, n, r, params, Plw, Ph1, Pg1):
 
 # SYSTEM OF EQUATIONS
 
-def diff_system(r, y, params, Plw, Ph1, Pg1):
+def diff_system(r, y, params, Plw, Ph1, Pg1, cut = 41.*1e5):
     """
     differential system for the Euler equations
     
@@ -188,15 +188,15 @@ def diff_system(r, y, params, Plw, Ph1, Pg1):
     return output
 
 
-def stopping_condition(t, y,params, Plw, Ph1, Pg1): 
-    return y[0] - 41. * 1e5 # in cm/s
+def stopping_condition(t, y, params, Plw, Ph1, Pg1, cut = 41.*1e5):
+    return y[0] - cut # in cm/s
 
 stopping_condition.terminal = True
 stopping_condition.direction = -1
 
 
 # SOLVING THE SYSTEM
-def get_profiles(params, resol=1000, print_time=False, integrator="RK45"):
+def get_profiles(params, resol=1000, print_time=False, integrator="RK45", log_grid = False, Rmax = 100):
     """
     computes the profiles for v, n, T as a function of r
     
@@ -210,6 +210,10 @@ def get_profiles(params, resol=1000, print_time=False, integrator="RK45"):
         if True, prints the time needed for the computation
     integrator: str, optional
         integrator to be used for the computation of the profiles
+    log_grid: bool, optional
+        if True, the grid is logarithmic
+    Rmax: float, optional
+        maximum radius of the grid in units of R (the minimum radius)
     
     Returns
     =======
@@ -279,15 +283,18 @@ def get_profiles(params, resol=1000, print_time=False, integrator="RK45"):
     
     # integrating the equations
     
-    r_bound = (R, 100*R)
-    
-    r_eval = np.linspace(r_bound[0],r_bound[1],resol)
+    r_bound = (R, Rmax*R)
+
+    if log_grid:
+        r_eval = np.logspace(np.log10(r_bound[0]), np.log10(r_bound[1]), resol)
+    else:
+        r_eval = np.linspace(r_bound[0],r_bound[1],resol)
 
     if print_time:
       t_ivp = time.perf_counter()
 
     sol = si.solve_ivp(diff_system, r_bound, y0, t_eval=r_eval, args=(params,Plw,Ph1,Pg1),method = integrator,\
-                       events = stopping_condition) #,rtol=1.0e-3
+                       events = stopping_condition)
     
     if print_time:
       time_ivp = (time.perf_counter() - t_ivp)

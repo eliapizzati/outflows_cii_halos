@@ -9,7 +9,7 @@ from scipy.interpolate import interp1d
 
 
 import plot_config as pltc
-import mydir
+import my_dir
 import my_utils
 import natconst as nc
 
@@ -57,8 +57,8 @@ data = obs_data_list[int_data]
 redshift = 4.54
 
 if not data_loading:
-    from mcmc_new import get_emission_fast, get_other_params
-    from mcmc_new import h, grid
+    from mcmc_main import get_emission_fast, get_other_params
+    from mcmc_main import h, grid
 
     other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"])
 

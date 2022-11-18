@@ -9,7 +9,7 @@ import numpy as np
 import os
 
 import natconst as nc
-import mydir
+import my_dir
 from my_utils import to_habing_flux 
 
 
@@ -48,7 +48,7 @@ def UVB_rates(redshift, quantity):
     
     #UV BACKGROUND
         
-    data_flux_UVB =  np.loadtxt(os.path.join(mydir.script_dir, "input_data", "krome_HMflux.dat"), unpack=True)
+    data_flux_UVB =  np.loadtxt(os.path.join(my_dir.script_dir, "input_data", "krome_HMflux.dat"), unpack=True)
         
     redshift_list, energy_exp, flux_exp_UVB = data_flux_UVB
         
@@ -165,7 +165,7 @@ if __name__ == "__main__":
     
     # UV BACKGROUND
         
-    data_flux_UVB =  np.loadtxt(os.path.join(mydir.script_dir, "input_data", "krome_HMflux.dat"), unpack=True)
+    data_flux_UVB =  np.loadtxt(os.path.join(my_dir.script_dir, "input_data", "krome_HMflux.dat"), unpack=True)
         
     redshift_list, energy_exp, flux_exp_UVB = data_flux_UVB
         
@@ -261,7 +261,7 @@ if __name__ == "__main__":
     # integral of the spectral luminosity
         
         
-    data_flux_gal = np.loadtxt(os.path.join(mydir.script_dir, "input_data", "flux.dat"), unpack=True, usecols = (0,36))
+    data_flux_gal = np.loadtxt(os.path.join(my_dir.script_dir, "input_data", "flux.dat"), unpack=True, usecols = (0,36))
         
     wav = data_flux_gal[0] * nc.angs  # in cm
         

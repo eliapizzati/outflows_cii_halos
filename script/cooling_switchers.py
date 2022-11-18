@@ -13,7 +13,6 @@ from matplotlib.widgets import Slider
 
 from my_utils import plw_from_habing_flux
 from cooling import cooling_vectorized, heating_vectorized, temperatures
-import mydir
 import plot_config
 
 

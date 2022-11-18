@@ -9,9 +9,8 @@ Created on Mon Aug  9 18:12:43 2021
 import numpy as np
 import matplotlib.pyplot as plt
 import natconst as nc
-import os 
+import os
 
-import mydir
 import emcee
 import corner
 
@@ -68,8 +67,8 @@ params = dict([("DM_model", "NFW"),
 if plot0:
 
 
-    from mcmc import get_emission_fast, get_other_params
-    from mcmc import h, grid
+    from script.OLD.mcmc import get_emission_fast, get_other_params
+    from script.OLD.mcmc import h, grid
 
     from script.OLD.load_data import obs_data_list
 
@@ -167,8 +166,8 @@ if plot1:
     # emission chains
     """
     
-    from mcmc import get_emission_fast, get_other_params
-    from mcmc import h, grid
+    from script.OLD.mcmc import get_emission_fast, get_other_params
+    from script.OLD.mcmc import h, grid
     
     from script.OLD.load_data import obs_data_list
 

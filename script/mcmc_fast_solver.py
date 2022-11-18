@@ -1,13 +1,11 @@
-# -*- coding: utf-8 -*-
 """
-Created on Tue May 11 11:04:50 2021
-
-@author: anna
+This script defines the differential system for the Euler equations
+and tests it with some standard initial conditions
 """
 
 import os
 import natconst as nc
-import mydir
+import my_dir
 import time
 
 # from numba import jit
@@ -29,14 +27,16 @@ import plot_config as pltc
 
 import gnedincooling as gc
 
-gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
+gc.frtinitcf(0, os.path.join(my_dir.script_dir, "input_data", "cf_table.I2.dat"))
 
 
 # SYSTEM OF EQUATIONS
 
-def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s, cut):
+def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
+                     Plw, Ph1, Pg1, Zeta, A_NFW, r_s, cut):
     """
-    differential system for the Euler equations
+    differential system for the Euler equations; does the same
+    as the get_profiles function in sol_modules.py but much faster
 
     Parameters
     ----------
@@ -82,33 +82,35 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     pc = 3.08572e18  # Parsec [cm]
     ms = 1.99e33  # Solar mass [g]
     gg = 6.672e-8  # Gravitational constant
+    cosmo_h = 0.6774 # Hubble parameter
 
     Gamma_H_1000 = 5.48031935502901e-09  # s^-1
     Gamma_He_1000 = 1.7687762344020628e-09  # s^-1
     Gamma_LW_1000 = 1.4229125141877616e-08  # s^-1
 
-    # defining the equations
+    knorm_kmsK = kk / (mus * mp) / 1e10  # in (km/s)**2 / K
+
+    # defining the three variables
 
     v = y[0]  # velocity in kms
     n = y[1]  # density in cm-3
     T = y[2]  # temperature in K
 
-    knorm_kmsK = kk / (mus * mp) / 1e10  # in (km/s)**2 / K
-
     c_S2 = gamma * knorm_kmsK * abs(T)  # in (km/s)^2
     c_T2 = knorm_kmsK * abs(T)  # in (km/s)^2
 
-    # cooling part
+    # radiation fields and cooling function part
 
     Plw = Plw + Gamma_LW_1000 * (1. / r) ** 2 * SFR_pure * f_esc_FUV
     Ph1 = Ph1 + Gamma_H_1000 * (1. / r) ** 2 * SFR_pure * f_esc_ion
     Pg1 = Pg1 + Gamma_He_1000 * (1. / r) ** 2 * SFR_pure * f_esc_ion
-
     Pc6 = 0.
 
     lamda = gc.frtgetcf_cool(T, n, Zeta, Plw, Ph1, Pg1, Pc6) - gc.frtgetcf_heat(T, n, Zeta, Plw, Ph1, Pg1, Pc6)
 
     q = n * lamda / (mus * mp) / 1e10  # in (km/s)^2/s
+
+    # gravity part
 
     M_r = M_vir_pure / A_NFW * (np.log(1. + r / r_s) + r_s / (r_s + r) - 1)
 
@@ -117,21 +119,17 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
                 0.30712 * (1 + redshift) ** 3 + 5.384308416949404e-05 * (1 + redshift) ** 4 + 0.6913912010962934)
     critical_density = 3 * hubble2 / (8 * np.pi * gg)  # in g/cm^3
 
-    # gravity part
-
-    cosmo_h = 0.6774
     r_vir_pure = np.cbrt(3 * M_vir_pure * nc.ms / (critical_density * 4 * np.pi * overdensity)) / 1e3 / pc  # in kpc
-
     R_pure = r_vir_pure/1e2
-
     x_R = r / R_pure
 
     M_star = mstar_behroozi(M_vir_pure, z=redshift)
-
     M_disk_r = (M_star / 2.) * (2. - (x_R * (x_R + 2) + 2) * np.exp(-x_R))
 
     v_c = np.sqrt(gg * (M_r + M_disk_r) * ms / (r * 1e3 * pc)) / 1e5  # in km/s
     v_e = v_c * np.sqrt(2)  # in km/s
+
+    # system of differential equations
 
     derivative_a = (2 * v / r) * (c_S2 - v_e ** 2 / 4) / (v ** 2 - c_S2) + (gamma - 1.) * q / (
             (v ** 2 - c_S2) * 1e2 / pc)
@@ -147,33 +145,44 @@ def diff_system_fast(r, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
     return output
 
 
-def stopping_condition(t, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV, Plw, Ph1, Pg1, Zeta, A_NFW, r_s,
-                       cut):
+def stopping_condition(t, y, SFR_pure, redshift, M_vir_pure, f_esc_ion, f_esc_FUV,
+                       Plw, Ph1, Pg1, Zeta, A_NFW, r_s, cut):
     return y[0] - cut  # in km/s
 
 
 stopping_condition.terminal = True
 stopping_condition.direction = -1
 
+
+
+
+
+
+
 if __name__ == "__main__":
 
     def get_profiles_fast(params, resol=1000, print_time=False, integrator="RK45", cut=50.):
         """
-        computes the profiles for v, n, T as a function of r
+        function to test diff_system_fast, it is not used in other scripts
 
         Parameters
-        ==========
-        params: dict
-            parameters to be passed to all functions
-        resol: int, optional
-            number of r-steps
+        ----------
+        params: array
+            array of parameters
+        resol: int
+            resolution of the radial grid
+        print_time: bool
+            if True, print the time needed to compute the profiles
+        integrator: str
+            integrator to use
+        cut: float
+            stopping condition
 
         Returns
-        =======
-        profiles: sol_profiles class element
+        -------
+        sol_profiles class element
 
         """
-
         # params definition
 
         if "beta" in params:
@@ -244,7 +253,7 @@ if __name__ == "__main__":
         Ph1 = UVB_rates(redshift, quantity="H rate")
         Pg1 = UVB_rates(redshift, quantity="He rate")
 
-        # getting the BC
+        # getting the initial conditions
 
         SFR = SFR_pure / nc.year  # 1/s
 
@@ -349,8 +358,8 @@ if __name__ == "__main__":
 
     folder = "plot_fast_solver"
 
-    if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
-        os.mkdir(os.path.join(mydir.plot_dir, folder))
+    if not os.path.exists(os.path.join(my_dir.plot_dir, folder)):
+        os.mkdir(os.path.join(my_dir.plot_dir, folder))
 
     for integrator in integrator_list:
 
@@ -374,5 +383,5 @@ if __name__ == "__main__":
 
     if show_profile:
         fig_sol.legend(loc="lower center", ncol=8, fontsize="small")
-        plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles_4.png"))
+        plt.savefig(os.path.join(my_dir.plot_dir, folder, "profiles_4.png"))
 

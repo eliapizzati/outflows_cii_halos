@@ -5,7 +5,7 @@ This script is used to solve the differential system of equations for the Euler 
 
 import os
 import natconst as nc
-import mydir
+import my_dir
 import time
 
 # from numba import jit
@@ -27,7 +27,7 @@ import plot_config as pltc
 
 import gnedincooling as gc
 
-gc.frtinitcf(0, os.path.join(mydir.script_dir, "input_data", "cf_table.I2.dat"))
+gc.frtinitcf(0, os.path.join(my_dir.script_dir, "../input_data", "cf_table.I2.dat"))
 
 
 # SYSTEM OF EQUATIONS
@@ -308,8 +308,8 @@ if __name__ == "__main__":
 
     folder = "plot_fast_solver"
 
-    if not os.path.exists(os.path.join(mydir.plot_dir, folder)):
-        os.mkdir(os.path.join(mydir.plot_dir, folder))
+    if not os.path.exists(os.path.join(my_dir.plot_dir, folder)):
+        os.mkdir(os.path.join(my_dir.plot_dir, folder))
 
     for integrator in integrator_list:
 
@@ -333,4 +333,4 @@ if __name__ == "__main__":
 
     if show_profile:
         fig_sol.legend(loc="lower center", ncol=8, fontsize="small")
-        plt.savefig(os.path.join(mydir.plot_dir, folder, "profiles_4.png"))
+        plt.savefig(os.path.join(my_dir.plot_dir, folder, "profiles_4.png"))

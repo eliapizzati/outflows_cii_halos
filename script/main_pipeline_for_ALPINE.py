@@ -7,7 +7,7 @@ the switches
 
 import os
 import numpy as np
-import mydir
+import my_dir
 import natconst as nc
 
 import matplotlib.pyplot as plt
@@ -406,7 +406,7 @@ if save_chi2 == True:
     
     chi2_names = np.asarray(chi2_names)
     
-    out_filename = os.path.join(mydir.data_dir, "data_chi2", data_container_name)
+    out_filename = os.path.join(my_dir.data_dir, "data_chi2", data_container_name)
     
     np.save(out_filename, chi2_names)
 
