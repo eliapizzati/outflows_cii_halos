@@ -21,7 +21,8 @@ import natconst as nc
 
 import my_dir
 from load_data import obs_data_list, names, names_CII_halo, observational_data_fuji
-from mcmc_fast_emission import get_emission_fast
+from mcmc_fast_emission import get_emission_fast, get_other_params
+from mcmc_likelihood_and_priors import log_likelihood, log_probability
 
 import gnedincooling as gc
 
