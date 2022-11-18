@@ -88,7 +88,7 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam,
     f_esc_FUV = 0.
     Zeta = 1.
     R_in_pure = 0.3
-    alfa = other_params["alpha"]
+    alfa = other_params["alfa"]
     mus = 0.61
     pc = 3.08572e18
 
