@@ -14,6 +14,9 @@ from multiprocessing import Pool
 
 import time
 import emcee
+from scipy.interpolate import interp1d
+
+
 import natconst as nc
 
 import my_dir
