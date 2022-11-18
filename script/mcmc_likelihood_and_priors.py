@@ -3,6 +3,8 @@
 import numpy as np
 import time
 
+import natconst as nc
+
 from mcmc_fast_emission import get_emission_fast
 
 def log_likelihood(theta, data, other_params, h, grid, f_beam):
