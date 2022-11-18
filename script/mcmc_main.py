@@ -144,9 +144,9 @@ if optimization:
 
 else:
 
-    # theta_input = [np.log10(data.params_obs["beta_best_fit"]), data.params_obs["log_SFR"], data.params_obs["log_v_c"]]
-    #
-    # ndim = len(theta_input)
+    theta_input = [np.log10(data.params_obs["beta_best_fit"]), data.params_obs["log_SFR"], data.params_obs["log_v_c"]]
+
+    ndim = len(theta_input)
     #
     # pos = theta_input + np.asarray([0.2, 0.2, 0.2]) * np.random.randn(nwalkers, ndim)
     #
