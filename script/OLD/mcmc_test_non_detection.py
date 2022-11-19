@@ -1,5 +1,8 @@
 
-
+"""
+This script is used to test the comparison between detections and non detections
+NOT SURE THIS IS STILL UPDATED AND WORKS
+"""
 
 import os
 import matplotlib.pyplot as plt
@@ -63,7 +66,7 @@ for data, color in zip(datas, colors):
     for log_beta in [log_beta_fit]:
         theta = [log_beta, log_sfr, log_vc]
 
-        intensity, sigma = get_emission_fast(theta, data, other_params, h, grid, f_beam, return_sigma=True)
+        intensity, sigma = get_emission_fast(theta, data, other_params, h, grid, f_beam, return_quantities="emission")
 
         ax_int_conv.plot(h, intensity, alpha=1, label="eta = {:.1f}".format(10**log_beta), color=color)
         ax_sigma.plot(h, sigma, alpha=1, label="eta = {:.1f}".format(10**log_beta), color=color)

@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Aug  5 19:36:13 2021
-
-@author: anna
+This script was used to plot some other figures for the thesis
+(cc85 model, cooling function, cmb suppression theory)
 """
 
 
@@ -11,7 +10,7 @@ import matplotlib.pyplot as plt
 import natconst as nc
 
 
-from cc85 import cc85_profiles
+# from cc85 import cc85_profiles
 from my_utils import get_circular_velocity_profile_NFW, get_vc_from_virial_mass
 from cmb_suppression import eta_func, T_spin_func
 
@@ -40,9 +39,9 @@ matplotlib.rcParams.update({
 
 
 
-plot1 = False  #cc85 + NFW vc
-plot2 = False      # cooling
-plot3 = True    # cmb suppression theory
+plot1 = False  # cc85 + NFW vc
+plot2 = False  # cooling
+plot3 = True   # cmb suppression theory
 
 
 if plot1:

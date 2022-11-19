@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-Created on Thu Aug  5 17:58:27 2021
-
-@author: anna
+This script was used to plot some figures for the thesis (e.g. power spectrum, starburst99 emission, nonlinear collapse, ecc
 """
 
 
@@ -45,8 +42,8 @@ cosmo = cosmology.setCosmology('planck15')
 
 size = 14
 
-plot1 = False   ## sigma_m & ps
-plot2 = False   #Mass function & density profile
+plot1 = False   # sigma_m & ps
+plot2 = False   # Mass function & density profile
 plot3 = True    # starburst99
 
 

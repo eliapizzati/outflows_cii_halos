@@ -1,8 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Sep  8 11:38:20 2021
 
-@author: anna
+"""
+This script plots some figures for the ppt rpesentation, i.e.:
+Fig 1: cc85
+Fig 2: cooling function (requires gnedincooling)
+Fig 3: cmb suppression theory
+Fig 4: n,v,T profiles (requires gnedincooling)
+Fig 5: ionization profiles (requires gnedincooling)
 """
 
 
@@ -13,7 +16,7 @@ import matplotlib.pyplot as plt
 import natconst as nc
 
 
-from cc85 import cc85_profiles
+# from cc85 import cc85_profiles
 from my_utils import get_circular_velocity_profile_NFW, get_vc_from_virial_mass
 from cmb_suppression import eta_func, T_spin_func
 
@@ -42,10 +45,10 @@ matplotlib.rcParams.update({
 
 
 
-plot1 = False  #cc85 
-plot2 = False      # cooling
-plot3 = True    # cmb suppression theory
-plot4 = False    # profiles
+plot1 = False  # cc85
+plot2 = False  # cooling function
+plot3 = True   # cmb suppression theory
+plot4 = False   # profiles
 plot5 = False   # ionization
 
 if plot1:

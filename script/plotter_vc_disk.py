@@ -1,8 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Sep  8 11:38:20 2021
 
-@author: anna
+
+"""
+This script analyzes the nfw profiles including the disk contribution.
+It plots two figures:
+- the nfw profile with the disk contribution
+- the disk + dark matter radial profile
 """
 
 
@@ -40,7 +42,7 @@ matplotlib.rcParams.update({
 #        "text.usetex": True
 })
 
-plot1 = False  # gravity
+plot1 = True     # gravity
 plot2 = True      # exp profile
 
 if plot1:

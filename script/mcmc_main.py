@@ -5,8 +5,6 @@ It defines the likelihood function and the priors and starts the sampling routin
 
 import os
 import numpy as np
-import matplotlib.pyplot as plt
-import scipy.integrate as si
 import scipy
 import logging
 
@@ -30,10 +28,13 @@ gc.frtinitcf(0, os.path.join(my_dir.script_dir, "input_data", "cf_table.I2.dat")
 
 # preliminar parameters (TO CHECK EVERY TIME)
 
-store_data_loc = "quasar" # can be either quasar (the machine is quasar in leiden) or local (mac laptop) or github (for github)
+stored_data_loc = "quasar" # can be either quasar (for the machine is quasar in leiden) or mac (for mac laptop) or github (for github)
+                        # or linux (for linux laptop)
 parallel = True
 optimization = False
 model = "old"
+
+resume_old_chain = True
 
 # selecting the object to fit
 
@@ -43,19 +44,20 @@ data = obs_data_list[data_counter]
 nwalkers = 48
 nsteps = int(input("number of steps?"))
 
-
 filename = "{}_{:.0f}_updated_{}".format(data.params_obs["name_short"], nsteps, model)
 
-folder = "data_emcee"
-if not os.path.exists(os.path.join(my_dir.data_dir, folder)):
-    os.mkdir(os.path.join(my_dir.data_dir, folder))
 
-if store_data_loc == "quasar":
+if stored_data_loc == "quasar":
     path = os.path.join("/data2/pizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
-elif store_data_loc == "local":
+elif stored_data_loc == "mac" or stored_data_loc == "local": #default local is the mac laptop
     path = os.path.join("/Users/eliapizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
-else:
+elif stored_data_loc == "github":
+    folder = "data_emcee"
+    if not os.path.exists(os.path.join(my_dir.data_dir, folder)):
+        os.mkdir(os.path.join(my_dir.data_dir, folder))
     path = os.path.join(my_dir.data_dir, folder, "{}.h5".format(filename))
+else:
+    raise ValueError("stored_data_loc not recognized")
 
 
 # parameters for the integration part
@@ -66,6 +68,8 @@ r_resol = 500
 
 cut = 45.
 integrator = "RK45"
+
+# setting up the grid and the other observational parameters
 
 h = np.linspace(0.3, rmax, h_resol)
 h_ext = np.linspace(-rmax, rmax, 2 * h_resol)
@@ -85,12 +89,15 @@ beam_func = interp1d(h, beam_interp, \
 beam_2d = beam_func(np.sqrt(grid[0] ** 2 + grid[1] ** 2))
 f_beam = np.fft.fft2(beam_2d)
 
+other_params = get_other_params(redshift, FWHM_vel, r_resol, cut, integrator)
+
+# setting up the initial guess for the parameters (if the optimization is not performed)
 if not optimization:
     beta_best_fits = [5.5, 7.5, 6.4, 5.3, 5.9, 4.0, 8.2, 4.3]
     data.params_obs.update(beta_best_fit=beta_best_fits[data_counter])
 
-other_params = get_other_params(redshift, FWHM_vel, r_resol, cut, integrator)
 
+# setting up the log file
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', \
                     datefmt='%m/%d/%Y %I:%M:%S %p', \
@@ -110,10 +117,8 @@ logging.info("filename = {}".format(filename))
 logging.info("###################################################################")
 
 
-log_likelihood.counter = 0
-
 if optimization:
-
+    # setting up the initial guess for the parameters (if the optimization is performed)
 
     # find optimal starting points for each walker
     chi2_func = lambda *args: -2 * log_probability(*args)[0]
@@ -147,18 +152,25 @@ else:
     theta_input = [np.log10(data.params_obs["beta_best_fit"]), data.params_obs["log_SFR"], data.params_obs["log_v_c"]]
 
     ndim = len(theta_input)
-    #
-    # pos = theta_input + np.asarray([0.2, 0.2, 0.2]) * np.random.randn(nwalkers, ndim)
-    #
-    # # pos += np.asarray([0.5, 0., 0.]) * np.random.rand(nwalkers, ndim)
-    #
-    # pos[2][pos[2] < 1.] = 1. + np.abs(pos[2][pos[2] < 1.])
-    #
-    # pos[pos < 0.] = 1e-3
+
+    pos = theta_input + np.asarray([0.2, 0.2, 0.2]) * np.random.randn(nwalkers, ndim)
+
+    # pos += np.asarray([0.5, 0., 0.]) * np.random.rand(nwalkers, ndim)
+
+    pos[2][pos[2] < 1.] = 1. + np.abs(pos[2][pos[2] < 1.])
+
+    pos[pos < 0.] = 1e-3
+
+if resume_old_chain:
+    ndim = 3
     pos = None
 
+    if optimization == True:
+        raise UserWarning("resuming old chain; optimization part will be ignored!")
+
 backend = emcee.backends.HDFBackend(path)
-# backend.reset(nwalkers, ndim)
+if not resume_old_chain:
+    backend.reset(nwalkers, ndim)
 
 
 if parallel:
@@ -167,7 +179,7 @@ if parallel:
 
         sampler = emcee.EnsembleSampler(nwalkers=nwalkers, ndim=ndim, log_prob_fn=log_probability, \
                                         args=(data, other_params, h, grid, f_beam), backend=backend, pool=pool)
-        sampler.run_mcmc(pos, nsteps, progress=True);
+        sampler.run_mcmc(pos, nsteps, progress=True)
 
 else:
 
@@ -177,6 +189,7 @@ else:
 
 samples = sampler.get_chain()
 
+print("Sampling done!")
 print("Mean acceptance fraction: {0:.3f}".format(np.mean(sampler.acceptance_fraction)))
 
 print(

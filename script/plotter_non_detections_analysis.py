@@ -46,7 +46,7 @@ plot1 = True  # dependencies
 
 folder = "final_dependencies"
 
-path = os.path.join(mydir.data_dir, folder)
+path = os.path.join(my_dir.data_dir, folder)
 
 if not os.path.exists(path):
     os.mkdir(path)
@@ -136,7 +136,6 @@ if plot1:
         qint, = ax_flux.plot(h, intensity0, lw=lw, color=color, linestyle="-")
 
         if data_saving:
-
 
             np.savetxt(os.path.join(path, f"final_dep_m{np.log10(mstar0):.1f}.dat"), (h, sigma0, intensity0))
 

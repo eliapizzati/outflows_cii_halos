@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
 """
-Created on Mon Aug  9 16:40:06 2021
-
-@author: anna
+This script gets the profiles of emission for alpine data (analogous to script/main_alpine.py) and then plots them,
+also studying the effect of the observational uncertainties on SFR and v_c
 """
 
 
@@ -36,7 +34,7 @@ matplotlib.rcParams.update({
 
 
 
-plot1 = False  #single profiles results
+plot1 = False  # single profiles results
 plot2 = True      # SFR and vc uncertainties
 
 
@@ -99,7 +97,8 @@ if plot1:
             intensity_conv = get_intensity_convolved(intensity_raw, params, data.params_obs, data, add_central_contribution=False)
          
             
-            axs_flat[data_counter].plot(intensity_conv.h/(1e3*nc.pc),intensity_conv.var, color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
+            axs_flat[data_counter].plot(intensity_conv.h/(1e3*nc.pc),intensity_conv.var,
+                                        color = cmap_rend_col((betas[i]-betas.min())/(betas.max()-betas.min())))
             
             
         axs_flat[data_counter].errorbar(data.x/(1000*nc.pc), data.data, yerr=data.err, \

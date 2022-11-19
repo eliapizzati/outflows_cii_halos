@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
 """
-Created on Wed Sep  8 11:38:20 2021
-
-@author: anna
+This script plots the following figures for the paper:
+- Figure 1: NFW profile (requires gnedicooling)
+- Figure 2: cmb theory (requires gnedicooling)
+- Figure 3: NFW profile horizontal layout (requires gnedicooling)
+- Figure 4: cmb theory horizontal layout (requires gnedicooling)
 """
 
 
@@ -41,10 +42,10 @@ matplotlib.rcParams.update({
 })
 
 
-plot1 = False  # gravity
-plot2 = False      # cmb
-plot3 = False # gravity horizontla
-plot4 = True # cmb horizontal
+plot1 = True  # NFW profile
+plot2 = False  # cmb
+plot3 = False # NFW profile horizontal
+plot4 = False  # cmb horizontal
 
 
 params = dict([("DM_model", "NFW+disk"),

@@ -1,16 +1,9 @@
-# -*- coding: utf-8 -*-
+
+
+
 """
-Created on Fri Aug  6 16:51:30 2021
-
-@author: anna
-"""
-
-
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Aug  5 19:36:13 2021
-
-@author: anna
+This script creates some basic figures for the thesis (model chapter) such as v,n,T profiles, ionization states, cmb emission,
+final intensity and surface density profiles
 """
 
 
@@ -44,8 +37,8 @@ matplotlib.rcParams.update({
 
 
 
-plot1 = False  #profiles v,n,T
-plot2 = False      # ionization state
+plot1 = False  # profiles v,n,T
+plot2 = False  # ionization state
 plot3 = True   # cmb emission
 plot4 = False  # final emission
 
@@ -372,7 +365,7 @@ if plot4:
     from sol_modules import get_profiles
     from post_sol_modules import get_ionization_states, get_surface_density, get_intensity_raw, get_intensity_convolved, get_luminosity_CII, get_halo_mass
 
-    from script.OLD.load_data import observational_data_fuji
+    from load_data import observational_data_fuji
 
     betas = np.arange(1.0,9.0,0.8)
 

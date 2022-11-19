@@ -41,8 +41,6 @@ def log_likelihood(theta, data, other_params, h, grid, f_beam):
 
     chi2 = np.sum(residuals ** 2)
 
-    log_likelihood.counter += 1
-
     return - chi2 / 2.
 
 

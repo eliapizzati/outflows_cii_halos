@@ -21,26 +21,27 @@ import natconst as nc
 
 from load_data import obs_data_list, names, names_CII_halo, observational_data_fuji
 
-loading_from_cluster = False
-plot_logprob = False
+
+stored_data_loc = "mac" # can be either quasar (for the machine is quasar in leiden) or mac (for mac laptop) or github (for github)
+                        # or linux (for linux laptop)plot_logprob = False
+
 model = "old"
 
-plot1 = True #chains
-plot2 = True #corners
-plot3 = False #emission
-plot4 = False #luminodity
+print_autocorr_time = False
+plot_logprob = False
+plot_saving = True
 
-thin = 1
-discard = 0
+# which plots (analysis) to perform
+plot1 = True # chains of the walkers
+plot2 = True # corner plot of the parameters
+plot3 = False # emission from the sampled posterior (requires gnedincooling) + luminosity of the CII line
 
+thin = 300
+discard = 5000
 
 nwalkers = 48
-nsteps = 100#int(input("number of steps?"))
+nsteps = 100000#int(input("number of steps?"))
 
-
-
-sample_step = int(100 * (nsteps / 1000))
-walker_step = int(20 * (nwalkers / 48))
 
 int_data = int(input("data number?"))
 data = obs_data_list[int_data]
@@ -57,22 +58,25 @@ print("filename = {}".format(filename))
 
 print("###################################################################")
 
-folder_data = "data_emcee"
+if stored_data_loc == "quasar":
+    path = os.path.join("/data2/pizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
+elif stored_data_loc == "mac" or stored_data_loc == "local": #default local is the mac laptop
+    path = os.path.join("/Users/eliapizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
+elif stored_data_loc == "github":
+    folder = "data_emcee"
+    if not os.path.exists(os.path.join(my_dir.data_dir, folder)):
+        os.mkdir(os.path.join(my_dir.data_dir, folder))
+    path = os.path.join(my_dir.data_dir, folder, "{}.h5".format(filename))
+else:
+    raise ValueError("stored_data_loc not recognized")
 
-if not os.path.exists(os.path.join(my_dir.data_dir, folder_data)):
-    os.mkdir(os.path.join(my_dir.data_dir, folder_data))
 
 folder_plot = "plot_emcee"
-
 if not os.path.exists(os.path.join(my_dir.plot_dir, folder_plot)):
     os.mkdir(os.path.join(my_dir.plot_dir, folder_plot))
 
 
-path = os.path.join(my_dir.data_dir, folder_data, "{}.h5".format(filename))
-path_machine = os.path.join("/Users/eliapizzati/projects/outflows/data_mcmc", "{}.h5".format(filename))
-
-reader = emcee.backends.HDFBackend(path_machine)
-
+reader = emcee.backends.HDFBackend(path)
 samples = reader.get_chain(thin=thin, discard=discard)
 samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
 
@@ -80,12 +84,15 @@ log_prob_samples = reader.get_log_prob(flat=True, thin=thin, discard=discard)
 log_prior_samples = reader.get_blobs(flat=True, thin=thin, discard=discard)
 
 print("flat log prob shape: {0}".format(log_prob_samples.shape))
-# print("tau = ", reader.get_autocorr_time(thin=1, discard=30000))
-print("N/100 = ", reader.get_chain(thin=1, discard=10000).shape[0]/100)
+
+if print_autocorr_time:
+    print("tau = ", reader.get_autocorr_time(thin=1, discard=1000))
+    print("average tau = ", np.mean(reader.get_autocorr_time(thin=1, discard=1000)))
+    print("N/100 = ", reader.get_chain(thin=1, discard=1000).shape[0]/100)
+
 
 all_samples = np.concatenate(
     (samples_flat, log_prob_samples[:, None]),
-    #log_prior_samples[:, None]), \
     axis=1)
 
 ndim = 3
@@ -132,14 +139,14 @@ if plot1:
     fig.suptitle("{0:}, v_c = {1:.1f} km/s, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"],
                                                                   data.params_obs["SFR"]))
 
-    plt.savefig(os.path.join(my_dir.plot_dir, folder_plot, "chain_{}.png".format(filename)))
+    if plot_saving:
+        plt.savefig(os.path.join(my_dir.plot_dir, folder_plot, "chain_{}.png".format(filename)))
 
 
 if plot2:
     """
     PLOT2 - corner
     """
-
 
     if plot_logprob:
         labels += ["log prob"]#, "log prior"]
@@ -244,17 +251,20 @@ if plot2:
     #fig.suptitle("{0:}, v_c = {1:.1f} km/s, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"],
     #                                                              data.params_obs["SFR"]))
 
-    plt.savefig(os.path.join(my_dir.plot_dir, folder_plot, "corner_{}.png".format(filename)))
+    if plot_saving:
+        plt.savefig(os.path.join(my_dir.plot_dir, folder_plot, "corner_{}.png".format(filename)))
 
 
 
 if plot3:
     """
-    PLOT3 - qlf
+    PLOT3 - emission from samples
     """
 
-    from mcmc_main import get_emission_fast, get_other_params
+    from mcmc_fast_emission import get_emission_fast, get_other_params
     from mcmc_main import h, grid
+
+    number_of_lines_to_plot = 100
 
     other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"])
 
@@ -273,79 +283,31 @@ if plot3:
     ax_int_conv.set_ylim((1e-3, 1e2))
 
     counter = 0
-    for walker in samples[::sample_step]:
-        for theta in walker[::walker_step]:
-            counter += 1
-            print("computing emission for theta =", theta, "\t", "iteration number {}/{}" \
-                  .format(counter, int(nsteps * nwalkers / sample_step / walker_step / thin)))
-
-            # if theta[0]>1.15:# and theta[1]>50.:
-
-            intensity = get_emission_fast(theta, data, other_params, h, grid, f_beam)
-
-            ax_int_conv.plot(h, intensity, alpha=0.1, color="gray")
-
-    alpine = ax_int_conv.errorbar(data.x / (1000 * nc.pc), data.data, yerr=data.err, \
-                                  markerfacecolor='maroon', markeredgecolor='maroon', marker='o', \
-                                  linestyle='', ecolor='maroon')
-
-
-    fig_int_conv.suptitle(
-        "{0:}, v_c = {1:.1f} km/s, SFR = {2:.1f}".format(data.params_obs["name"], data.params_obs["v_c"],
-                                                         data.params_obs["SFR"]))
-
-    fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
-
-    plt.savefig(os.path.join(my_dir.plot_dir, folder_plot, "emission_{}.png".format(filename)))
-
-
-
-if plot4:
-    """
-    PLOT3 - luminodity
-    """
-
-    from mcmc_main import get_emission_fast, get_other_params
-    from mcmc_main import h, grid
-
-    other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"])
-
-    beam_interp = np.interp(h, data.x_beam / 1e3 / nc.pc, data.beam, right=0.)
-
-    beam_interp[beam_interp < 0.] = 0.
-
-    beam_func = interp1d(h, beam_interp, \
-                         fill_value=(beam_interp[0], 0.), bounds_error=False)
-
-    beam_2d = beam_func(np.sqrt(grid[0] ** 2 + grid[1] ** 2))
-    f_beam = np.fft.fft2(beam_2d)
-
-    fig_int_conv, ax_int_conv = pltc.plot_configurator(plot_type="int", xlim=15)
-
-    ax_int_conv.set_ylim((1e-3, 1e2))
+    intx = np.random.randint(len(samples_flat), size=number_of_lines_to_plot)
 
     luminosities = []
 
-    counter = 0
-    for walker in samples[::sample_step]:
-        for theta in walker[::walker_step]:
-            counter += 1
-            print("computing emission for theta =", theta, "\t", "iteration number {}/{}" \
-                  .format(counter, int(nsteps * nwalkers / sample_step / walker_step / thin)))
+    for theta in samples_flat[intx]:
+        counter += 1
+        print("computing emission for theta =", theta, "\t", "iteration number {}/{}" \
+              .format(counter, number_of_lines_to_plot))
 
-            # if theta[0]>1.15:# and theta[1]>50.:
+        intensity, sigma = get_emission_fast(theta, data, other_params, h, grid, f_beam, return_quantities="emission")
 
-            intensity, sigma = get_emission_fast(theta, data, other_params, h, grid, f_beam, return_sigma=True)
+        h_ext = np.linspace(0, np.max(h), 100)
+        sigma_ext = np.interp(h_ext, h, sigma)
+        luminosity_cii = np.trapz(sigma_ext * 2 * np.pi * h_ext * nc.pc * 1e3, h_ext * nc.pc * 1e3)
 
-            h_ext = np.linspace(0, np.max(h), 100)
-            sigma_ext = np.interp(h_ext, h, sigma)
-            luminosity_cii = np.trapz(sigma_ext * 2 * np.pi * h_ext * nc.pc * 1e3, h_ext * nc.pc * 1e3)
+        ax_int_conv.plot(h, intensity, alpha=0.1, color="gray")
 
-            ax_int_conv.plot(h, intensity, alpha=0.1, color="gray")
-
-            luminosities.append(luminosity_cii/nc.ls)
+        luminosities.append(luminosity_cii / nc.ls)
 
     luminosities = np.asarray(luminosities)
+    # print(luminosities)
+    print("model CII luminosities",np.percentile(luminosities/1e9, [18,50,84])[1], np.percentile(luminosities/1e9, [18,50,84])[1]-np.percentile(luminosities/1e9, [18,50,84])[0],
+          np.percentile(luminosities/1e9, [18,50,84])[2]-np.percentile(luminosities/1e9, [18,50,84])[1])
+    print("data CII luminosities", data.params_obs["luminosity_CII"]/1e9,  data.params_obs["luminosity_CII_err_up"]/1e9, data.params_obs["luminosity_CII_err_down"]/1e9)
+
 
     alpine = ax_int_conv.errorbar(data.x / (1000 * nc.pc), data.data, yerr=data.err, \
                                   markerfacecolor='maroon', markeredgecolor='maroon', marker='o', \
@@ -357,14 +319,13 @@ if plot4:
 
     fig_int_conv.legend(loc="lower center", ncol=8, fontsize="small")
 
-    plt.savefig(os.path.join(my_dir.plot_dir, folder_plot, "emission_{}.png".format(filename)))
+    if plot_saving:
+        plt.savefig(os.path.join(my_dir.plot_dir, folder_plot, "emission_{}.png".format(filename)))
 
-    print(luminosities)
-    print("model lum",np.percentile(luminosities/1e9, [18,50,84])[1], np.percentile(luminosities/1e9, [18,50,84])[1]-np.percentile(luminosities/1e9, [18,50,84])[0],
-          np.percentile(luminosities/1e9, [18,50,84])[2]-np.percentile(luminosities/1e9, [18,50,84])[1])
-    print("data lum", data.params_obs["luminosity_CII"]/1e9,  data.params_obs["luminosity_CII_err_up"]/1e9, data.params_obs["luminosity_CII_err_down"]/1e9)
 
-if not loading_from_cluster:
-    plt.show()
+
+
+
+plt.show()
 
 

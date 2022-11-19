@@ -1,3 +1,11 @@
+
+"""
+This script creates a switcher to analyze the behavior of the emission (in terms of sigma ond conv int)
+as a function of the parameters of the model (beta, sfr, vc); it can take all of the parameters independently
+(plus the alpha parameter) or only one (i.e., mstar) which determines all of the other ones via the fitting relations
+presented in Pizzati+22
+"""
+
 import numpy as np
 import os
 import matplotlib.pyplot as plt
@@ -37,17 +45,18 @@ matplotlib.rcParams.update({
 })
 
 
-plot1 = True #single dependence
-plot2 = False #multiple dependencies
-plot3 = False #multiple dependencies w alpha
+plot1 = True # switchers with a single dependence on
+plot2 = False # multiple dependencies (independent)
+plot3 = False # multiple dependencies (independent) w alpha
 
+# data selection for emission comparison
 
-int_data = 0#int(input("data number?"))
+int_data = 0 #int(input("data number?"))
 data = obs_data_list[int_data]
 
+# load observational data
 
-
-other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"])
+other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"], alfa=1.)
 
 beam_interp = np.interp(h, data.x_beam / 1e3 / nc.pc, data.beam, right=0.)
 
@@ -58,6 +67,9 @@ beam_func = interp1d(h, beam_interp, \
 
 beam_2d = beam_func(np.sqrt(grid[0] ** 2 + grid[1] ** 2))
 f_beam = np.fft.fft2(beam_2d)
+
+
+# setting up the switchers
 
 axd = plt.figure(figsize=(15, 8.5), constrained_layout=False).subplot_mosaic(
     """
@@ -180,7 +192,7 @@ text = plt.figtext(0.63, 0.023,
                                       'boxstyle': "round", 'edgecolor': 'none', 'pad': 0.5})
 
 if plot1:
-    "single dep"
+    "single dependence on mstar"
 
     # SLIDERS
 
@@ -220,7 +232,7 @@ if plot1:
 
 
 if plot2:
-    "multiple deps"
+    "multiple deps independent"
 
     # SLIDERS
 
@@ -274,7 +286,7 @@ if plot2:
 
 
 if plot3:
-    "multiple deps w alpha"
+    "multiple dependences w alpha"
 
     # SLIDERS
 
@@ -305,6 +317,7 @@ if plot3:
         vc = my_utils.get_vc_from_virial_mass(mvir, z=5.) / 1e5
 
         params = np.asarray([np.log10(eta), np.log10(sfr), np.log10(vc)])
+        other_params = get_other_params(data.params_obs["redshift"], data.params_obs["line_FWHM"], alfa=alfa)
 
         intensity, sigma, r, n, v, T = get_emission_fast(params, data, other_params, h, grid, f_beam,
                                                          return_quantities="all", alfa=alfa)
