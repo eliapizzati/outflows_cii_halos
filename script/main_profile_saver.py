@@ -44,7 +44,7 @@ print("##################################")
 
 # getting the profiles using the integrator in sol_modules.py (this is the step that needs to be optimized)
 
-resol = 10000
+resol = 1000
 
 time_profile = time.perf_counter()
 profiles = get_profiles(params, resol=resol, Rmax = 10, log_grid=True, print_time=False, integrator="RK45")
