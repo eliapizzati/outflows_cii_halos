@@ -288,7 +288,7 @@ def get_profiles(params, resol=1000, print_time=False, integrator="RK45", log_gr
 
     if log_grid:
         r_eval = np.logspace(np.log10(r_bound[0]), np.log10(r_bound[1]), resol)
-        print(r_eval)
+        r_eval = r_eval[1::-1]
     else:
         r_eval = np.linspace(r_bound[0],r_bound[1],resol)
 
