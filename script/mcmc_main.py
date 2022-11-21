@@ -31,10 +31,10 @@ gc.frtinitcf(0, os.path.join(my_dir.script_dir, "input_data", "cf_table.I2.dat")
 stored_data_loc = "quasar" # can be either quasar (for the machine is quasar in leiden) or mac (for mac laptop) or github (for github)
                         # or linux (for linux laptop)
 parallel = True
-optimization = False
-model = "old"
+optimization = True
+model = "new"
 
-resume_old_chain = True
+resume_old_chain = False
 
 # selecting the object to fit
 
