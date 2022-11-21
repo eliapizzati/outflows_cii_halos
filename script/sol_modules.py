@@ -284,9 +284,11 @@ def get_profiles(params, resol=1000, print_time=False, integrator="RK45", log_gr
     # integrating the equations
     
     r_bound = (R, Rmax*R)
+    print("r_bound",r_bound)
 
     if log_grid:
         r_eval = np.logspace(np.log10(r_bound[0]), np.log10(r_bound[1]), resol)
+        print(r_eval)
     else:
         r_eval = np.linspace(r_bound[0],r_bound[1],resol)
 
