@@ -56,7 +56,7 @@ plot0 = False  # single emission chain (requires gnedincooling)
 plot1 = False  # emission chains (requires gnedincooling)
 plot2 = True  # corners
 plot3 = False  # violins
-plot4 = False  # final trends
+plot4 = True  # final trends
 
 stored_data_loc = "mac" # can be either quasar (for the machine is quasar in leiden) or mac (for mac laptop) or github (for github)
                         # or linux (for linux laptop)plot_logprob = False
@@ -687,13 +687,13 @@ if plot4:
     mask = [True, True, True, True, True, True, True]
 
     ax_vc.scatter(mstars[mask], beta_means[mask], \
-                  marker='o', color=cmap_rend_col((sfrs[mask] - SFR_min) / (SFR_max - SFR_min)), \
-                  s=500 * (1. / abs(likelihood_means[mask])), zorder=30)
+                  marker='o', edgecolors="gray", color=cmap_rend_col((sfrs[mask] - SFR_min) / (SFR_max - SFR_min)), \
+                  s=500 * (1. / abs(likelihood_means[mask])), alpha=0.8, zorder=30)
 
     ax_vc.errorbar(mstars[mask], beta_means[mask], \
                    [sigma_betas_down[mask], sigma_betas_up[mask]], \
                    [sigma_mstars_down[mask], sigma_mstars_up[mask]],
-                   ecolor="gray", linestyle="", barsabove=False, alpha=0.4, zorder=30)
+                   ecolor="gray", linestyle="", barsabove=False, alpha=0.4, zorder=20)
 
     from matplotlib.ticker import ScalarFormatter
 

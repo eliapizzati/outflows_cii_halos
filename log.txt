@@ -15,7 +15,7 @@
 
    - I also want to handle the plots in a more straightforward way! solution is to use matplotlib.rcParams.update()
 
-   - 
+
 10:26 AM 3/9/2021
 
 - I have made a lot of changes in the script structure. Now there are a few classes and a lot of functions; parameters are contained in a dictionary;
