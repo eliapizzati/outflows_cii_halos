@@ -25,7 +25,7 @@ from load_data import obs_data_list, names, names_CII_halo, observational_data_f
 stored_data_loc = "mac" # can be either quasar (for the machine is quasar in leiden) or mac (for mac laptop) or github (for github)
                         # or linux (for linux laptop)plot_logprob = False
 
-model = "old"
+model = "new"
 
 print_autocorr_time = False
 plot_logprob = False
@@ -36,11 +36,11 @@ plot1 = True # chains of the walkers
 plot2 = True # corner plot of the parameters
 plot3 = False # emission from the sampled posterior (requires gnedincooling) + luminosity of the CII line
 
-thin = 300
-discard = 5000
+thin = 1
+discard = 0
 
 nwalkers = 48
-nsteps = 100000#int(input("number of steps?"))
+nsteps = 10000#int(input("number of steps?"))
 
 
 int_data = int(input("data number?"))

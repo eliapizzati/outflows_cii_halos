@@ -54,9 +54,9 @@ plot_saving = True
 
 plot0 = False  # single emission chain (requires gnedincooling)
 plot1 = False  # emission chains (requires gnedincooling)
-plot2 = True  # corners
+plot2 = False  # corners
 plot3 = False  # violins
-plot4 = False  # final trends
+plot4 = True  # final trends
 
 stored_data_loc = "mac" # can be either quasar (for the machine is quasar in leiden) or mac (for mac laptop) or github (for github)
                         # or linux (for linux laptop)plot_logprob = False
@@ -67,11 +67,11 @@ model = "old"
 nwalkers = 48
 nsteps = 100000
 thin = 100
-discard = 2000
+discard = 10000
 
-data = obs_data_list[0]
+data = obs_data_list[4]
 
-string = "results for""\n""DC396844"
+string = "results for""\n""DC881725"
 
 params = dict([("DM_model", "NFW"),
                ("beta", 1.0),
@@ -343,7 +343,7 @@ if plot2:
     samples = reader.get_chain(thin=thin, discard=discard)
     samples_flat = reader.get_chain(flat=True, thin=thin, discard=discard)
 
-    tau = reader.get_autocorr_time(thin=1, discard=discard)
+    # tau = reader.get_autocorr_time(thin=1, discard=discard)
 
     print("###################################################################")
 
@@ -352,8 +352,8 @@ if plot2:
     print("n walkers = {}".format(nwalkers))
     print("data object = {}".format(data.params_obs["name_short"]))
     print("filename = {}".format(filename))
-    print("tau = {}".format(tau))
-    print("average tau = {}".format(np.mean(tau)))
+    # print("tau = {}".format(tau))
+    # print("average tau = {}".format(np.mean(tau)))
     print("###################################################################")
 
     kwargs = dict(
@@ -792,12 +792,12 @@ if plot4:
 
     ax_sfr.scatter(sfrs[mask], beta_means[mask], \
                    marker='o', color=cmap_rend_col((vcs[mask] - v_c_min) / (v_c_max - v_c_min)), \
-                   s=500 * (1. / abs(likelihood_means[mask])))
+                   edgecolor="gray", s=500 * (1. / abs(likelihood_means[mask])), alpha=0.8, zorder=30)
 
     ax_sfr.errorbar(sfrs[mask], beta_means[mask], \
                     [sigma_betas_down[mask], sigma_betas_up[mask]], \
                     [sigma_sfrs_down[mask], sigma_sfrs_up[mask]],
-                    ecolor="gray", linestyle="", barsabove=False, alpha=0.2)
+                    ecolor="gray", linestyle="", barsabove=False, alpha=0.2, zorder=20)
 
     ax_sfr.set_xlabel(r"SFR [M$_\odot$ yr$^{-1}$]")
     ax_sfr.set_ylabel("$\eta$", labelpad=-1.)

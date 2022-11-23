@@ -445,7 +445,7 @@ def from_xfitted_to_eta(x, a_fit, b_fit):
     Parameters
     ----------
     x: float
-        SFR or Mstar in solar masses per year or solar masses
+        SFR or Mstar in solar masses per year or 10^10 solar masses
     a_fit : float
         a_fit parameter from the fit
     b_fit : float
@@ -477,7 +477,6 @@ def from_eta_to_xfitted(eta, a_fit, b_fit):
     Returns
     -------
     float
-        SFR or Mstar in solar masses per year or solar masses
+        SFR or Mstar in solar masses per year or 10^10 solar masses
     """
     return 10 ** ((np.log10(eta) - np.log10(a_fit))/ b_fit)
-

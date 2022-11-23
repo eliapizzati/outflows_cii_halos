@@ -50,6 +50,8 @@ The first workflow is based on the following scripts:
 
  - _main_profile_saver.py_: similar to main_pipeline_for_ALPINE but just for saving data files
 
+ - _main_profile_reader.py_: script to read the profiles saved in main_profile_saver
+
 
 The second workflow is based on the following scripts (all starting with _mcmc_):
 

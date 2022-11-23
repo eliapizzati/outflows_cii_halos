@@ -25,10 +25,10 @@ plotting = True
 
 params = dict([("DM_model", "NFW+disk"),
                ("beta", 6.8),
-               ("SFR", 15.),
+               ("SFR", 31.),
                ("f_esc_ion", 0.0),
                ("f_esc_FUV", 0.0),
-               ("v_c", 198.),
+               ("v_c", 199.),
                ("redshift", 5.0),
                ("Zeta", 1.0),
                ("alfa", 1.0),
@@ -44,7 +44,7 @@ print("##################################")
 
 # getting the profiles using the integrator in sol_modules.py (this is the step that needs to be optimized)
 
-resol = 1000
+resol = 10000
 
 time_profile = time.perf_counter()
 profiles = get_profiles(params, resol=resol, Rmax = 10, log_grid=True, print_time=False, integrator="RK45")
@@ -58,7 +58,7 @@ else:
     string_nans = "Integration successful"
 print(string_nans)
 
-profiles.to_file(attributes_in_name=f"VC5100537582_{resol}_per_laura_log_grid")
+profiles.to_file(attributes_in_name=f"DC630594_{resol}_per_laura_log_grid")
 
 if post_profiles:
     # getting the ionization states, the sigma CII and the convolved intensity for the CII

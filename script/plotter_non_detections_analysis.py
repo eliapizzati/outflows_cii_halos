@@ -1,4 +1,10 @@
 
+
+"""
+This script fenerates the plot for the paper for the non detection analysis
+N.B. Fits of the eta-sfr and eta-mstar relations need to be updated!
+"""
+
 import numpy as np
 import os
 import matplotlib.pyplot as plt
@@ -131,7 +137,8 @@ if plot1:
             intensity0, sigma0, r0, n0, v0, T0 = get_emission_fast(params0, data, other_params, h, grid, f_beam,
                                                                return_quantities="all")
 
-        qsigma, = ax_sigma.plot(h, sigma0, lw=lw, color=color, linestyle="-", label=r'$\eta$={:.1f}, SFR={:.0f}M$_\odot$yr$^{{-1}}$, v$_c$={:.0f}kms$^{{-1}}$'.format(eta0,sfr0,vc0))
+        qsigma, = ax_sigma.plot(h, sigma0, lw=lw, color=color, linestyle="-",
+                                label=r'$\eta$={:.1f}, SFR={:.0f}M$_\odot$yr$^{{-1}}$, v$_c$={:.0f}kms$^{{-1}}$'.format(eta0,sfr0,vc0))
 
         qint, = ax_flux.plot(h, intensity0, lw=lw, color=color, linestyle="-")
 
