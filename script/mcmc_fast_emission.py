@@ -211,7 +211,8 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam,
             gamma_CI + kappa_CI * n_e) + kappa_CII / beta_CIII)
 
     # emission part
-    epsilon = 7.9e-20 * n ** 2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII * np.exp(-92. / T) / 92. ** 0.5
+    # epsilon = 7.9e-20 * n ** 2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII * np.exp(-92. / T) / 92. ** 0.5
+    epsilon = 7.9e-20 * n ** 2 * (nc.A_C * Zeta) * nc.A_H * x_e * x_CII*T ** (-0.5) * np.exp(-92. / T)
 
     C_ul_e = 8.63e-6 / 2. / np.sqrt(T) * 1.60
     C_ul_H = 20. * 1e-10 / 1.3
@@ -227,8 +228,10 @@ def get_emission_fast(theta, data, other_params, h, grid, f_beam,
 
     T_spin = nc.T_star / np.log(num / den)
 
-    eta = 1. - (np.exp(nc.hh * nc.line_CII_rest_frame / (nc.kk *(1.+redshift )*T_spin)) - 1.) / \
-          (np.exp((nc.hh * nc.line_CII_rest_frame) / (nc.kk *(1.+redshift )**2 *nc.CMB_temperature)) - 1.)
+    # eta = 1. - (np.exp(nc.hh * nc.line_CII_rest_frame / (nc.kk *(1.+redshift )*T_spin)) - 1.) / \
+    #       (np.exp((nc.hh * nc.line_CII_rest_frame) / (nc.kk *(1.+redshift )**2 *nc.CMB_temperature)) - 1.)
+    eta = 1. - (np.exp(nc.hh * nc.line_CII_rest_frame / (nc.kk *T_spin)) - 1.) / \
+          (np.exp((nc.hh * nc.line_CII_rest_frame) / (nc.kk *(1.+redshift ) *nc.CMB_temperature)) - 1.)
 
     epsilon *= eta
 

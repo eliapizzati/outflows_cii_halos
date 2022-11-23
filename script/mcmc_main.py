@@ -32,7 +32,7 @@ stored_data_loc = "quasar" # can be either quasar (for the machine is quasar in 
                         # or linux (for linux laptop)
 parallel = True
 optimization = True
-model = "old"
+model = "new"
 
 resume_old_chain = False
 

@@ -56,7 +56,7 @@ plot0 = False  # single emission chain (requires gnedincooling)
 plot1 = False  # emission chains (requires gnedincooling)
 plot2 = True  # corners
 plot3 = False  # violins
-plot4 = True  # final trends
+plot4 = False  # final trends
 
 stored_data_loc = "mac" # can be either quasar (for the machine is quasar in leiden) or mac (for mac laptop) or github (for github)
                         # or linux (for linux laptop)plot_logprob = False
@@ -71,7 +71,7 @@ discard = 2000
 
 data = obs_data_list[0]
 
-string = "results for""\n""VC5110377875"
+string = "results for""\n""DC396844"
 
 params = dict([("DM_model", "NFW"),
                ("beta", 1.0),
@@ -353,6 +353,7 @@ if plot2:
     print("data object = {}".format(data.params_obs["name_short"]))
     print("filename = {}".format(filename))
     print("tau = {}".format(tau))
+    print("average tau = {}".format(np.mean(tau)))
     print("###################################################################")
 
     kwargs = dict(
