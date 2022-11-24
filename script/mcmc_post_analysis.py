@@ -25,7 +25,7 @@ from load_data import obs_data_list, names, names_CII_halo, observational_data_f
 stored_data_loc = "mac" # can be either quasar (for the machine is quasar in leiden) or mac (for mac laptop) or github (for github)
                         # or linux (for linux laptop)plot_logprob = False
 
-model = "new"
+model = "old"
 
 print_autocorr_time = False
 plot_logprob = False
@@ -40,7 +40,7 @@ thin = 1
 discard = 0
 
 nwalkers = 48
-nsteps = 10000#int(input("number of steps?"))
+nsteps = 100000#int(input("number of steps?"))
 
 
 int_data = int(input("data number?"))
