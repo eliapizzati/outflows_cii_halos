@@ -1,24 +1,7 @@
 
-To make the gnedincooling package working, I have to run the following command in the _other_scripts_ folder:
 
-_f2py3 -c -m gnedincooling frt_cf3m.F_
+This package contains the routines to run the outflow model described in Pizzati et al. 2020,2022 and predicts the extended emission in [CII] that can be directly compared to data. 
 
-and then copy the output file in the main script folder.
-
-
-Just a small documentation of the scripts in the main folder.
-
-N.B. There are three places where I can store the mcmc data (they are too heavy to be
-stored in the github repository). I have to change the path in the scripts to make them work.
-The three places are: 
- - the mac laptop (keywork: "mac")
- - the linux laptop (keywork: "linux")
- - the quasar machine in leiden (keyword: "quasar"; folder /data2/pizzati/projects/...)
- - the github folder (keyword: "github")
-
-On top of that, there are some environments that I have to activate to run the scripts.
-These are: conda env outflows_new on the mac, outenv python3 on the quasar machine, and 
-outflows_new (?) on the linux laptop.
 
 There are two main workflows: the first one builds on many classes and it is suitable for 
 every task that is not computationally intensive. The second one is a faster version of the pipeline 
@@ -120,3 +103,18 @@ that everything is behaving well. The cooling function is defined in gnedincooli
  - _trial_spectrum.py_ (requires gnedincooling): tries to study the spectral shape of the CII line
 
  - _temp_fuji_alpine_comparison.py_: compares the two sets of data
+
+N.B. To create the gnedincooling file, run the following command in the _other_scripts_ folder:
+
+_f2py3 -c -m gnedincooling frt_cf3m.F_
+
+and then copy the output file in the main script folder.
+
+N.B.2 There are three places where mcmc data are stored (they are too heavy to be
+stored in the github repository). I have to change the path in the scripts to make them work.
+The three places are: 
+ - the mac laptop (keywork: "mac")
+ - the linux laptop (keywork: "linux")
+ - the quasar machine in leiden (keyword: "quasar"; folder /data2/pizzati/projects/...)
+ - the github folder (keyword: "github")
+
